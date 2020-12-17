@@ -1,0 +1,32 @@
+Can't find all required versions.
+Selected: conf-m4.1 ocaml.4.13.0 ocaml-config.2 ocamlfind.1.8.1 omake.0.10.3
+          tiny_json_conv&ocaml-base-compiler ocaml-base-compiler
+          ocaml-base-compiler
+- meta_conv -> (problem)
+    Rejected candidates:
+      meta_conv.1.1.5: Requires ocaml >= 4.02.0 & < 4.03.0
+      meta_conv.1.1.4: Requires ocaml = 4.01.0
+      meta_conv.1.1.3: Requires ocaml = 4.01.0
+      meta_conv.1.1.2: Requires ocaml = 4.00.1
+      meta_conv.1.1.1: Requires ocaml = 4.00.1
+      ...
+- ocaml-base-compiler -> (problem)
+    User requested <= 4.11.1
+    Rejected candidates:
+      ocaml-base-compiler.4.11.1: Requires ocaml = 4.11.1
+      ocaml-base-compiler.4.11.0: Requires ocaml = 4.11.0
+      ocaml-base-compiler.4.10.1: Requires ocaml = 4.10.1
+      ocaml-base-compiler.4.10.0: Requires ocaml = 4.10.0
+      ocaml-base-compiler.4.09.1: Requires ocaml = 4.09.1
+      ...
+- tiny_json -> (problem)
+    tiny_json_conv 1.0.1 requires < 1.1.0
+    Rejected candidates:
+      tiny_json.1.1.6: Incompatible with restriction: < 1.1.0
+      tiny_json.1.1.5: Incompatible with restriction: < 1.1.0
+      tiny_json.1.1.4: Requires ocaml >= 4.0.0 & < 4.6.0
+      tiny_json.1.1.3: Requires ocaml >= 4.0.0 & < 4.6.0
+      tiny_json.1.1.2: Requires ocaml >= 4.0.0 & < 4.6.0
+      ...
+- tiny_json_conv -> tiny_json_conv.1.0.1
+    User requested = 1.0.1

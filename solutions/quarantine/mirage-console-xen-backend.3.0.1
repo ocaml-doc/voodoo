@@ -1,0 +1,68 @@
+Can't find all required versions.
+Selected: base-bytes.base base-threads.base base-unix.base
+          bigarray-compat.1.0.0 cmdliner.1.0.4 conf-m4.1 cppo.1.6.6
+          csexp.1.3.2 cstruct.6.0.0 dune.2.7.1 dune-configurator.2.7.1
+          io-page.2.3.0 io-page-xen.2.3.0 lwt-dllist.1.0.0
+          mirage-profile.0.9.1 num.1.4 ocaml.4.13.0 ocaml-config.2
+          ocamlbuild.0.14.0 ocamlfind.1.8.1 ocplib-endian.1.1 parsexp.v0.14.0
+          ppx_cstruct.6.0.0 result.1.5 rresult.0.6.0 sexplib.v0.14.0
+          sexplib0.v0.14.0 shared-memory-ring.3.1.0
+          shared-memory-ring-lwt.3.1.0 stdlib-shims.0.1.0 topkg.1.0.3
+          xen-evtchn.2.1.0 xenstore.2.1.1
+          mirage-console-xen-backend&ocaml-base-compiler ocaml-base-compiler
+          ocaml-base-compiler ocaml
+- base -> (problem)
+    Rejected candidates:
+      base.v0.14.0: Requires ocaml >= 4.07.0 & < 4.12
+      base.v0.13.2: Requires ocaml >= 4.04.2 & < 4.12
+      base.v0.13.1: Requires ocaml >= 4.04.2 & < 4.12
+      base.v0.13.0: Requires ocaml >= 4.04.2 & < 4.10.0
+      base.v0.12.2: Requires ocaml >= 4.04.2 & < 4.10.0
+      ...
+- lwt -> (problem)
+    Rejected candidates:
+      lwt.5.3.0: Requires ocaml >= 4.02.0 & < 4.12
+      lwt.5.2.0: Requires ocaml >= 4.02.0 & < 4.12
+      lwt.5.1.2: Requires ocaml >= 4.02.0 & < 4.12
+      lwt.5.1.1: Requires ocaml >= 4.02.0 & < 4.12
+      lwt.5.1.0: Requires ocaml >= 4.02.0 & < 4.12
+      ...
+- mirage-console -> (problem)
+    mirage-console-xen-backend 3.0.1 requires = 3.0.1
+    Rejected candidates:
+      mirage-console.4.0.0: Incompatible with restriction: = 3.0.1
+      mirage-console.3.0.2: Incompatible with restriction: = 3.0.1
+      mirage-console.2.4.3: Incompatible with restriction: = 3.0.1
+      mirage-console.2.4.2: Incompatible with restriction: = 3.0.1
+      mirage-console.2.4.1: Incompatible with restriction: = 3.0.1
+      ...
+- mirage-console-xen-backend -> mirage-console-xen-backend.3.0.1
+    User requested = 3.0.1
+- mirage-console-xen-proto -> mirage-console-xen-proto.3.0.1
+    mirage-console-xen-backend 3.0.1 requires = 3.0.1
+- mirage-xen -> (problem)
+    No known implementations at all
+- mirage-xen-ocaml -> (problem)
+    No known implementations at all
+- ocaml-base-compiler -> (problem)
+    User requested <= 4.11.1
+    Rejected candidates:
+      ocaml-base-compiler.4.11.1: Requires ocaml = 4.11.1
+      ocaml-base-compiler.4.11.0: Requires ocaml = 4.11.0
+      ocaml-base-compiler.4.10.1: Requires ocaml = 4.10.1
+      ocaml-base-compiler.4.10.0: Requires ocaml = 4.10.0
+      ocaml-base-compiler.4.09.1: Requires ocaml = 4.09.1
+      ...
+- ppxlib -> (problem)
+    ppx_cstruct 6.0.0 requires >= 0.16.0
+    Rejected candidates:
+      ppxlib.0.20.0: Requires ocaml >= 4.04.1 & < 4.13
+      ppxlib.0.19.0: Requires ocaml >= 4.04.1 & < 4.13
+      ppxlib.0.18.0: Requires ocaml >= 4.04.1 & < 4.12
+      ppxlib.0.17.0: Requires ocaml >= 4.04.1 & < 4.12
+      ppxlib.0.16.0: Requires ocaml >= 4.04.1 & < 4.12
+      ...
+- dune|ocaml -> (problem)
+    Rejected candidates:
+      dune: Requires dune >= 2.8.0
+      ocaml: Requires ocaml < 4.12.0~~

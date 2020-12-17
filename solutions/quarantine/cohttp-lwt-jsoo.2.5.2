@@ -1,0 +1,67 @@
+Can't find all required versions.
+Selected: base-threads.base base-unix.base conf-m4.1 dune.2.7.1
+          js_of_ocaml.3.8.0 js_of_ocaml-lwt.3.8.0 js_of_ocaml-ppx.3.8.0
+          logs.0.7.0 ocaml.4.13.0 ocaml-config.2 ocamlbuild.0.14.0
+          ocamlfind.1.8.1 ppx_sexp_conv.v0.14.2 sexplib0.v0.14.0 topkg.1.0.3
+          uchar.0.0.2 cohttp-lwt-jsoo&ocaml-base-compiler ocaml-base-compiler
+          ocaml-base-compiler ocaml
+- base -> (problem)
+    Rejected candidates:
+      base.v0.14.0: Requires ocaml >= 4.07.0 & < 4.12
+      base.v0.13.2: Requires ocaml >= 4.04.2 & < 4.12
+      base.v0.13.1: Requires ocaml >= 4.04.2 & < 4.12
+      base.v0.13.0: Requires ocaml >= 4.04.2 & < 4.10.0
+      base.v0.12.2: Requires ocaml >= 4.04.2 & < 4.10.0
+      ...
+- cohttp -> (problem)
+    cohttp-lwt 2.5.2 requires = 2.5.2
+    Rejected candidates:
+      cohttp.2.5.4: Incompatible with restriction: = 2.5.2
+      cohttp.2.5.2-1: Incompatible with restriction: = 2.5.2
+      cohttp.2.5.1: Incompatible with restriction: = 2.5.2
+      cohttp.2.5.0: Incompatible with restriction: = 2.5.2
+      cohttp.2.4.0: Incompatible with restriction: = 2.5.2
+      ...
+- cohttp-lwt -> cohttp-lwt.2.5.2
+    cohttp-lwt-jsoo 2.5.2 requires = 2.5.2
+- cohttp-lwt-jsoo -> cohttp-lwt-jsoo.2.5.2
+    User requested = 2.5.2
+- js_of_ocaml-compiler -> (problem)
+    dune 2.7.1 requires not(< 3.6.0)
+    js_of_ocaml 3.8.0 requires = 3.8.0
+    Rejected candidates:
+      js_of_ocaml-compiler.3.8.0: Requires ocaml >= 4.02.0 & < 4.12.0
+      js_of_ocaml-compiler.3.7.1: Incompatible with restriction: = 3.8.0
+      js_of_ocaml-compiler.3.6.0: Incompatible with restriction: = 3.8.0
+      js_of_ocaml-compiler.3.5.2: Incompatible with restriction: not(< 3.6.0)
+      js_of_ocaml-compiler.3.5.1: Incompatible with restriction: not(< 3.6.0)
+      ...
+- lwt -> (problem)
+    cohttp-lwt 2.5.2 requires >= 2.5.0
+    cohttp-lwt-jsoo 2.5.2 requires >= 3.0.0
+    Rejected candidates:
+      lwt.5.3.0: Requires ocaml >= 4.02.0 & < 4.12
+      lwt.5.2.0: Requires ocaml >= 4.02.0 & < 4.12
+      lwt.5.1.2: Requires ocaml >= 4.02.0 & < 4.12
+      lwt.5.1.1: Requires ocaml >= 4.02.0 & < 4.12
+      lwt.5.1.0: Requires ocaml >= 4.02.0 & < 4.12
+      ...
+- ocaml-base-compiler -> (problem)
+    User requested <= 4.11.1
+    Rejected candidates:
+      ocaml-base-compiler.4.11.1: Requires ocaml = 4.11.1
+      ocaml-base-compiler.4.11.0: Requires ocaml = 4.11.0
+      ocaml-base-compiler.4.10.1: Requires ocaml = 4.10.1
+      ocaml-base-compiler.4.10.0: Requires ocaml = 4.10.0
+      ocaml-base-compiler.4.09.1: Requires ocaml = 4.09.1
+      ...
+- ppxlib -> (problem)
+    js_of_ocaml 3.8.0 requires >= 0.15.0
+    ppx_sexp_conv v0.14.2 requires >= 0.18.0
+    Rejected candidates:
+      ppxlib.0.20.0: Requires ocaml >= 4.04.1 & < 4.13
+      ppxlib.0.19.0: Requires ocaml >= 4.04.1 & < 4.13
+      ppxlib.0.18.0: Requires ocaml >= 4.04.1 & < 4.12
+      ppxlib.0.17.0: Incompatible with restriction: >= 0.18.0
+      ppxlib.0.16.0: Incompatible with restriction: >= 0.18.0
+      ...

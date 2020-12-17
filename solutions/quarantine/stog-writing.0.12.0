@@ -1,0 +1,25 @@
+Can't find all required versions.
+Selected: base-threads.base base-unix.base dune.2.7.1 menhir.20200624
+          menhirLib.20200624 menhirSdk.20200624 ocaml.4.13.0 ocaml-config.2
+          stog-writing&ocaml-base-compiler ocaml-base-compiler
+          ocaml-base-compiler ocaml
+- ocaml-base-compiler -> (problem)
+    User requested <= 4.11.1
+    Rejected candidates:
+      ocaml-base-compiler.4.11.1: Requires ocaml = 4.11.1
+      ocaml-base-compiler.4.11.0: Requires ocaml = 4.11.0
+      ocaml-base-compiler.4.10.1: Requires ocaml = 4.10.1
+      ocaml-base-compiler.4.10.0: Requires ocaml = 4.10.0
+      ocaml-base-compiler.4.09.1: Requires ocaml = 4.09.1
+      ...
+- stog -> (problem)
+    stog-writing 0.12.0 requires >= 0.12.0 & < 0.13
+    Rejected candidates:
+      stog.0.18.0-1: Incompatible with restriction: >= 0.12.0 & < 0.13
+      stog.0.18.0: Incompatible with restriction: >= 0.12.0 & < 0.13
+      stog.0.17.1: Incompatible with restriction: >= 0.12.0 & < 0.13
+      stog.0.17.0: Incompatible with restriction: >= 0.12.0 & < 0.13
+      stog.0.16.0: Incompatible with restriction: >= 0.12.0 & < 0.13
+      ...
+- stog-writing -> stog-writing.0.12.0
+    User requested = 0.12.0

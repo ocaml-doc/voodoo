@@ -1,0 +1,42 @@
+Can't find all required versions.
+Selected: base-threads.base base-unix.base dune.2.7.1 ocaml.4.13.0
+          ocaml-config.2 ocamlbuild.0.14.0 ppx_derivers.1.2.1
+          ppx_tools_versioned.5.4.0 result.1.5 uchar.0.0.2
+          js_of_ocaml-lwt&ocaml-base-compiler ocaml-base-compiler
+          ocaml-base-compiler ocaml
+- js_of_ocaml -> js_of_ocaml.3.7.0
+    js_of_ocaml-lwt 3.7.0 requires = 3.7.0
+- js_of_ocaml-compiler -> (problem)
+    dune 2.7.1 requires not(< 3.6.0)
+    js_of_ocaml 3.7.0 requires = 3.7.0
+    Rejected candidates:
+      js_of_ocaml-compiler.3.8.0: Incompatible with restriction: = 3.7.0
+      js_of_ocaml-compiler.3.7.1: Incompatible with restriction: = 3.7.0
+      js_of_ocaml-compiler.3.6.0: Incompatible with restriction: = 3.7.0
+      js_of_ocaml-compiler.3.5.2: Incompatible with restriction: not(< 3.6.0)
+      js_of_ocaml-compiler.3.5.1: Incompatible with restriction: not(< 3.6.0)
+      ...
+- js_of_ocaml-lwt -> js_of_ocaml-lwt.3.7.0
+    User requested = 3.7.0
+- js_of_ocaml-ppx -> js_of_ocaml-ppx.3.7.0
+    js_of_ocaml-lwt 3.7.0 requires = 3.7.0
+- lwt -> (problem)
+    js_of_ocaml-lwt 3.7.0 requires >= 2.4.4
+    Rejected candidates:
+      lwt.5.3.0: Requires ocaml >= 4.02.0 & < 4.12
+      lwt.5.2.0: Requires ocaml >= 4.02.0 & < 4.12
+      lwt.5.1.2: Requires ocaml >= 4.02.0 & < 4.12
+      lwt.5.1.1: Requires ocaml >= 4.02.0 & < 4.12
+      lwt.5.1.0: Requires ocaml >= 4.02.0 & < 4.12
+      ...
+- ocaml-base-compiler -> (problem)
+    User requested <= 4.11.1
+    Rejected candidates:
+      ocaml-base-compiler.4.11.1: Requires ocaml = 4.11.1
+      ocaml-base-compiler.4.11.0: Requires ocaml = 4.11.0
+      ocaml-base-compiler.4.10.1: Requires ocaml = 4.10.1
+      ocaml-base-compiler.4.10.0: Requires ocaml = 4.10.0
+      ocaml-base-compiler.4.09.1: Requires ocaml = 4.09.1
+      ...
+- ocaml-migrate-parsetree -> ocaml-migrate-parsetree.1.8.0
+    js_of_ocaml 3.7.0 requires >= 1.4 & < 2.0.0

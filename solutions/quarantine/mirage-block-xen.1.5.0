@@ -1,0 +1,23 @@
+Can't find all required versions.
+Selected: base-bigarray.base base-threads.base base-unix.base ocaml-config.2
+          mirage-block-xen&ocaml-base-compiler ocaml-base-compiler
+          ocaml-variants
+- mirage-block-xen -> (problem)
+    User requested = 1.5.0
+    No usable implementations:
+      mirage-block-xen.2.0.0: Rejected by user-specified constraint mirage-block-xen (= 1.5.0)
+      mirage-block-xen.1.7.0: Rejected by user-specified constraint mirage-block-xen (= 1.5.0)
+      mirage-block-xen.1.6.2: Rejected by user-specified constraint mirage-block-xen (= 1.5.0)
+      mirage-block-xen.1.6.1: Rejected by user-specified constraint mirage-block-xen (= 1.5.0)
+- ocaml -> ocaml.4.11.1
+    ocaml-base-compiler 4.11.1 requires = 4.11.1
+- ocaml-base-compiler -> ocaml-base-compiler.4.11.1
+    User requested <= 4.11.1
+- ocaml-variants -> (problem)
+    Rejected candidates:
+      ocaml-variants.4.13.0+trunk+no-flat-float-array: In same conflict class (ocaml-core-compiler) as ocaml-base-compiler
+      ocaml-variants.4.13.0+trunk+nnp: In same conflict class (ocaml-core-compiler) as ocaml-base-compiler
+      ocaml-variants.4.13.0+trunk+fp+flambda: In same conflict class (ocaml-core-compiler) as ocaml-base-compiler
+      ocaml-variants.4.13.0+trunk+fp: In same conflict class (ocaml-core-compiler) as ocaml-base-compiler
+      ocaml-variants.4.13.0+trunk+flambda: In same conflict class (ocaml-core-compiler) as ocaml-base-compiler
+      ...

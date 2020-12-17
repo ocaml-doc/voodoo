@@ -1,0 +1,33 @@
+Can't find all required versions.
+Selected: base-bytes.base base-threads.base base-unix.base cmdliner.1.0.4
+          conf-m4.1 dune.2.7.1 fileutils.0.6.3 ocaml.4.13.0 ocaml-config.2
+          ocaml-xdg-basedir.0.0.3 ocamlbuild.0.14.0 ocamlfind.1.8.1
+          ounit.2.2.3 ounit2.2.2.3 re.1.9.0 seq.base stdlib-shims.0.1.0
+          operf-macro&ocaml-base-compiler ocaml-base-compiler
+          ocaml-base-compiler ocaml
+- ocaml-base-compiler -> (problem)
+    User requested <= 4.11.1
+    Rejected candidates:
+      ocaml-base-compiler.4.11.1: Requires ocaml = 4.11.1
+      ocaml-base-compiler.4.11.0: Requires ocaml = 4.11.0
+      ocaml-base-compiler.4.10.1: Requires ocaml = 4.10.1
+      ocaml-base-compiler.4.10.0: Requires ocaml = 4.10.0
+      ocaml-base-compiler.4.09.1: Requires ocaml = 4.09.1
+      ...
+- operf-macro -> operf-macro.0.2
+    User requested = 0.2
+- perf -> (problem)
+    No known implementations at all
+- sexplib -> (problem)
+    operf-macro 0.2 requires < 113.01.00
+    Rejected candidates:
+      sexplib.v0.14.0: Incompatible with restriction: < 113.01.00
+      sexplib.v0.13.0: Incompatible with restriction: < 113.01.00
+      sexplib.v0.12.0: Incompatible with restriction: < 113.01.00
+      sexplib.v0.11.0: Incompatible with restriction: < 113.01.00
+      sexplib.v0.10.0: Incompatible with restriction: < 113.01.00
+      ...
+- dune|ocaml -> (problem)
+    Rejected candidates:
+      dune: Requires dune >= 2.8.0
+      ocaml: Requires ocaml < 4.12.0~~

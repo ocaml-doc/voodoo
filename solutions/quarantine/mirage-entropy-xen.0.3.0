@@ -1,0 +1,43 @@
+Can't find all required versions.
+Selected: base-bigarray.base base-bytes.base base-num.base base-threads.base
+          base-unix.base camlp4.4.05+system conf-m4.1 conf-time.1
+          conf-which.1 cppo.1.6.6 cppo_ocamlbuild.1.6.6 cstruct-lwt.0
+          dune.2.7.1 num.0 ocaml-config.2 ocaml-secondary-compiler.4.08.1-1
+          ocaml-system.4.09.0 ocamlbuild.0.14.0 ocamlfind.1.8.1
+          ocamlfind-secondary.1.8.1 ocplib-endian.1.1 parsexp.v0.14.0
+          ppx_derivers.1.2.1 ppx_tools_versioned.5.4.0 result.1.5
+          sexplib.v0.14.0 sexplib0.v0.14.0
+          mirage-entropy-xen&ocaml-base-compiler ocaml-base-compiler
+          ocaml-base-compiler base-no-ppx ocaml&ocamlfind-secondary
+- base -> (problem)
+    Rejected candidates:
+      base.v0.14.0: Requires ocaml >= 4.07.0 & < 4.12
+      base.v0.13.2: Requires sexplib0 >= v0.13 & < v0.14
+      base.v0.13.1: Requires sexplib0 >= v0.13 & < v0.14
+      base.v0.13.0: Requires sexplib0 >= v0.13 & < v0.14
+      base.v0.12.2: Requires sexplib0 >= v0.12 & < v0.13
+      ...
+- base-no-ppx -> (problem)
+    Rejected candidates:
+      base-no-ppx.base: Requires ocaml < 4.02.0
+- cstruct -> cstruct.2.4.1
+    cstruct-lwt 0 requires < 3.0.0
+- lwt -> lwt.3.0.0
+    mirage-entropy-xen 0.3.0 requires < 3.2.0
+- mirage-entropy-xen -> mirage-entropy-xen.0.3.0
+    User requested = 0.3.0
+- mirage-xen -> (problem)
+    No known implementations at all
+- ocaml -> ocaml.4.05.0
+    base-num base requires < 4.06.0
+- ocaml-base-compiler -> (problem)
+    User requested <= 4.11.1
+    Rejected candidates:
+      ocaml-base-compiler.4.11.1: In same conflict class (ocaml-core-compiler) as ocaml-system
+      ocaml-base-compiler.4.11.0: In same conflict class (ocaml-core-compiler) as ocaml-system
+      ocaml-base-compiler.4.10.1: In same conflict class (ocaml-core-compiler) as ocaml-system
+      ocaml-base-compiler.4.10.0: In same conflict class (ocaml-core-compiler) as ocaml-system
+      ocaml-base-compiler.4.09.1: In same conflict class (ocaml-core-compiler) as ocaml-system
+      ...
+- ocaml-migrate-parsetree -> ocaml-migrate-parsetree.1.8.0
+    cstruct 2.4.1 requires < 2.0.0

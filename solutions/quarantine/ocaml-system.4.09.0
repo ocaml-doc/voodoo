@@ -1,0 +1,15 @@
+Can't find all required versions.
+Selected: base-bigarray.base base-threads.base base-unix.base ocaml.4.13.0
+          ocaml-config.2 ocaml-system&ocaml-base-compiler ocaml-base-compiler
+          ocaml-base-compiler
+- ocaml-base-compiler -> (problem)
+    User requested <= 4.11.1
+    Rejected candidates:
+      ocaml-base-compiler.4.11.1: In same conflict class (ocaml-core-compiler) as ocaml-system
+      ocaml-base-compiler.4.11.0: In same conflict class (ocaml-core-compiler) as ocaml-system
+      ocaml-base-compiler.4.10.1: In same conflict class (ocaml-core-compiler) as ocaml-system
+      ocaml-base-compiler.4.10.0: In same conflict class (ocaml-core-compiler) as ocaml-system
+      ocaml-base-compiler.4.09.1: In same conflict class (ocaml-core-compiler) as ocaml-system
+      ...
+- ocaml-system -> ocaml-system.4.09.0
+    User requested = 4.09.0

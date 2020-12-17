@@ -1,0 +1,69 @@
+Can't find all required versions.
+Selected: base-ocamlbuild.base camlp4.4.02.0-1modular-implicits conf-m4.1
+          conf-which.1 enumerate.111.08.00 ocaml-config.2 ocamlbuild.0
+          ocamlfind.1.8.1 ounit.2.2.3 core_extended&ocaml-base-compiler
+          ocaml-base-compiler ocaml-base-compiler
+- bin_prot -> bin_prot.112.06.01
+    core 112.06.02 requires >= 112.06.00 & < 112.07.00
+- comparelib -> comparelib.109.60.00
+    core 112.06.02 requires >= 109.60.00 & < 109.61.00
+- core -> core.112.06.02
+    core_extended 112.06.00 requires >= 112.06.00 & < 112.07.00
+- core_extended -> core_extended.112.06.00
+    User requested = 112.06.00
+- core_kernel -> core_kernel.112.06.02
+    core 112.06.02 requires >= 112.06.00 & < 112.07.00
+- custom_printf -> custom_printf.112.06.00
+    core 112.06.02 requires >= 112.06.00 & < 112.07.00
+- fieldslib -> fieldslib.109.20.03
+    core 112.06.02 requires >= 109.20.00 & < 109.21.00
+- herelib -> herelib.109.35.02
+    core 112.06.02 requires >= 109.35.00 & < 109.36.00
+- ocaml -> ocaml.4.02.3
+    base-ocamlbuild base requires >= 3.10 & < 4.03
+- ocaml-base-compiler -> (problem)
+    User requested <= 4.11.1
+    ocaml-base-compiler|ocaml-variants|ocaml-system ocaml-base-compiler requires >= 4.12.0~
+    Rejected candidates:
+      ocaml-base-compiler.4.11.1: Requires ocaml = 4.11.1
+      ocaml-base-compiler.4.11.0: Requires ocaml = 4.11.0
+      ocaml-base-compiler.4.10.1: Requires ocaml = 4.10.1
+      ocaml-base-compiler.4.10.0: Requires ocaml = 4.10.0
+      ocaml-base-compiler.4.09.1: Requires ocaml = 4.09.1
+      ...
+- ocaml-variants -> (problem)
+    camlp4 4.02.0-1modular-implicits requires = 4.02.0+modular-implicits | = 4.02.1+modular-implicits-ber
+    Rejected candidates:
+      ocaml-variants.4.13.0+trunk+no-flat-float-array: Incompatible with restriction: = 4.02.0+modular-implicits | = 4.02.1+modular-implicits-ber
+      ocaml-variants.4.13.0+trunk+nnp: Incompatible with restriction: = 4.02.0+modular-implicits | = 4.02.1+modular-implicits-ber
+      ocaml-variants.4.13.0+trunk+fp+flambda: Incompatible with restriction: = 4.02.0+modular-implicits | = 4.02.1+modular-implicits-ber
+      ocaml-variants.4.13.0+trunk+fp: Incompatible with restriction: = 4.02.0+modular-implicits | = 4.02.1+modular-implicits-ber
+      ocaml-variants.4.13.0+trunk+flambda: Incompatible with restriction: = 4.02.0+modular-implicits | = 4.02.1+modular-implicits-ber
+      ...
+- ounit2 -> (problem)
+    ounit 2.2.3 requires = 2.2.3
+    Rejected candidates:
+      ounit2.2.2.3: Requires ocaml >= 4.04.0
+      ounit2.2.2.2: Incompatible with restriction: = 2.2.3
+      ounit2.2.2.1: Incompatible with restriction: = 2.2.3
+      ounit2.2.2.0: Incompatible with restriction: = 2.2.3
+- pa_bench -> pa_bench.112.06.00
+    core 112.06.02 requires >= 112.06.00 & < 112.07.00
+- pa_ounit -> pa_ounit.111.28.00
+    core 112.06.02 requires >= 111.28.00 & < 111.29.00
+- pa_test -> pa_test.111.08.01
+    core 112.06.02 requires >= 111.08.00 & < 111.09.00
+- pipebang -> pipebang.110.01.00
+    core 112.06.02 requires >= 110.01.00 & < 110.02.00
+- re2 -> re2.112.06.00
+    core_extended 112.06.00 requires >= 112.06.00 & < 112.07.00
+- sexplib -> sexplib.112.06.01
+    core 112.06.02 requires >= 112.06.00 & < 112.07.00
+- textutils -> textutils.112.06.00
+    core_extended 112.06.00 requires >= 112.06.00 & < 112.07.00
+- type_conv -> type_conv.112.01.02
+    bin_prot 112.06.01 requires >= 112.01.00 & < 112.02.00
+- typerep -> typerep.112.06.00
+    core_kernel 112.06.02 requires >= 112.06.00 & < 112.07.00
+- variantslib -> variantslib.109.15.03
+    core 112.06.02 requires >= 109.15.00 & < 109.16.00

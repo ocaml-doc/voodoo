@@ -1,0 +1,95 @@
+Can't find all required versions.
+Selected: base-bytes.base base-threads.base base-unix.base base64.3.4.0
+          biniou.1.2.1 camlp4.4.02.0-1modular-implicits cmdliner.1.0.4
+          conf-libssl.2 conf-m4.1 conf-pkg-config.1.3 conf-which.1 cppo.1.6.6
+          csexp.1.3.2 dune.2.7.1 dune-configurator.2.7.1 easy-format.1.3.2
+          ocaml.4.13.0 ocaml-config.2 ocamlbuild.0.14.0 ocamlfind.1.8.1
+          ounit.2.2.3 ounit2.2.2.3 ppx_derivers.1.2.1 ppx_deriving_rpc.8.0.0
+          ppx_sexp_conv.v0.14.2 re.1.9.0 result.1.5 rpc.8.0.0 rpclib.8.0.0
+          rpclib-lwt.8.0.0 rresult.0.6.0 seq.base sexplib0.v0.14.0 ssl.0.5.9
+          stdlib-shims.0.1.0 stringext.1.6.0 syslog.2.0.1 topkg.1.0.3
+          type_conv.113.00.02 xmlm.1.3.0 yojson.1.7.0
+          message-switch&ocaml-base-compiler ocaml-base-compiler
+          ocaml-base-compiler ocaml
+- base -> (problem)
+    Rejected candidates:
+      base.v0.14.0: Requires ocaml >= 4.07.0 & < 4.12
+      base.v0.13.2: Requires ocaml >= 4.04.2 & < 4.12
+      base.v0.13.1: Requires ocaml >= 4.04.2 & < 4.12
+      base.v0.13.0: Requires ocaml >= 4.04.2 & < 4.10.0
+      base.v0.12.2: Requires ocaml >= 4.04.2 & < 4.10.0
+      ...
+- cohttp -> cohttp.0.11.2
+    message-switch 0.10.3 requires >= 0.10.0 & < 0.12.0
+- conduit -> conduit.0.5.1
+    cohttp 0.11.2 requires = 0.5.1
+- fieldslib -> (problem)
+    cohttp 0.11.2 requires >= 109.20.00 & < 113.01.00
+    Rejected candidates:
+      fieldslib.v0.14.0: Incompatible with restriction: >= 109.20.00 & < 113.01.00
+      fieldslib.v0.13.0: Incompatible with restriction: >= 109.20.00 & < 113.01.00
+      fieldslib.v0.12.0: Incompatible with restriction: >= 109.20.00 & < 113.01.00
+      fieldslib.v0.11.0: Incompatible with restriction: >= 109.20.00 & < 113.01.00
+      fieldslib.v0.10.0: Incompatible with restriction: >= 109.20.00 & < 113.01.00
+      ...
+- jbuilder -> jbuilder.1.0+beta20.2
+    dune 2.7.1 requires not(= transition)
+- lwt -> (problem)
+    cohttp 0.11.2 requires not(< 2.4.3)
+    cohttp 0.11.2 requires not(>= 2.5.0)
+    Rejected candidates:
+      lwt.5.3.0: Incompatible with restriction: not(>= 2.5.0)
+      lwt.5.2.0: Incompatible with restriction: not(>= 2.5.0)
+      lwt.5.1.2: Incompatible with restriction: not(>= 2.5.0)
+      lwt.5.1.1: Incompatible with restriction: not(>= 2.5.0)
+      lwt.5.1.0: Incompatible with restriction: not(>= 2.5.0)
+      ...
+- message-switch -> message-switch.0.10.3
+    User requested = 0.10.3
+- ocaml-base-compiler -> (problem)
+    User requested <= 4.11.1
+    Rejected candidates:
+      ocaml-base-compiler.4.11.1: Requires ocaml = 4.11.1
+      ocaml-base-compiler.4.11.0: Requires ocaml = 4.11.0
+      ocaml-base-compiler.4.10.1: Requires ocaml = 4.10.1
+      ocaml-base-compiler.4.10.0: Requires ocaml = 4.10.0
+      ocaml-base-compiler.4.09.1: Requires ocaml = 4.09.1
+      ...
+- ocaml-migrate-parsetree -> ocaml-migrate-parsetree.1.8.0
+    uri 1.9.7 requires < 2.0.0
+- ocaml-variants -> (problem)
+    camlp4 4.02.0-1modular-implicits requires = 4.02.0+modular-implicits | = 4.02.1+modular-implicits-ber
+    Rejected candidates:
+      ocaml-variants.4.13.0+trunk+no-flat-float-array: Incompatible with restriction: = 4.02.0+modular-implicits | = 4.02.1+modular-implicits-ber
+      ocaml-variants.4.13.0+trunk+nnp: Incompatible with restriction: = 4.02.0+modular-implicits | = 4.02.1+modular-implicits-ber
+      ocaml-variants.4.13.0+trunk+fp+flambda: Incompatible with restriction: = 4.02.0+modular-implicits | = 4.02.1+modular-implicits-ber
+      ocaml-variants.4.13.0+trunk+fp: Incompatible with restriction: = 4.02.0+modular-implicits | = 4.02.1+modular-implicits-ber
+      ocaml-variants.4.13.0+trunk+flambda: Incompatible with restriction: = 4.02.0+modular-implicits | = 4.02.1+modular-implicits-ber
+      ...
+- oclock -> (problem)
+    No known implementations at all
+- ppxlib -> (problem)
+    ppx_deriving_rpc 8.0.0 requires >= 0.9.0 & < 0.18.0
+    ppx_sexp_conv v0.14.2 requires >= 0.18.0
+    Rejected candidates:
+      ppxlib.0.20.0: Incompatible with restriction: >= 0.9.0 & < 0.18.0
+      ppxlib.0.19.0: Incompatible with restriction: >= 0.9.0 & < 0.18.0
+      ppxlib.0.18.0: Incompatible with restriction: >= 0.9.0 & < 0.18.0
+      ppxlib.0.17.0: Incompatible with restriction: >= 0.18.0
+      ppxlib.0.16.0: Incompatible with restriction: >= 0.18.0
+      ...
+- sexplib -> (problem)
+    cohttp 0.11.2 requires >= 109.53.00 & < 113.01.00
+    Rejected candidates:
+      sexplib.v0.14.0: Incompatible with restriction: >= 109.53.00 & < 113.01.00
+      sexplib.v0.13.0: Incompatible with restriction: >= 109.53.00 & < 113.01.00
+      sexplib.v0.12.0: Incompatible with restriction: >= 109.53.00 & < 113.01.00
+      sexplib.v0.11.0: Incompatible with restriction: >= 109.53.00 & < 113.01.00
+      sexplib.v0.10.0: Incompatible with restriction: >= 109.53.00 & < 113.01.00
+      ...
+- uri -> uri.1.9.7
+    cohttp 0.11.2 requires >= 1.5.0 & < 2.0.0
+- dune|ocaml -> (problem)
+    Rejected candidates:
+      dune: Requires dune >= 2.8.0
+      ocaml: Requires ocaml < 4.12.0~~

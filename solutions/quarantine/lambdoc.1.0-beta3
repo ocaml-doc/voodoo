@@ -1,0 +1,64 @@
+Can't find all required versions.
+Selected: base-bigarray.base base-bytes.base base-threads.base base-unix.base
+          camlp4.4.02.0-1modular-implicits conf-libpcre.1 conf-m4.1
+          conf-pkg-config.1.3 conf-which.1 csexp.1.3.2 dune.2.7.1
+          dune-configurator.2.7.1 menhir.20200624 menhirLib.20200624
+          menhirSdk.20200624 ocaml.4.13.0 ocaml-config.2 ocamlbuild.0.14.0
+          ocamlfind.1.8.1 ocamlnet.4.1.8 omd.1.3.1 pcre.7.4.6 pxp.1.2.9
+          result.1.5 type_conv.113.00.02 ulex.1.2 lambdoc&ocaml-base-compiler
+          ocaml-base-compiler ocaml-base-compiler ocaml
+- batteries -> (problem)
+    Rejected candidates:
+      batteries.3.2.0: Requires ocaml >= 4.00.0 & < 4.13.0
+      batteries.3.1.0: Requires ocaml >= 4.00.0 & < 4.12.0
+      batteries.3.0.0: Requires ocaml >= 4.00.0 & < 4.11.0
+      batteries.2.11.0: Requires ocaml >= 4.00.0 & < 4.10.0
+      batteries.2.10.0: Requires ocaml >= 4.00.0 & < 4.10.0
+      ...
+- blahcaml -> (problem)
+    No known implementations at all
+- camlhighlight -> camlhighlight.3.0
+    lambdoc 1.0-beta3 requires >= 3.0 & < 4
+- lambdoc -> lambdoc.1.0-beta3
+    User requested = 1.0-beta3
+- ocaml-base-compiler -> (problem)
+    User requested <= 4.11.1
+    Rejected candidates:
+      ocaml-base-compiler.4.11.1: Requires ocaml = 4.11.1
+      ocaml-base-compiler.4.11.0: Requires ocaml = 4.11.0
+      ocaml-base-compiler.4.10.1: Requires ocaml = 4.10.1
+      ocaml-base-compiler.4.10.0: Requires ocaml = 4.10.0
+      ocaml-base-compiler.4.09.1: Requires ocaml = 4.09.1
+      ...
+- ocaml-variants -> (problem)
+    camlp4 4.02.0-1modular-implicits requires = 4.02.0+modular-implicits | = 4.02.1+modular-implicits-ber
+    Rejected candidates:
+      ocaml-variants.4.13.0+trunk+no-flat-float-array: Incompatible with restriction: = 4.02.0+modular-implicits | = 4.02.1+modular-implicits-ber
+      ocaml-variants.4.13.0+trunk+nnp: Incompatible with restriction: = 4.02.0+modular-implicits | = 4.02.1+modular-implicits-ber
+      ocaml-variants.4.13.0+trunk+fp+flambda: Incompatible with restriction: = 4.02.0+modular-implicits | = 4.02.1+modular-implicits-ber
+      ocaml-variants.4.13.0+trunk+fp: Incompatible with restriction: = 4.02.0+modular-implicits | = 4.02.1+modular-implicits-ber
+      ocaml-variants.4.13.0+trunk+flambda: Incompatible with restriction: = 4.02.0+modular-implicits | = 4.02.1+modular-implicits-ber
+      ...
+- sexplib -> (problem)
+    camlhighlight 3.0 requires < 113.01.00
+    Rejected candidates:
+      sexplib.v0.14.0: Incompatible with restriction: < 113.01.00
+      sexplib.v0.13.0: Incompatible with restriction: < 113.01.00
+      sexplib.v0.12.0: Incompatible with restriction: < 113.01.00
+      sexplib.v0.11.0: Incompatible with restriction: < 113.01.00
+      sexplib.v0.10.0: Incompatible with restriction: < 113.01.00
+      ...
+- tyxml -> tyxml.3.6.0
+    camlhighlight 3.0 requires >= 3.2 & < 4
+- uutf -> (problem)
+    tyxml 3.6.0 requires <= 0.9.4
+    Rejected candidates:
+      uutf.1.0.2: Incompatible with restriction: <= 0.9.4
+      uutf.1.0.1: Incompatible with restriction: <= 0.9.4
+      uutf.1.0.0: Incompatible with restriction: <= 0.9.4
+      uutf.0.9.4: Requires ocaml >= 4.00.0 & < 4.06.0
+      uutf.0.9.3: Requires ocaml >= 4.00.0 & < 4.06.0
+      ...
+- xstrp4 -> (problem)
+    Rejected candidates:
+      xstrp4.1.8: Requires ocaml < 4.06.0

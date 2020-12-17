@@ -1,0 +1,132 @@
+Can't find all required versions.
+Selected: base-bytes.base base-threads.base base-unix.base
+          camlp4.4.02.0-1modular-implicits channel.1.1.1 cmdliner.1.0.4
+          conf-m4.1 conf-time.1 conf-which.1 cppo.1.6.6 dune.2.7.1 logs.0.7.0
+          ocaml.4.13.0 ocaml-config.2 ocamlbuild.0.14.0 ocamlfind.1.8.1
+          ocplib-endian.1.1 ounit.2.2.3 ounit2.2.2.3 packet.0.4.0
+          ppx_sexp_conv.v0.14.2 quickcheck.1.0.2 sexplib0.v0.14.0
+          stdlib-shims.0.1.0 tcpip.2.6.1 topkg.1.0.3 tuntap.1.8.0
+          type_conv.113.00.02 openflow&ocaml-base-compiler
+          ocaml-base-compiler ocaml-base-compiler ocaml
+- async -> (problem)
+    openflow 0.8.0 requires >= 112.06.00 & < 112.17.00
+    Rejected candidates:
+      async.v0.14.0: Incompatible with restriction: >= 112.06.00 & < 112.17.00
+      async.v0.13.0: Incompatible with restriction: >= 112.06.00 & < 112.17.00
+      async.v0.12.0: Incompatible with restriction: >= 112.06.00 & < 112.17.00
+      async.v0.11.0: Incompatible with restriction: >= 112.06.00 & < 112.17.00
+      async.v0.10.0: Incompatible with restriction: >= 112.06.00 & < 112.17.00
+      ...
+- base -> (problem)
+    Rejected candidates:
+      base.v0.14.0: Requires ocaml >= 4.07.0 & < 4.12
+      base.v0.13.2: Requires ocaml >= 4.04.2 & < 4.12
+      base.v0.13.1: Requires ocaml >= 4.04.2 & < 4.12
+      base.v0.13.0: Requires ocaml >= 4.04.2 & < 4.10.0
+      base.v0.12.2: Requires ocaml >= 4.04.2 & < 4.10.0
+      ...
+- core -> (problem)
+    Rejected candidates:
+      core.v0.14.0: Requires ocaml >= 4.08.0 & < 4.12.0
+      core.v0.13.0: Requires ocaml >= 4.08.0 & < 4.12.0
+      core.v0.12.4: Requires ocaml >= 4.07.0 & < 4.12.0
+      core.v0.12.3: Requires ocaml >= 4.07.0 & < 4.12.0
+      core.v0.12.2: Requires ocaml >= 4.07.0 & < 4.12.0
+      ...
+- cstruct -> cstruct.1.7.1
+    cstruct-lwt 0 requires < 3.0.0
+    mirage-profile 0.6.1 requires <= 1.9.0
+- cstruct-lwt -> cstruct-lwt.0
+    mirage-console 2.1.3 requires < 3.4.0
+    mirage-net-unix 2.2.3 requires = 0
+- io-page -> (problem)
+    channel 1.1.1 requires < 2.0.0
+    Rejected candidates:
+      io-page.2.3.0: Incompatible with restriction: < 2.0.0
+      io-page.2.2.0: Incompatible with restriction: < 2.0.0
+      io-page.2.1.0: Incompatible with restriction: < 2.0.0
+      io-page.2.0.1: Incompatible with restriction: < 2.0.0
+      io-page.2.0.0: Incompatible with restriction: < 2.0.0
+      ...
+- ipaddr -> ipaddr.2.9.0
+    tcpip 2.6.1 requires >= 2.2.0 & < 3.0.0
+- lwt -> (problem)
+    channel 1.1.1 requires >= 2.4.7
+    Rejected candidates:
+      lwt.5.3.0: Requires ocaml >= 4.02.0 & < 4.12
+      lwt.5.2.0: Requires ocaml >= 4.02.0 & < 4.12
+      lwt.5.1.2: Requires ocaml >= 4.02.0 & < 4.12
+      lwt.5.1.1: Requires ocaml >= 4.02.0 & < 4.12
+      lwt.5.1.0: Requires ocaml >= 4.02.0 & < 4.12
+      ...
+- macaddr -> (problem)
+    Rejected candidates:
+      macaddr.5.0.1: Requires ipaddr not(< 3.0.0)
+      macaddr.5.0.0: Requires ipaddr not(< 3.0.0)
+      macaddr.4.0.0: Requires ipaddr not(< 3.0.0)
+      macaddr.3.1.0: Requires ipaddr not(< 3.0.0)
+      macaddr.3.0.0: Requires ipaddr not(< 3.0.0)
+- mirage-clock-unix -> mirage-clock-unix.1.0.0
+    mirage-unix 2.6.0 requires >= 1.0.0 & < 1.1
+- mirage-console -> mirage-console.2.1.3
+    tcpip 2.6.1 requires < 2.2.0
+- mirage-net-unix -> mirage-net-unix.2.2.3
+    tcpip 2.6.1 requires >= 1.1.0 & < 2.3.0
+- mirage-profile -> mirage-profile.0.6.1
+    tcpip 2.6.1 requires >= 0.5 & < 0.8.0
+- mirage-types -> mirage-types.2.8.0
+    mirage-clock-unix 1.0.0 requires >= 0.3.0 & < 3.0.0
+- mirage-types-lwt -> mirage-types-lwt.2.8.0
+    channel 1.1.1 requires < 3.0.0
+- mirage-unix -> mirage-unix.2.6.0
+    tcpip 2.6.1 requires >= 1.1.0 & <= 2.6.0
+- ocaml-base-compiler -> (problem)
+    User requested <= 4.11.1
+    Rejected candidates:
+      ocaml-base-compiler.4.11.1: Requires ocaml = 4.11.1
+      ocaml-base-compiler.4.11.0: Requires ocaml = 4.11.0
+      ocaml-base-compiler.4.10.1: Requires ocaml = 4.10.1
+      ocaml-base-compiler.4.10.0: Requires ocaml = 4.10.0
+      ocaml-base-compiler.4.09.1: Requires ocaml = 4.09.1
+      ...
+- ocaml-variants -> (problem)
+    camlp4 4.02.0-1modular-implicits requires = 4.02.0+modular-implicits | = 4.02.1+modular-implicits-ber
+    Rejected candidates:
+      ocaml-variants.4.13.0+trunk+no-flat-float-array: Incompatible with restriction: = 4.02.0+modular-implicits | = 4.02.1+modular-implicits-ber
+      ocaml-variants.4.13.0+trunk+nnp: Incompatible with restriction: = 4.02.0+modular-implicits | = 4.02.1+modular-implicits-ber
+      ocaml-variants.4.13.0+trunk+fp+flambda: Incompatible with restriction: = 4.02.0+modular-implicits | = 4.02.1+modular-implicits-ber
+      ocaml-variants.4.13.0+trunk+fp: Incompatible with restriction: = 4.02.0+modular-implicits | = 4.02.1+modular-implicits-ber
+      ocaml-variants.4.13.0+trunk+flambda: Incompatible with restriction: = 4.02.0+modular-implicits | = 4.02.1+modular-implicits-ber
+      ...
+- openflow -> openflow.0.8.0
+    User requested = 0.8.0
+- optcomp -> (problem)
+    Rejected candidates:
+      optcomp.1.6: Requires ocaml >= 3.12 & < 4.06.0
+      optcomp.1.5: Requires ocaml >= 3.12 & < 4.06.0
+      optcomp.1.4: Requires ocaml < 4.06.0
+- ppxlib -> (problem)
+    ppx_sexp_conv v0.14.2 requires >= 0.18.0
+    Rejected candidates:
+      ppxlib.0.20.0: Requires ocaml >= 4.04.1 & < 4.13
+      ppxlib.0.19.0: Requires ocaml >= 4.04.1 & < 4.13
+      ppxlib.0.18.0: Requires ocaml >= 4.04.1 & < 4.12
+      ppxlib.0.17.0: Incompatible with restriction: >= 0.18.0
+      ppxlib.0.16.0: Incompatible with restriction: >= 0.18.0
+      ...
+- sexplib -> (problem)
+    cstruct 1.7.1 requires < 113.01.00
+    packet 0.4.0 requires >= 110.01.00 & < 113.01.00
+    Rejected candidates:
+      sexplib.v0.14.0: Incompatible with restriction: < 113.01.00
+      sexplib.v0.13.0: Incompatible with restriction: < 113.01.00
+      sexplib.v0.12.0: Incompatible with restriction: < 113.01.00
+      sexplib.v0.11.0: Incompatible with restriction: < 113.01.00
+      sexplib.v0.10.0: Incompatible with restriction: < 113.01.00
+      ...
+- shared-memory-ring -> shared-memory-ring.1.1.1
+    mirage-console 2.1.3 requires not(> 1.3.0)
+- dune|ocaml -> (problem)
+    Rejected candidates:
+      dune: Requires dune >= 2.8.0
+      ocaml: Requires ocaml < 4.12.0~~

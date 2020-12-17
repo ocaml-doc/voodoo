@@ -1,0 +1,20 @@
+Can't find all required versions.
+Selected: conf-m4.1 ocaml.4.13.0 ocaml-config.2
+          gmp-freestanding&ocaml-base-compiler ocaml-base-compiler
+          ocaml-base-compiler
+- gmp-freestanding -> gmp-freestanding.6.0.0
+    User requested = 6.0.0
+- ocaml-base-compiler -> (problem)
+    User requested <= 4.11.1
+    Rejected candidates:
+      ocaml-base-compiler.4.11.1: Requires ocaml = 4.11.1
+      ocaml-base-compiler.4.11.0: Requires ocaml = 4.11.0
+      ocaml-base-compiler.4.10.1: Requires ocaml = 4.10.1
+      ocaml-base-compiler.4.10.0: Requires ocaml = 4.10.0
+      ocaml-base-compiler.4.09.1: Requires ocaml = 4.09.1
+      ...
+- ocaml-freestanding -> (problem)
+    Rejected candidates:
+      ocaml-freestanding.0.2.2: Requires ocaml >= 4.02.3 & < 4.06.0
+      ocaml-freestanding.0.2.1: Requires ocaml >= 4.02.3 & < 4.05.0
+      ocaml-freestanding.0.1.1: Requires ocaml >= 4.02.3 & <= 4.03.0

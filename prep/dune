@@ -1,0 +1,4 @@
+(executable
+ (public_name analyse)
+ (libraries astring cmdliner builder lwt obuilder-spec ocluster-api
+   capnp-rpc-unix github-unix))

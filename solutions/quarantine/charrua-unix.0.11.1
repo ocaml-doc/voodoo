@@ -1,0 +1,118 @@
+Can't find all required versions.
+Selected: base-bytes.base base-threads.base base-unix.base
+          bigarray-compat.1.0.0 cmdliner.1.0.4 conf-m4.1 configurator.v0.11.0
+          cppo.1.6.6 cstruct-lwt.5.1.1 cstruct-unix.5.1.1
+          dune-configurator.1.0.0 duration.0.1.3 fmt.0.8.9 io-page.2.3.0
+          io-page-unix.2.3.0 jbuilder.transition logs.0.7.0 lwt-dllist.1.0.0
+          lwt_log.1.1.1 menhir.20190924 mirage-clock-lwt.2.0.0
+          mirage-profile.0.9.1 mirage-stack-lwt.1.4.0 mirage-time-lwt.1.3.0
+          mtime.1.2.0 num.1.4 ocaml.4.13.0 ocaml-config.2 ocamlbuild.0.14.0
+          ocamlfind.1.8.1 ocplib-endian.1.1 ppx_cstruct.5.1.1
+          ppx_sexp_conv.v0.13.0 ppx_tools_versioned.5.4.0 randomconv.0.1.3
+          result.1.5 rresult.0.6.0 seq.base sexplib.v0.13.0
+          stdlib-shims.0.1.0 tcpip.3.7.0 topkg.1.0.3
+          charrua-unix&ocaml-base-compiler ocaml-base-compiler
+          ocaml-base-compiler
+- base -> (problem)
+    Rejected candidates:
+      base.v0.14.0: Requires ocaml >= 4.07.0 & < 4.12
+      base.v0.13.2: Requires ocaml >= 4.04.2 & < 4.12
+      base.v0.13.1: Requires ocaml >= 4.04.2 & < 4.12
+      base.v0.13.0: Requires ocaml >= 4.04.2 & < 4.10.0
+      base.v0.12.2: Requires ocaml >= 4.04.2 & < 4.10.0
+      ...
+- charrua-core -> charrua-core.0.11.2
+    charrua-unix 0.11.1 requires >= 0.11.0 & < 0.12.0
+- charrua-unix -> charrua-unix.0.11.1
+    User requested = 0.11.1
+- cstruct -> (problem)
+    charrua-core 0.11.2 requires >= 3.0.1 & < 4.0.0
+    cstruct-lwt 5.1.1 requires = 5.1.1
+    Rejected candidates:
+      cstruct.6.0.0: Incompatible with restriction: >= 3.0.1 & < 4.0.0
+      cstruct.5.2.0: Incompatible with restriction: >= 3.0.1 & < 4.0.0
+      cstruct.5.1.1: Incompatible with restriction: >= 3.0.1 & < 4.0.0
+      cstruct.5.0.0: Incompatible with restriction: >= 3.0.1 & < 4.0.0
+      cstruct.4.0.0: Incompatible with restriction: >= 3.0.1 & < 4.0.0
+      ...
+- dune -> dune.1.6.3
+    dune-configurator 1.0.0 requires < 2.0.0
+- ethernet -> ethernet.1.0.0
+    charrua-core 0.11.2 requires < 2.0.0
+- ipaddr -> ipaddr.3.1.0
+    charrua-core 0.11.2 requires >= 3.0.0 & < 4.0.0
+- lru -> lru.0.2.0
+    tcpip 3.7.0 requires < 0.3.0
+- lwt -> (problem)
+    charrua-unix 0.11.1 requires >= 4.0.0
+    Rejected candidates:
+      lwt.5.3.0: Requires dune >= 1.8.0
+      lwt.5.2.0: Requires dune >= 1.7.0
+      lwt.5.1.2: Requires dune >= 1.7.0
+      lwt.5.1.1: Requires dune >= 1.7.0
+      lwt.5.1.0: Requires dune >= 1.7.0
+      ...
+- macaddr -> macaddr.3.1.0
+    ethernet 1.0.0 requires < 4.0.0
+- mirage-clock -> mirage-clock.2.0.0
+    mirage-clock-lwt 2.0.0 requires >= 1.2.0 & < 3.0.0
+- mirage-device -> mirage-device.1.2.0
+    mirage-clock 2.0.0 requires >= 1.0.0 & < 2.0.0
+- mirage-flow -> mirage-flow.1.6.0
+    mirage-protocols 1.4.1 requires >= 1.2.0 & < 2.0.0
+- mirage-net -> mirage-net.1.2.0
+    mirage-net-lwt 1.2.0 requires >= 1.0.0 & < 2.0.0
+- mirage-net-lwt -> mirage-net-lwt.1.2.0
+    ethernet 1.0.0 requires >= 1.0.0 & < 2.0.0
+- mirage-protocols -> mirage-protocols.1.4.1
+    mirage-protocols-lwt 1.4.1 requires >= 1.4.0 & < 2.0.0
+- mirage-protocols-lwt -> mirage-protocols-lwt.1.4.1
+    ethernet 1.0.0 requires >= 1.4.0 & < 2.0.0
+- mirage-random -> mirage-random.1.2.0
+    tcpip 3.7.0 requires >= 1.0.0 & < 2.0.0
+- mirage-stack -> mirage-stack.1.4.0
+    mirage-stack-lwt 1.4.0 requires >= 1.3.0 & < 2.0.0
+- mirage-time -> mirage-time.1.3.0
+    mirage-time-lwt 1.3.0 requires >= 1.0.0 & < 2.0.0
+- ocaml-base-compiler -> (problem)
+    User requested <= 4.11.1
+    Rejected candidates:
+      ocaml-base-compiler.4.11.1: Requires ocaml = 4.11.1
+      ocaml-base-compiler.4.11.0: Requires ocaml = 4.11.0
+      ocaml-base-compiler.4.10.1: Requires ocaml = 4.10.1
+      ocaml-base-compiler.4.10.0: Requires ocaml = 4.10.0
+      ocaml-base-compiler.4.09.1: Requires ocaml = 4.09.1
+      ...
+- ocaml-migrate-parsetree -> (problem)
+    Rejected candidates:
+      ocaml-migrate-parsetree.2.1.0: Requires dune >= 1.11
+      ocaml-migrate-parsetree.2.0.0: Requires dune >= 1.11
+      ocaml-migrate-parsetree.1.8.0: Requires dune >= 1.9.0
+      ocaml-migrate-parsetree.1.7.3: Requires dune >= 1.9.0
+      ocaml-migrate-parsetree.1.7.2: Requires dune >= 1.9.0
+      ...
+- parsexp -> parsexp.v0.13.0
+    sexplib v0.13.0 requires >= v0.13 & < v0.14
+- ppxlib -> (problem)
+    ppx_sexp_conv v0.13.0 requires >= 0.9.0
+    Rejected candidates:
+      ppxlib.0.20.0: Requires ocaml >= 4.04.1 & < 4.13
+      ppxlib.0.19.0: Requires ocaml >= 4.04.1 & < 4.13
+      ppxlib.0.18.0: Requires ocaml >= 4.04.1 & < 4.12
+      ppxlib.0.17.0: Requires ocaml >= 4.04.1 & < 4.12
+      ppxlib.0.16.0: Requires ocaml >= 4.04.1 & < 4.12
+      ...
+- psq -> psq.0.1.0
+    lru 0.2.0 requires < 0.2.0
+- rawlink -> rawlink.0.7
+    charrua-unix 0.11.1 requires < 1.0
+- sexplib0 -> sexplib0.v0.13.0
+    parsexp v0.13.0 requires >= v0.13 & < v0.14
+- stdio -> stdio.v0.13.0
+    configurator v0.11.0 requires >= v0.11 & < v0.14
+- tuntap -> tuntap.1.8.0
+    charrua-unix 0.11.1 requires >= 1.2.0 & < 2.0.0
+- dune|ocaml -> (problem)
+    Rejected candidates:
+      dune: Requires dune >= 2.8.0
+      ocaml: Requires ocaml < 4.12.0~~

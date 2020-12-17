@@ -1,0 +1,28 @@
+Can't find all required versions.
+Selected: base-threads.base base-unix.base conf-m4.1 dune.2.7.1 grenier.0.11
+          inuit.0.4.1 ocaml.4.13.0 ocaml-config.2 ocamlbuild.0.14.0
+          ocamlfind.1.8.1 result.1.5 sturgeon.0.4.2 topkg.1.0.3
+          statmemprof-emacs&ocaml-base-compiler ocaml-base-compiler
+          ocaml-base-compiler ocaml
+- jbuilder -> jbuilder.1.0+beta20.2
+    dune 2.7.1 requires not(= transition)
+- ocaml-base-compiler -> (problem)
+    User requested <= 4.11.1
+    Rejected candidates:
+      ocaml-base-compiler.4.11.1: Requires ocaml = 4.11.1
+      ocaml-base-compiler.4.11.0: Requires ocaml = 4.11.0
+      ocaml-base-compiler.4.10.1: Requires ocaml = 4.10.1
+      ocaml-base-compiler.4.10.0: Requires ocaml = 4.10.0
+      ocaml-base-compiler.4.09.1: Requires ocaml = 4.09.1
+      ...
+- ocaml-variants -> (problem)
+    statmemprof-emacs 0.1.0 requires = 4.03.0+statistical-memprof | = 4.04.2+statistical-memprof | = 4.05.0+statistical-memprof | = 4.06.0+statistical-memprof | = 4.06.1+statistical-memprof | = 4.07.1+statistical-memprof
+    Rejected candidates:
+      ocaml-variants.4.13.0+trunk+no-flat-float-array: Incompatible with restriction: = 4.03.0+statistical-memprof | = 4.04.2+statistical-memprof | = 4.05.0+statistical-memprof | = 4.06.0+statistical-memprof | = 4.06.1+statistical-memprof | = 4.07.1+statistical-memprof
+      ocaml-variants.4.13.0+trunk+nnp: Incompatible with restriction: = 4.03.0+statistical-memprof | = 4.04.2+statistical-memprof | = 4.05.0+statistical-memprof | = 4.06.0+statistical-memprof | = 4.06.1+statistical-memprof | = 4.07.1+statistical-memprof
+      ocaml-variants.4.13.0+trunk+fp+flambda: Incompatible with restriction: = 4.03.0+statistical-memprof | = 4.04.2+statistical-memprof | = 4.05.0+statistical-memprof | = 4.06.0+statistical-memprof | = 4.06.1+statistical-memprof | = 4.07.1+statistical-memprof
+      ocaml-variants.4.13.0+trunk+fp: Incompatible with restriction: = 4.03.0+statistical-memprof | = 4.04.2+statistical-memprof | = 4.05.0+statistical-memprof | = 4.06.0+statistical-memprof | = 4.06.1+statistical-memprof | = 4.07.1+statistical-memprof
+      ocaml-variants.4.13.0+trunk+flambda: Incompatible with restriction: = 4.03.0+statistical-memprof | = 4.04.2+statistical-memprof | = 4.05.0+statistical-memprof | = 4.06.0+statistical-memprof | = 4.06.1+statistical-memprof | = 4.07.1+statistical-memprof
+      ...
+- statmemprof-emacs -> statmemprof-emacs.0.1.0
+    User requested = 0.1.0

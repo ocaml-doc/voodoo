@@ -1,0 +1,43 @@
+Can't find all required versions.
+Selected: conf-gtksourceview.2 conf-m4.1 conf-pkg-config.1.3 lablgtk.2.18.11
+          ocaml.4.13.0 ocaml-config.2 ocamlfind.1.8.1
+          ocaml-top&ocaml-base-compiler ocaml-base-compiler
+          ocaml-base-compiler
+- ocaml-base-compiler -> (problem)
+    User requested <= 4.11.1
+    Rejected candidates:
+      ocaml-base-compiler.4.11.1: Requires ocaml = 4.11.1
+      ocaml-base-compiler.4.11.0: Requires ocaml = 4.11.0
+      ocaml-base-compiler.4.10.1: Requires ocaml = 4.10.1
+      ocaml-base-compiler.4.10.0: Requires ocaml = 4.10.0
+      ocaml-base-compiler.4.09.1: Requires ocaml = 4.09.1
+      ...
+- ocaml-top -> ocaml-top.1.0.1
+    User requested = 1.0.1
+- ocp-build -> (problem)
+    ocaml-top 1.0.1 requires >= 1.99.6-beta & < 1.99.8-beta
+    Rejected candidates:
+      ocp-build.1.99.21: Incompatible with restriction: >= 1.99.6-beta & < 1.99.8-beta
+      ocp-build.1.99.20-beta: Incompatible with restriction: >= 1.99.6-beta & < 1.99.8-beta
+      ocp-build.1.99.19-beta: Incompatible with restriction: >= 1.99.6-beta & < 1.99.8-beta
+      ocp-build.1.99.18-beta: Incompatible with restriction: >= 1.99.6-beta & < 1.99.8-beta
+      ocp-build.1.99.17-beta: Incompatible with restriction: >= 1.99.6-beta & < 1.99.8-beta
+      ...
+- ocp-indent -> (problem)
+    ocaml-top 1.0.1 requires >= 1.3.1 & < 1.4.0
+    Rejected candidates:
+      ocp-indent.1.8.1: Incompatible with restriction: >= 1.3.1 & < 1.4.0
+      ocp-indent.1.8.0: Incompatible with restriction: >= 1.3.1 & < 1.4.0
+      ocp-indent.1.7.0: Incompatible with restriction: >= 1.3.1 & < 1.4.0
+      ocp-indent.1.6.1: Incompatible with restriction: >= 1.3.1 & < 1.4.0
+      ocp-indent.1.6.0: Incompatible with restriction: >= 1.3.1 & < 1.4.0
+      ...
+- ocp-index -> (problem)
+    ocaml-top 1.0.1 requires >= 0.2.0 & < 1.0.0
+    Rejected candidates:
+      ocp-index.1.2.1: Incompatible with restriction: >= 0.2.0 & < 1.0.0
+      ocp-index.1.2: Incompatible with restriction: >= 0.2.0 & < 1.0.0
+      ocp-index.1.1.9: Incompatible with restriction: >= 0.2.0 & < 1.0.0
+      ocp-index.1.1.7: Incompatible with restriction: >= 0.2.0 & < 1.0.0
+      ocp-index.1.1.6: Incompatible with restriction: >= 0.2.0 & < 1.0.0
+      ...

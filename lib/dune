@@ -1,0 +1,4 @@
+(library
+ (name builder)
+ (public_name odoc-builder.builder)
+ (libraries astring sexplib fpath))

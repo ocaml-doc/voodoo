@@ -1,0 +1,79 @@
+Can't find all required versions.
+Selected: atdgen.1.12.0 base-ocamlbuild.base base-threads.base base-unix.base
+          biniou.1.0.13 conf-m4.1 conf-which.1 conf-zmq.0.1 cppo.1.6.5
+          dune.2.7.1 easy-format.1.2.0 menhir.20140422 ocaml-config.2
+          ocaml-secondary-compiler.4.08.1-1 ocamlfind.1.8.1
+          ocamlfind-secondary.1.8.1 ocp-build.1.99.21 ocp-indent.1.8.1
+          ocp-index.1.1.5 ounit.2.2.3 result.1.5 seq.0.2.2 topkg.1.0.0
+          uint.1.2.1 uuidm.0.9.6 yojson.1.3.3
+          iocaml-kernel&ocaml-base-compiler ocaml-base-compiler
+          ocaml-base-compiler ocaml&ocamlfind-secondary seq&ocaml
+- atd -> atd.1.12.0
+    atdgen 1.12.0 requires >= 1.2.0 & < 1.13.0
+- base-bytes -> (problem)
+    uint 1.2.1 requires = base
+    Rejected candidates:
+      base-bytes.base: Requires ocaml >= 4.02.0
+      base-bytes.backport: Incompatible with restriction: = base
+- cmdliner -> (problem)
+    ocp-build 1.99.21 requires >= 1
+    Rejected candidates:
+      cmdliner.1.0.4: Requires ocaml >= 4.03.0
+      cmdliner.1.0.3: Requires ocaml >= 4.03.0
+      cmdliner.1.0.2: Requires result < 1.5
+      cmdliner.1.0.1: Requires result < 1.5
+      cmdliner.1.0.0: Requires result < 1.5
+      ...
+- iocaml-kernel -> iocaml-kernel.0.4.0
+    User requested = 0.4.0
+- jbuilder -> (problem)
+    atd 1.12.0 requires >= 1.0+beta7
+    cppo 1.6.5 requires >= 1.0+beta17
+    dune 2.7.1 requires not(= transition)
+    Rejected candidates:
+      jbuilder.transition: Incompatible with restriction: not(= transition)
+      jbuilder.1.0+beta20.2: Requires ocaml >= 4.02.3
+      jbuilder.1.0+beta20.1: Requires ocaml >= 4.02.3
+      jbuilder.1.0+beta20: Requires ocaml >= 4.02.3 & < 4.08.0
+      jbuilder.1.0+beta19.1: Requires ocaml >= 4.02.3 & < 4.08.0
+      ...
+- ocaml -> ocaml.4.01.0
+    base-ocamlbuild base requires >= 3.10 & < 4.03
+    iocaml-kernel 0.4.0 requires >= 4.01.0 & < 4.02.0
+- ocaml-base-compiler -> (problem)
+    User requested <= 4.11.1
+    ocaml-base-compiler|ocaml-variants|ocaml-system ocaml-base-compiler requires >= 4.12.0~
+    Rejected candidates:
+      ocaml-base-compiler.4.11.1: Requires ocaml = 4.11.1
+      ocaml-base-compiler.4.11.0: Requires ocaml = 4.11.0
+      ocaml-base-compiler.4.10.1: Requires ocaml = 4.10.1
+      ocaml-base-compiler.4.10.0: Requires ocaml = 4.10.0
+      ocaml-base-compiler.4.09.1: Requires ocaml = 4.09.1
+      ...
+- ocamlbuild -> ocamlbuild.0
+    menhir 20140422 requires < 0.9.1
+- ounit2 -> (problem)
+    ounit 2.2.3 requires = 2.2.3
+    Rejected candidates:
+      ounit2.2.2.3: Requires ocaml >= 4.04.0
+      ounit2.2.2.2: Incompatible with restriction: = 2.2.3
+      ounit2.2.2.1: Incompatible with restriction: = 2.2.3
+      ounit2.2.2.0: Incompatible with restriction: = 2.2.3
+- re -> (problem)
+    ocp-build 1.99.21 requires >= 1.7.3
+    Rejected candidates:
+      re.1.9.0: Requires ocaml >= 4.02
+      re.1.8.0: Requires ocaml >= 4.02.3
+      re.1.7.3: Requires ocaml >= 4.02.3
+      re.1.7.2: Incompatible with restriction: >= 1.7.3
+      re.1.7.1: Incompatible with restriction: >= 1.7.3
+      ...
+- zmq -> (problem)
+    iocaml-kernel 0.4.0 requires = 3.2-2
+    Rejected candidates:
+      zmq.5.1.3: Incompatible with restriction: = 3.2-2
+      zmq.5.1.2: Incompatible with restriction: = 3.2-2
+      zmq.5.1.1: Incompatible with restriction: = 3.2-2
+      zmq.5.1.0: Incompatible with restriction: = 3.2-2
+      zmq.5.0.0: Incompatible with restriction: = 3.2-2
+      ...

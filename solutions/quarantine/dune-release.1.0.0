@@ -1,0 +1,29 @@
+Can't find all required versions.
+Selected: astring.0.8.5 base-bigarray.base base-threads.base base-unix.base
+          bos.0.2.0 cmdliner.1.0.4 conf-m4.1 cppo.1.6.6 dune.1.6.3
+          fpath.0.7.3 logs.0.7.0 ocaml.4.13.0 ocaml-config.2
+          ocamlbuild.0.14.0 ocamlfind.1.8.1 ocamlgraph.1.8.8
+          opam-core.2.1.0~beta2 opam-file-format.2.1.1
+          opam-format.2.1.0~beta2 re.1.9.0 result.1.5 rresult.0.6.0 seq.base
+          stdlib-shims.0.1.0 topkg.1.0.3 dune-release&ocaml-base-compiler
+          ocaml-base-compiler ocaml-base-compiler
+- dune-release -> dune-release.1.0.0
+    User requested = 1.0.0
+- fmt -> fmt.0.8.6
+    dune-release 1.0.0 requires < 0.8.7
+- ocaml-base-compiler -> (problem)
+    User requested <= 4.11.1
+    Rejected candidates:
+      ocaml-base-compiler.4.11.1: Requires ocaml = 4.11.1
+      ocaml-base-compiler.4.11.0: Requires ocaml = 4.11.0
+      ocaml-base-compiler.4.10.1: Requires ocaml = 4.10.1
+      ocaml-base-compiler.4.10.0: Requires ocaml = 4.10.0
+      ocaml-base-compiler.4.09.1: Requires ocaml = 4.09.1
+      ...
+- odoc -> (problem)
+    Rejected candidates:
+      odoc.dev: Requires dune >= 2.7.0
+- dune|ocaml -> (problem)
+    Rejected candidates:
+      dune: Requires dune >= 2.8.0
+      ocaml: Requires ocaml < 4.12.0~~

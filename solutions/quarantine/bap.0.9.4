@@ -1,0 +1,110 @@
+Can't find all required versions.
+Selected: base.v0.14.0 base-bigarray.base base-bytes.base base-threads.base
+          base-unix.base bigarray-compat.1.0.0 bitstring.4.0.1
+          camlp4.4.11+system camlzip.1.10 camomile.1.0.2 charInfo_width.1.1.0
+          cmdliner.1.0.4 conf-gmp.2 conf-libcurl.1 conf-m4.1 conf-perl.1
+          conf-pkg-config.1.3 conf-time.1 conf-which.1 conf-zlib.1 cppo.1.6.6
+          csexp.1.3.2 cstruct.6.0.0 dune.2.7.1 dune-configurator.2.7.1
+          faillib.111.17.00 fileutils.0.6.3 herelib.112.35.00 hex.1.4.0
+          jsonm.1.0.1 lambda-term.3.1.0 logs.0.7.0 lwt_log.1.1.1
+          lwt_react.1.1.3 mew.0.1.0 mew_vi.0.5.0 ocaml-data-notation.0.0.11
+          ocaml-system.4.09.0 ocamlbuild.0.14.0 ocamlfind.1.8.1
+          ocamlgraph.2.0.0 ocamlify.0.0.1 ocamlmod.0.0.9 ocurl.0.9.1
+          ppx_derivers.1.2.1 ppx_deriving.5.1 ppx_sexp_conv.v0.14.2 re.1.9.0
+          react.1.2.1 result.1.5 seq.base sexplib0.v0.14.0 stdlib-shims.0.1.0
+          stringext.1.6.0 topkg.1.0.3 trie.1.0.0 type_conv.113.00.02
+          uchar.0.0.2 utop.2.6.0 uutf.1.0.2 zarith.1.11 zed.3.1.0
+          bap&ocaml-base-compiler ocaml ocaml
+- bap -> bap.0.9.4
+    User requested = 0.9.4
+- base64 -> base64.2.3.0
+    cohttp 0.15.0 requires >= 2.0.0 & < 3.0.0
+- cohttp -> cohttp.0.15.0
+    bap 0.9.4 requires = 0.15.0
+- conduit -> conduit.0.15.4
+    cohttp 0.15.0 requires >= 0.7.0 & < 0.16.0
+- core_kernel -> (problem)
+    bap 0.9.4 requires = 111.28.0
+    Rejected candidates:
+      core_kernel.v0.14.1: Incompatible with restriction: = 111.28.0
+      core_kernel.v0.14.0: Incompatible with restriction: = 111.28.0
+      core_kernel.v0.13.1: Incompatible with restriction: = 111.28.0
+      core_kernel.v0.13.0: Incompatible with restriction: = 111.28.0
+      core_kernel.v0.12.3: Incompatible with restriction: = 111.28.0
+      ...
+- ezjsonm -> ezjsonm.0.4.0
+    bap 0.9.4 requires = 0.4.0
+- fieldslib -> fieldslib.113.00.00
+    cohttp 0.15.0 requires >= 109.20.00 & < 113.01.00
+- ipaddr -> ipaddr.2.9.0
+    conduit 0.15.4 requires >= 2.5.0 & < 3.0.0
+- jbuilder -> jbuilder.1.0+beta20.2
+    dune 2.7.1 requires not(= transition)
+- lwt -> (problem)
+    cohttp 0.15.0 requires not(< 2.4.3)
+    cohttp 0.15.0 requires not(>= 2.5.0)
+    conduit 0.15.4 requires not(< 2.7.0)
+    Rejected candidates:
+      lwt.5.3.0: Incompatible with restriction: not(>= 2.5.0)
+      lwt.5.2.0: Incompatible with restriction: not(>= 2.5.0)
+      lwt.5.1.2: Incompatible with restriction: not(>= 2.5.0)
+      lwt.5.1.1: Incompatible with restriction: not(>= 2.5.0)
+      lwt.5.1.0: Incompatible with restriction: not(>= 2.5.0)
+      ...
+- oasis -> oasis.0.4.6
+    bap 0.9.4 requires >= 0.4.0 & < 0.4.7
+- ocaml -> (problem)
+    bap 0.9.4 requires = 4.01
+    Rejected candidates:
+      ocaml.4.13.0: Incompatible with restriction: = 4.01
+      ocaml.4.12.0: Incompatible with restriction: = 4.01
+      ocaml.4.11.2: Incompatible with restriction: = 4.01
+      ocaml.4.11.1: Incompatible with restriction: = 4.01
+      ocaml.4.11.0: Incompatible with restriction: = 4.01
+      ...
+- ocaml-base-compiler -> (problem)
+    User requested <= 4.11.1
+    Rejected candidates:
+      ocaml-base-compiler.4.11.1: In same conflict class (ocaml-core-compiler) as ocaml-system
+      ocaml-base-compiler.4.11.0: In same conflict class (ocaml-core-compiler) as ocaml-system
+      ocaml-base-compiler.4.10.1: In same conflict class (ocaml-core-compiler) as ocaml-system
+      ocaml-base-compiler.4.10.0: In same conflict class (ocaml-core-compiler) as ocaml-system
+      ocaml-base-compiler.4.09.1: In same conflict class (ocaml-core-compiler) as ocaml-system
+      ...
+- ocaml-migrate-parsetree -> ocaml-migrate-parsetree.1.8.0
+    ppx_deriving 5.1 requires < 2.0.0
+- ppx_core -> (problem)
+    ppx_driver v0.9.2 requires >= v0.9.2 & < v0.10
+    Rejected candidates:
+      ppx_core.v0.11.0: Incompatible with restriction: >= v0.9.2 & < v0.10
+      ppx_core.v0.10.0: Requires base >= v0.10 & < v0.11
+      ppx_core.v0.9.3: Requires base >= v0.9.3 & < v0.10
+      ppx_core.v0.9.2: Requires base >= v0.9.4 & < v0.10
+      ppx_core.v0.9.0: Requires base >= v0.9 & < v0.10
+      ...
+- ppx_driver -> ppx_driver.v0.9.2
+    conduit 0.15.4 requires >= v0.9.1 & < v0.10.0
+- ppx_optcomp -> ppx_optcomp.v0.9.0
+    ppx_driver v0.9.2 requires >= v0.9 & < v0.10
+- ppxlib -> (problem)
+    ppx_deriving 5.1 requires >= 0.14.0 & < 0.16.0
+    ppx_sexp_conv v0.14.2 requires >= 0.18.0
+    Rejected candidates:
+      ppxlib.0.20.0: Incompatible with restriction: >= 0.14.0 & < 0.16.0
+      ppxlib.0.19.0: Incompatible with restriction: >= 0.14.0 & < 0.16.0
+      ppxlib.0.18.0: Incompatible with restriction: >= 0.14.0 & < 0.16.0
+      ppxlib.0.17.0: Incompatible with restriction: >= 0.14.0 & < 0.16.0
+      ppxlib.0.16.0: Incompatible with restriction: >= 0.14.0 & < 0.16.0
+      ...
+- sexplib -> (problem)
+    cohttp 0.15.0 requires >= 109.53.00 & < 113.01.00
+    uri 1.9.7 requires >= v0.9.0 & < v0.15
+    Rejected candidates:
+      sexplib.v0.14.0: Incompatible with restriction: >= 109.53.00 & < 113.01.00
+      sexplib.v0.13.0: Incompatible with restriction: >= 109.53.00 & < 113.01.00
+      sexplib.v0.12.0: Incompatible with restriction: >= 109.53.00 & < 113.01.00
+      sexplib.v0.11.0: Incompatible with restriction: >= 109.53.00 & < 113.01.00
+      sexplib.v0.10.0: Incompatible with restriction: >= 109.53.00 & < 113.01.00
+      ...
+- uri -> uri.1.9.7
+    cohttp 0.15.0 requires >= 1.5.0 & < 2.0.0

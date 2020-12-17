@@ -1,0 +1,23 @@
+Can't find all required versions.
+Selected: ocaml.4.13.0 ocaml-config.2 base-implicits&ocaml-base-compiler
+          ocaml-base-compiler ocaml-base-compiler
+- base-implicits -> base-implicits.base
+    User requested = base
+- ocaml-base-compiler -> (problem)
+    User requested <= 4.11.1
+    Rejected candidates:
+      ocaml-base-compiler.4.11.1: Requires ocaml = 4.11.1
+      ocaml-base-compiler.4.11.0: Requires ocaml = 4.11.0
+      ocaml-base-compiler.4.10.1: Requires ocaml = 4.10.1
+      ocaml-base-compiler.4.10.0: Requires ocaml = 4.10.0
+      ocaml-base-compiler.4.09.1: Requires ocaml = 4.09.1
+      ...
+- ocaml-variants -> (problem)
+    base-implicits base requires = 4.02.0+modular-implicits | = 4.02.1+modular-implicits-ber
+    Rejected candidates:
+      ocaml-variants.4.13.0+trunk+no-flat-float-array: Incompatible with restriction: = 4.02.0+modular-implicits | = 4.02.1+modular-implicits-ber
+      ocaml-variants.4.13.0+trunk+nnp: Incompatible with restriction: = 4.02.0+modular-implicits | = 4.02.1+modular-implicits-ber
+      ocaml-variants.4.13.0+trunk+fp+flambda: Incompatible with restriction: = 4.02.0+modular-implicits | = 4.02.1+modular-implicits-ber
+      ocaml-variants.4.13.0+trunk+fp: Incompatible with restriction: = 4.02.0+modular-implicits | = 4.02.1+modular-implicits-ber
+      ocaml-variants.4.13.0+trunk+flambda: Incompatible with restriction: = 4.02.0+modular-implicits | = 4.02.1+modular-implicits-ber
+      ...

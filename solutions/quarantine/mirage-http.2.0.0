@@ -1,0 +1,129 @@
+Can't find all required versions.
+Selected: angstrom.0.15.0 astring.0.8.5 base-bytes.base base-threads.base
+          base-unix.base base64.3.4.0 bigarray-compat.1.0.0 bigstringaf.0.7.0
+          camlp4.4.02.0-1modular-implicits cmdliner.1.0.4 cohttp.2.5.4
+          conf-m4.1 conf-pkg-config.1.3 conf-which.1 cppo.1.6.6 csexp.1.3.2
+          cstruct.6.0.0 dns-lwt.1.1.3 domain-name.0.3.0 dune.2.7.1
+          dune-configurator.2.7.1 duration.0.1.3 fieldslib.v0.14.0 fmt.0.8.9
+          io-page.2.3.0 ipaddr.5.0.1 jsonm.1.0.1 logs.0.7.0 macaddr.5.0.1
+          mirage-dns.3.1.3 mirage-flow-lwt.1.6.0 mirage-kv-lwt.2.0.0
+          mirage-profile.0.9.1 mirage-stack-lwt.1.4.0 mirage-time-lwt.1.3.0
+          ocaml.4.13.0 ocaml-config.2 ocaml-syntax-shims.1.0.0
+          ocamlbuild.0.14.0 ocamlfind.1.8.1 ocplib-endian.1.1
+          ppx_cstruct.6.0.0 ppx_fields_conv.v0.14.2 ppx_sexp_conv.v0.14.2
+          re.1.9.0 result.1.5 seq.base sexplib0.v0.14.0 stdlib-shims.0.1.0
+          stringext.1.6.0 topkg.1.0.3 type_conv.113.00.02 uchar.0.0.2
+          uri.4.0.0 uri-sexp.4.0.0 uutf.1.0.2 vchan.4.0.3 xenstore.2.1.1
+          xenstore_transport.1.1.0 mirage-http&ocaml-base-compiler
+          ocaml-base-compiler ocaml-base-compiler ocaml
+- base -> (problem)
+    Rejected candidates:
+      base.v0.14.0: Requires ocaml >= 4.07.0 & < 4.12
+      base.v0.13.2: Requires ocaml >= 4.04.2 & < 4.12
+      base.v0.13.1: Requires ocaml >= 4.04.2 & < 4.12
+      base.v0.13.0: Requires ocaml >= 4.04.2 & < 4.10.0
+      base.v0.12.2: Requires ocaml >= 4.04.2 & < 4.10.0
+      ...
+- conduit -> conduit.0.5.1
+    mirage-http 2.0.0 requires < 0.7.0
+- dns -> (problem)
+    dns-lwt 1.1.3 requires = 1.1.3
+    Rejected candidates:
+      dns.4.6.2: Incompatible with restriction: = 1.1.3
+      dns.4.6.1: Incompatible with restriction: = 1.1.3
+      dns.4.6.0: Incompatible with restriction: = 1.1.3
+      dns.4.5.0: Incompatible with restriction: = 1.1.3
+      dns.4.4.1: Incompatible with restriction: = 1.1.3
+      ...
+- lwt -> (problem)
+    conduit 0.5.1 requires not(< 2.4.3)
+    conduit 0.5.1 requires not(>= 3.0.0)
+    dns-lwt 1.1.3 requires >= 3.0.0
+    Rejected candidates:
+      lwt.5.3.0: Incompatible with restriction: not(>= 3.0.0)
+      lwt.5.2.0: Incompatible with restriction: not(>= 3.0.0)
+      lwt.5.1.2: Incompatible with restriction: not(>= 3.0.0)
+      lwt.5.1.1: Incompatible with restriction: not(>= 3.0.0)
+      lwt.5.1.0: Incompatible with restriction: not(>= 3.0.0)
+      ...
+- mirage-clock -> mirage-clock.2.0.0
+    mirage-flow-lwt 1.6.0 requires >= 1.2.0 & < 3.0.0
+- mirage-device -> mirage-device.1.2.0
+    mirage-clock 2.0.0 requires >= 1.0.0 & < 2.0.0
+- mirage-flow -> mirage-flow.1.6.0
+    mirage-flow-lwt 1.6.0 requires >= 1.2.0 & < 2.0.0
+- mirage-http -> mirage-http.2.0.0
+    User requested = 2.0.0
+- mirage-kv -> mirage-kv.2.0.0
+    mirage-kv-lwt 2.0.0 requires >= 2.0.0 & < 3.0.0
+- mirage-net -> mirage-net.2.0.0
+    mirage-protocols 3.1.0 requires >= 2.0.0 & < 3.0.0
+- mirage-protocols -> mirage-protocols.3.1.0
+    mirage-stack 1.4.0 requires >= 1.4.0 & < 4.0.0
+- mirage-stack -> mirage-stack.1.4.0
+    mirage-stack-lwt 1.4.0 requires >= 1.3.0 & < 2.0.0
+- mirage-time -> mirage-time.1.3.0
+    mirage-time-lwt 1.3.0 requires >= 1.0.0 & < 2.0.0
+- mirage-types -> mirage-types.2.8.0
+    mirage-types-lwt 2.8.0 requires = 2.8.0
+- mirage-types-lwt -> mirage-types-lwt.2.8.0
+    mirage-http 2.0.0 requires >= 2.0.0 & < 3.0.0
+- ocaml-base-compiler -> (problem)
+    User requested <= 4.11.1
+    Rejected candidates:
+      ocaml-base-compiler.4.11.1: Requires ocaml = 4.11.1
+      ocaml-base-compiler.4.11.0: Requires ocaml = 4.11.0
+      ocaml-base-compiler.4.10.1: Requires ocaml = 4.10.1
+      ocaml-base-compiler.4.10.0: Requires ocaml = 4.10.0
+      ocaml-base-compiler.4.09.1: Requires ocaml = 4.09.1
+      ...
+- ocaml-variants -> (problem)
+    camlp4 4.02.0-1modular-implicits requires = 4.02.0+modular-implicits | = 4.02.1+modular-implicits-ber
+    Rejected candidates:
+      ocaml-variants.4.13.0+trunk+no-flat-float-array: Incompatible with restriction: = 4.02.0+modular-implicits | = 4.02.1+modular-implicits-ber
+      ocaml-variants.4.13.0+trunk+nnp: Incompatible with restriction: = 4.02.0+modular-implicits | = 4.02.1+modular-implicits-ber
+      ocaml-variants.4.13.0+trunk+fp+flambda: Incompatible with restriction: = 4.02.0+modular-implicits | = 4.02.1+modular-implicits-ber
+      ocaml-variants.4.13.0+trunk+fp: Incompatible with restriction: = 4.02.0+modular-implicits | = 4.02.1+modular-implicits-ber
+      ocaml-variants.4.13.0+trunk+flambda: Incompatible with restriction: = 4.02.0+modular-implicits | = 4.02.1+modular-implicits-ber
+      ...
+- ppx_tools -> (problem)
+    Rejected candidates:
+      ppx_tools.6.3: Requires ocaml >= 4.08.0 & < 4.13.0
+      ppx_tools.6.2: Requires ocaml >= 4.08.0 & < 4.12.0
+      ppx_tools.6.1+4.10.0: Requires ocaml >= 4.10.0 & < 4.11
+      ppx_tools.6.0+4.08.0: Requires ocaml >= 4.08.0 & < 4.10
+      ppx_tools.5.3+4.08.0: Requires ocaml >= 4.08.0 & < 4.10
+      ...
+- ppxlib -> (problem)
+    ppx_cstruct 6.0.0 requires >= 0.16.0
+    ppx_fields_conv v0.14.2 requires >= 0.18.0
+    Rejected candidates:
+      ppxlib.0.20.0: Requires ocaml >= 4.04.1 & < 4.13
+      ppxlib.0.19.0: Requires ocaml >= 4.04.1 & < 4.13
+      ppxlib.0.18.0: Requires ocaml >= 4.04.1 & < 4.12
+      ppxlib.0.17.0: Incompatible with restriction: >= 0.18.0
+      ppxlib.0.16.0: Incompatible with restriction: >= 0.18.0
+      ...
+- sexplib -> (problem)
+    conduit 0.5.1 requires >= 109.15.00 & < 113.01.00
+    ppx_cstruct 6.0.0 requires >= v0.9.0
+    Rejected candidates:
+      sexplib.v0.14.0: Incompatible with restriction: >= 109.15.00 & < 113.01.00
+      sexplib.v0.13.0: Incompatible with restriction: >= 109.15.00 & < 113.01.00
+      sexplib.v0.12.0: Incompatible with restriction: >= 109.15.00 & < 113.01.00
+      sexplib.v0.11.0: Incompatible with restriction: >= 109.15.00 & < 113.01.00
+      sexplib.v0.10.0: Incompatible with restriction: >= 109.15.00 & < 113.01.00
+      ...
+- tcpip -> (problem)
+    mirage-http 2.0.0 requires < 2.3.0
+    Rejected candidates:
+      tcpip.5.0.1: Incompatible with restriction: < 2.3.0
+      tcpip.5.0.0: Incompatible with restriction: < 2.3.0
+      tcpip.4.1.0: Incompatible with restriction: < 2.3.0
+      tcpip.4.0.0: Incompatible with restriction: < 2.3.0
+      tcpip.3.7.9: Incompatible with restriction: < 2.3.0
+      ...
+- dune|ocaml -> (problem)
+    Rejected candidates:
+      dune: Requires dune >= 2.8.0
+      ocaml: Requires ocaml < 4.12.0~~

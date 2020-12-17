@@ -1,0 +1,81 @@
+Can't find all required versions.
+Selected: angstrom.0.15.0 asak.0.2 astring.0.8.5 base.v0.14.0
+          base-bigarray.base base-bytes.base base-threads.base base-unix.base
+          base64.3.4.0 bigarray-compat.1.0.0 bigstringaf.0.7.0 biniou.1.2.1
+          checkseum.0.3.0 cmdliner.1.0.4 conf-git.1.0 conf-libssl.2 conf-m4.1
+          conf-pkg-config.1.3 conf-which.1 cppo.1.6.6 csexp.1.3.2
+          cstruct.6.0.0 digestif.1.0.0 domain-name.0.3.0 dune.2.7.1
+          dune-configurator.2.7.1 easy-format.1.3.2 eqaf.0.7 ezjsonm.1.2.0
+          fmt.0.8.9 fpath.0.7.3 hex.1.4.0 ipaddr.5.0.1 ipaddr-sexp.5.0.1
+          js_of_ocaml.3.8.0 js_of_ocaml-compiler.3.8.0 js_of_ocaml-lwt.3.8.0
+          js_of_ocaml-ppx.3.8.0 js_of_ocaml-toplevel.3.8.0
+          js_of_ocaml-tyxml.3.8.0 jsonm.1.0.1 logs.0.7.0 lwt_react.1.1.3
+          lwt_ssl.1.1.3 macaddr.5.0.1 magic-mime.1.1.2 markup.1.0.0-1
+          menhir.20200624 menhirLib.20200624 menhirSdk.20200624 num.1.4
+          ocaml-compiler-libs.v0.12.3 ocaml-migrate-parsetree.2.1.0
+          ocaml-syntax-shims.1.0.0 ocamlbuild.0.14.0 ocamlfind.1.8.1
+          ocp-indent-nlfork.1.5.4 ocp-ocamlres.0.4 odoc.dev omd.1.3.1
+          optint.0.0.4 parsexp.v0.14.0 pprint.20200410 ppx_cstruct.6.0.0
+          ppx_derivers.1.2.1 ppx_sexp_conv.v0.14.2 ppx_tools.6.3
+          ppxlib.0.20.0 re.1.9.0 react.1.2.1 reactiveData.0.2.2 result.1.5
+          seq.base sexplib.v0.14.0 sexplib0.v0.14.0 ssl.0.5.9
+          stdlib-shims.0.1.0 stringext.1.6.0 topkg.1.0.3 tyxml.4.4.0
+          uchar.0.0.2 uri.4.0.0 uutf.1.0.2 yojson.1.7.0
+          learn-ocaml&ocaml-base-compiler ocaml ocaml
+- cohttp -> (problem)
+    cohttp-lwt 1.2.0 requires >= 1.2.0 & < 1.3.0
+    Rejected candidates:
+      cohttp.2.5.4: Incompatible with restriction: >= 1.2.0 & < 1.3.0
+      cohttp.2.5.2-1: Incompatible with restriction: >= 1.2.0 & < 1.3.0
+      cohttp.2.5.1: Incompatible with restriction: >= 1.2.0 & < 1.3.0
+      cohttp.2.5.0: Incompatible with restriction: >= 1.2.0 & < 1.3.0
+      cohttp.2.4.0: Incompatible with restriction: >= 1.2.0 & < 1.3.0
+      ...
+- cohttp-lwt -> cohttp-lwt.1.2.0
+    cohttp-lwt-unix 1.2.0 requires = 1.2.0
+- cohttp-lwt-unix -> cohttp-lwt-unix.1.2.0
+    learn-ocaml 0.12 requires >= 1.0.0 & < 2.0.0
+- conduit -> conduit.1.5.0
+    conduit-lwt 1.5.0 requires = 1.5.0 & < 3.0.0
+- conduit-lwt -> conduit-lwt.1.5.0
+    conduit-lwt-unix 1.5.0 requires = 1.5.0 & < 3.0.0
+- conduit-lwt-unix -> conduit-lwt-unix.1.5.0
+    cohttp-lwt-unix 1.2.0 requires >= 1.0.3 & < 2.0.0
+- decompress -> decompress.0.8.1
+    learn-ocaml 0.12 requires = 0.8.1
+- learn-ocaml -> learn-ocaml.0.12
+    User requested = 0.12
+- lwt -> (problem)
+    cohttp-lwt 1.2.0 requires not(< 2.5.0)
+    cohttp-lwt-unix 1.2.0 requires >= 3.0.0
+    learn-ocaml 0.12 requires >= 3.2.0 & < 4.0.0
+    Rejected candidates:
+      lwt.5.3.0: Incompatible with restriction: >= 3.2.0 & < 4.0.0
+      lwt.5.2.0: Incompatible with restriction: >= 3.2.0 & < 4.0.0
+      lwt.5.1.2: Incompatible with restriction: >= 3.2.0 & < 4.0.0
+      lwt.5.1.1: Incompatible with restriction: >= 3.2.0 & < 4.0.0
+      lwt.5.1.0: Incompatible with restriction: >= 3.2.0 & < 4.0.0
+      ...
+- ocaml -> (problem)
+    angstrom 0.15.0 requires >= 4.04.0
+    asak 0.2 requires >= 4.05 & < 4.10
+    base v0.14.0 requires >= 4.07.0 & < 4.12
+    learn-ocaml 0.12 requires = 4.05.0
+    Rejected candidates:
+      ocaml.4.13.0: Incompatible with restriction: >= 4.05 & < 4.10
+      ocaml.4.12.0: Incompatible with restriction: >= 4.05 & < 4.10
+      ocaml.4.11.2: Incompatible with restriction: >= 4.05 & < 4.10
+      ocaml.4.11.1: Incompatible with restriction: >= 4.05 & < 4.10
+      ocaml.4.11.0: Incompatible with restriction: >= 4.05 & < 4.10
+      ...
+- ocaml-base-compiler -> ocaml-base-compiler.4.11.1
+    User requested <= 4.11.1
+- ocplib-json-typed -> (problem)
+    learn-ocaml 0.12 requires = 0.6
+    Rejected candidates:
+      ocplib-json-typed.0.7.1: Incompatible with restriction: = 0.6
+      ocplib-json-typed.0.7: Incompatible with restriction: = 0.6
+      ocplib-json-typed.0.6: Requires js_of_ocaml not(>= 3.4.0)
+      ocplib-json-typed.0.5: Incompatible with restriction: = 0.6
+      ocplib-json-typed.0.4: Incompatible with restriction: = 0.6
+      ...

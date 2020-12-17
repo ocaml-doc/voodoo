@@ -1,0 +1,66 @@
+Can't find all required versions.
+Selected: base-bytes.base base-threads.base base-unix.base bin_prot.v0.14.0
+          camlp4.4.02.0-1modular-implicits conf-m4.1 conf-which.1 dune.2.7.1
+          fieldslib.v0.14.0 num.1.4 ocaml.4.13.0 ocaml-compiler-libs.v0.12.3
+          ocaml-config.2 ocamlbuild.0.14.0 ocamlfind.1.8.1 ounit.2.2.3
+          ounit2.2.2.3 pa_ounit.112.24.00 parsexp.v0.14.0 ppx_compare.v0.14.0
+          ppx_custom_printf.v0.14.0 ppx_derivers.1.2.1
+          ppx_fields_conv.v0.14.1 ppx_optcomp.v0.14.0 ppx_sexp_conv.v0.14.1
+          ppx_variants_conv.v0.14.1 result.1.5 sexplib.v0.14.0
+          sexplib0.v0.14.0 stdio.v0.14.0 stdlib-shims.0.1.0
+          variantslib.v0.14.0 async_core&ocaml-base-compiler
+          ocaml-base-compiler ocaml-base-compiler ocaml
+- async_core -> async_core.108.00.01
+    User requested = 108.00.01
+- base -> (problem)
+    Rejected candidates:
+      base.v0.14.0: Requires ocaml >= 4.07.0 & < 4.12
+      base.v0.13.2: Requires ocaml >= 4.04.2 & < 4.12
+      base.v0.13.1: Requires ocaml >= 4.04.2 & < 4.12
+      base.v0.13.0: Requires ocaml >= 4.04.2 & < 4.10.0
+      base.v0.12.2: Requires ocaml >= 4.04.2 & < 4.10.0
+      ...
+- core -> (problem)
+    async_core 108.00.01 requires = 108.00.01
+    Rejected candidates:
+      core.v0.14.0: Incompatible with restriction: = 108.00.01
+      core.v0.13.0: Incompatible with restriction: = 108.00.01
+      core.v0.12.4: Incompatible with restriction: = 108.00.01
+      core.v0.12.3: Incompatible with restriction: = 108.00.01
+      core.v0.12.2: Incompatible with restriction: = 108.00.01
+      ...
+- ocaml-base-compiler -> (problem)
+    User requested <= 4.11.1
+    Rejected candidates:
+      ocaml-base-compiler.4.11.1: Requires ocaml = 4.11.1
+      ocaml-base-compiler.4.11.0: Requires ocaml = 4.11.0
+      ocaml-base-compiler.4.10.1: Requires ocaml = 4.10.1
+      ocaml-base-compiler.4.10.0: Requires ocaml = 4.10.0
+      ocaml-base-compiler.4.09.1: Requires ocaml = 4.09.1
+      ...
+- ocaml-migrate-parsetree -> ocaml-migrate-parsetree.1.8.0
+    ppxlib 0.15.0 requires >= 1.5.0 & < 2.0.0
+- ocaml-variants -> (problem)
+    camlp4 4.02.0-1modular-implicits requires = 4.02.0+modular-implicits | = 4.02.1+modular-implicits-ber
+    Rejected candidates:
+      ocaml-variants.4.13.0+trunk+no-flat-float-array: Incompatible with restriction: = 4.02.0+modular-implicits | = 4.02.1+modular-implicits-ber
+      ocaml-variants.4.13.0+trunk+nnp: Incompatible with restriction: = 4.02.0+modular-implicits | = 4.02.1+modular-implicits-ber
+      ocaml-variants.4.13.0+trunk+fp+flambda: Incompatible with restriction: = 4.02.0+modular-implicits | = 4.02.1+modular-implicits-ber
+      ocaml-variants.4.13.0+trunk+fp: Incompatible with restriction: = 4.02.0+modular-implicits | = 4.02.1+modular-implicits-ber
+      ocaml-variants.4.13.0+trunk+flambda: Incompatible with restriction: = 4.02.0+modular-implicits | = 4.02.1+modular-implicits-ber
+      ...
+- ppxlib -> ppxlib.0.15.0
+    ppx_custom_printf v0.14.0 requires >= 0.11.0 & < 0.18.0
+- type_conv -> (problem)
+    pa_ounit 112.24.00 requires >= 109.53.00 & < 112.02.00
+    Rejected candidates:
+      type_conv.113.00.02: Incompatible with restriction: >= 109.53.00 & < 112.02.00
+      type_conv.113.00.01: Incompatible with restriction: >= 109.53.00 & < 112.02.00
+      type_conv.113.00.00: Incompatible with restriction: >= 109.53.00 & < 112.02.00
+      type_conv.112.01.02: Requires ocaml >= 4.02.0 & < 4.03
+      type_conv.112.01.01: Requires ocaml >= 4.02.0 & < 4.03
+      ...
+- dune|ocaml -> (problem)
+    Rejected candidates:
+      dune: Requires dune >= 2.8.0
+      ocaml: Requires ocaml < 4.12.0~~

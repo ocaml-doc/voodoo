@@ -1,0 +1,114 @@
+Can't find all required versions.
+Selected: base-bytes.base base-threads.base base-unix.base
+          camlp4.4.02.0-1modular-implicits conf-libpcre.1 conf-m4.1
+          conf-pkg-config.1.3 conf-which.1 csexp.1.3.2 dune.2.7.1
+          dune-configurator.2.7.1 ocaml.4.13.0 ocaml-config.2
+          ocamlbuild.0.14.0 ocamlfind.1.8.1 pcre.7.4.6 result.1.5
+          jenga&ocaml-base-compiler ocaml-base-compiler ocaml-base-compiler
+          ocaml
+- async -> async.109.15.00
+    async_find 109.15.00 requires >= 109.15.00 & <= 109.53.00
+    async_inotify 109.15.00 requires >= 109.15.00 & <= 109.33.00
+    async_shell 109.15.00 requires = 109.15.00
+- async_core -> async_core.109.15.00
+    async 109.15.00 requires = 109.15.00
+- async_extra -> async_extra.109.15.00
+    async 109.15.00 requires = 109.15.00
+- async_find -> async_find.109.15.00
+    async_inotify 109.15.00 requires = 109.15.00
+- async_inotify -> async_inotify.109.15.00
+    jenga 109.15.00 requires = 109.15.00
+- async_shell -> async_shell.109.15.00
+    jenga 109.15.00 requires = 109.15.00
+- async_unix -> async_unix.109.15.00
+    async 109.15.00 requires = 109.15.00
+- comparelib -> comparelib.109.15.00
+    jenga 109.15.00 requires = 109.15.00
+- core -> (problem)
+    async_core 109.15.00 requires >= 109.15.00 & <= 109.18.00
+    Rejected candidates:
+      core.v0.14.0: Incompatible with restriction: >= 109.15.00 & <= 109.18.00
+      core.v0.13.0: Incompatible with restriction: >= 109.15.00 & <= 109.18.00
+      core.v0.12.4: Incompatible with restriction: >= 109.15.00 & <= 109.18.00
+      core.v0.12.3: Incompatible with restriction: >= 109.15.00 & <= 109.18.00
+      core.v0.12.2: Incompatible with restriction: >= 109.15.00 & <= 109.18.00
+      ...
+- core_extended -> core_extended.109.15.00
+    async_inotify 109.15.00 requires >= 109.15.00 & <= 109.31.00
+    async_shell 109.15.00 requires = 109.15.00
+- custom_printf -> (problem)
+    core_extended 109.15.00 requires = 109.15.00
+    Rejected candidates:
+      custom_printf.113.00.00: Incompatible with restriction: = 109.15.00
+      custom_printf.112.24.00: Incompatible with restriction: = 109.15.00
+      custom_printf.112.17.00: Incompatible with restriction: = 109.15.00
+      custom_printf.112.06.00: Incompatible with restriction: = 109.15.00
+      custom_printf.112.01.00: Incompatible with restriction: = 109.15.00
+      ...
+- fieldslib -> fieldslib.109.15.00
+    jenga 109.15.00 requires = 109.15.00
+- herelib -> (problem)
+    async_unix 109.15.00 requires = 109.15.00
+    Rejected candidates:
+      herelib.112.35.00: Incompatible with restriction: = 109.15.00
+      herelib.109.35.02: Incompatible with restriction: = 109.15.00
+      herelib.109.35.00: Incompatible with restriction: = 109.15.00
+      herelib.109.15.00: Requires ocaml < 4.06.0
+      herelib.109.14.00: Incompatible with restriction: = 109.15.00
+      ...
+- inotify -> (problem)
+    async_inotify 109.15.00 requires < 2.0
+    Rejected candidates:
+      inotify.2.1: Incompatible with restriction: < 2.0
+      inotify.2.0: Incompatible with restriction: < 2.0
+      inotify.1.5: Requires ocaml < 4.06.0
+      inotify.1.4: Requires ocaml < 4.06.0
+- jenga -> jenga.109.15.00
+    User requested = 109.15.00
+- ocaml-base-compiler -> (problem)
+    User requested <= 4.11.1
+    Rejected candidates:
+      ocaml-base-compiler.4.11.1: Requires ocaml = 4.11.1
+      ocaml-base-compiler.4.11.0: Requires ocaml = 4.11.0
+      ocaml-base-compiler.4.10.1: Requires ocaml = 4.10.1
+      ocaml-base-compiler.4.10.0: Requires ocaml = 4.10.0
+      ocaml-base-compiler.4.09.1: Requires ocaml = 4.09.1
+      ...
+- ocaml-variants -> (problem)
+    camlp4 4.02.0-1modular-implicits requires = 4.02.0+modular-implicits | = 4.02.1+modular-implicits-ber
+    Rejected candidates:
+      ocaml-variants.4.13.0+trunk+no-flat-float-array: Incompatible with restriction: = 4.02.0+modular-implicits | = 4.02.1+modular-implicits-ber
+      ocaml-variants.4.13.0+trunk+nnp: Incompatible with restriction: = 4.02.0+modular-implicits | = 4.02.1+modular-implicits-ber
+      ocaml-variants.4.13.0+trunk+fp+flambda: Incompatible with restriction: = 4.02.0+modular-implicits | = 4.02.1+modular-implicits-ber
+      ocaml-variants.4.13.0+trunk+fp: Incompatible with restriction: = 4.02.0+modular-implicits | = 4.02.1+modular-implicits-ber
+      ocaml-variants.4.13.0+trunk+flambda: Incompatible with restriction: = 4.02.0+modular-implicits | = 4.02.1+modular-implicits-ber
+      ...
+- ocaml_plugin -> (problem)
+    jenga 109.15.00 requires = 109.15.00
+    Rejected candidates:
+      ocaml_plugin.v0.14.0: Incompatible with restriction: = 109.15.00
+      ocaml_plugin.v0.13.0: Incompatible with restriction: = 109.15.00
+      ocaml_plugin.v0.12.0: Incompatible with restriction: = 109.15.00
+      ocaml_plugin.v0.11.0: Incompatible with restriction: = 109.15.00
+      ocaml_plugin.v0.10.0: Incompatible with restriction: = 109.15.00
+      ...
+- sexplib -> (problem)
+    async_find 109.15.00 requires >= 109.15.00 & <= 109.55.00
+    jenga 109.15.00 requires = 109.15.00
+    Rejected candidates:
+      sexplib.v0.14.0: Incompatible with restriction: >= 109.15.00 & <= 109.55.00
+      sexplib.v0.13.0: Incompatible with restriction: >= 109.15.00 & <= 109.55.00
+      sexplib.v0.12.0: Incompatible with restriction: >= 109.15.00 & <= 109.55.00
+      sexplib.v0.11.0: Incompatible with restriction: >= 109.15.00 & <= 109.55.00
+      sexplib.v0.10.0: Incompatible with restriction: >= 109.15.00 & <= 109.55.00
+      ...
+- type_conv -> (problem)
+    comparelib 109.15.00 requires >= 109.15.00 & <= 109.20.00
+    fieldslib 109.15.00 requires = 109.15.00
+    Rejected candidates:
+      type_conv.113.00.02: Incompatible with restriction: >= 109.15.00 & <= 109.20.00
+      type_conv.113.00.01: Incompatible with restriction: >= 109.15.00 & <= 109.20.00
+      type_conv.113.00.00: Incompatible with restriction: >= 109.15.00 & <= 109.20.00
+      type_conv.112.01.02: Incompatible with restriction: >= 109.15.00 & <= 109.20.00
+      type_conv.112.01.01: Incompatible with restriction: >= 109.15.00 & <= 109.20.00
+      ...

@@ -22,7 +22,7 @@ let mkdir_p d =
     | Unix.Unix_error (Unix.EEXIST, _, _) -> d
     | exn -> raise exn) (Fpath.v ".") segs in
   ()
-  
+
 let write_file filename lines =
   let dir = fst (Fpath.split_base filename) in
   mkdir_p dir;
@@ -38,5 +38,5 @@ let time txt fn a =
   result
 
 let cp src dst =
-  Format.eprintf "cp: %s -> %s\n%!" src dst;
-  assert (lines_of_process "/bin/cp" [ src; dst ] = [])
+  Format.eprintf "%s -> %s\n%!" src dst;
+  assert (lines_of_process "cp" [ src; dst ] = [])

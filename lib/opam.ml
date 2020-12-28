@@ -15,8 +15,7 @@ let of_string str =
 let rec get_switch () =
   match !switch with
   | None ->
-    let cmd = "opam switch show" in
-    let cur_switch = Util.lines_of_process cmd |> List.hd in
+    let cur_switch = Util.lines_of_process "opam" [ "switch"; "show" ] |> List.hd in
     switch := Some cur_switch;
     get_switch ()
   | Some s ->
@@ -60,17 +59,39 @@ let deps_of_opam_result =
 
 let dependencies package =
   let open Listm in
-  if package.name = "ocaml" then [] else
-  let cmd = Format.asprintf "opam list --switch %s --required-by %a --columns=name,version --color=never --short" (get_switch ()) pp_package package in
-  Util.lines_of_process cmd >>= deps_of_opam_result
+  if package.name = "ocaml" then []
+  else
+    let package' = Format.asprintf "%a" pp_package package in
+    Util.lines_of_process "opam"
+      [
+        "list";
+        "--switch";
+        get_switch ();
+        "--required-by";
+        package';
+        "--columns=name,version";
+        "--color=never";
+        "--short";
+      ]
+    >>= deps_of_opam_result
 
 let all_opam_packages () =
   let open Listm in
-  let cmd = Format.asprintf "opam list --switch %s --columns=name,version --color=never --short" (get_switch ()) in
-  Util.lines_of_process cmd >>= deps_of_opam_result
+  Util.lines_of_process "opam"
+    [
+      "list";
+      "--switch";
+      get_switch ();
+      "--columns=name,version";
+      "--color=never";
+      "--short";
+    ]
+  >>= deps_of_opam_result
 
 let lib () =
-  let cmd = Format.asprintf "opam var --switch %s lib" (get_switch ()) in
-  Util.lines_of_process cmd |> List.hd
+  Util.lines_of_process "opam" [ "var"; "--switch"; get_switch (); "lib" ]
+  |> List.hd
 
-
+let prefix () =
+  Util.lines_of_process "opam" [ "var"; "--switch"; get_switch (); "prefix" ]
+  |> List.hd

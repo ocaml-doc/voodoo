@@ -1,0 +1,3 @@
+(executable
+ (public_name assemble)
+ (libraries cmdliner builder))

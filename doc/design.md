@@ -66,6 +66,105 @@ type package_version = string
 type package = universe_id * package_name * package_version
 ```
 
+
+### Handling packages, sub-packages and libraries
+
+Because odoc handles include paths in the same way that OCaml does, and because we would like references to behave in the same familiar way that normal OCaml paths do, it makes sense to keep the `odoc` files in the identical directory structure to that of the associated `cmt`, `cmti` and `cmi` files. This does _not_ imply that the directory structure of the output `html` files (or man/latex files) must mirror this. The implication of this is that we _cannot_ determine parent/child hierarchy by simple directory structure (in general).
+
+As an example of the various ways complex packages are layed out, we have the following two case studies:
+
+#### Case study: yaml
+
+- Compiled with dune. 
+- Contains multiple packages, including a sub-sub-package:
+
+```
+yaml
+yaml.bindings
+yaml.bindings.types
+yaml.c 
+yaml.ffi 
+yaml.types 
+yaml.unix 
+```
+
+- Each sub-package corresponds with precisely one META file
+- Each sub-package corresponds with precisely one archive
+- Each package has an isolated include directory
+- All subdirs are underneath ~/.opam/$switch/lib/yaml
+
+#### Case study: oasis
+
+- Not compiled with dune
+- Contains multiple packages:
+
+```
+oasis
+oasis.base
+oasis.builtin-plugins
+oasis.cli
+oasis.dynrun
+```
+
+- Two META files - one in ~/.opam/$switch/lib/plugin-loader and the other in ~/.opam/$switch/lib/oasis
+- Each sub-package corresponds with precisely one archive
+- Multiple packages share the same directory
+
+#### Case study: dose3
+
+- Not compiled with dune
+- Contains multiple packages:
+
+```
+dose3
+dose3.algo
+dose3.common
+dose3.csw
+dose3.debian
+dose3.doseparse
+dose3.doseparseNoRpm
+dose3.npm
+dose3.opam
+dose3.pef
+dose3.rpm
+dose3.versioning
+```
+
+- One META file, in ~/.opam/$switch/lib/dose3
+- The dose3 package contains multiple archives - `"common.cma algo.cma versioning.cma pef.cma debian.cma csw.cma opam.cma npm.cma"`
+- Sub-packages also contain the same archives - e.g. dose3.algo specifies `algo.cma`
+
+
+#### Observations
+
+Different sub-packages containing the same libraries is unusual.
+
+Suggested layout:
+
+```
+/packages/$package/$version/TopLevelModules/index.html
+/packages/$package/$version/$subpackge/SubPackageModule/index.html
+```
+
+For example for `yaml`:
+
+```
+/packages/yaml/2.1.0/Yaml/index.html
+/packages/yaml/2.1.0/Yaml/Stream/index.html
+/packages/yaml/2.1.0/yaml.bindings/Yaml_bindings/index.html
+/packages/yaml/2.1.0/yaml.bindings.types/Yaml_bindings_types/index.html
+```
+
+Questions:
+
+- What do we do for something like dose3?
+    - Can we just do nice docs for dune-based projects? probably not, not least due to Daniel's packages
+    - How do we figure out which packages can be documented nicely? (e.g. no overlapping archives)
+
+- What do we do for the OCaml libraries (stdlib, seq, raw_spacetime, str etc -- these don't have opam packages -- mostly the META files come from the `ocamlfind` package)
+
+- What other packages will be painful? We have the 'corpus' compiled already, but missing files like META, dune-packages and so on.
+
 ## Voodoo-submit
 
 Inputs: opam repository, s3 credentials, ocluster submission cap file

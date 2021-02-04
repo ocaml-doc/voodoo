@@ -1,9 +1,20 @@
 # Initial design
 
+Contacts: @julow @jonludlam
+
+
 ## Voodoo
 
 - outline the whole process
 
+Stages of the process:
+
+1. Decide what to build, recording decisions made. Concretely, we record the fact that we intend to build specific sets of opam packages at specific versions with a specific version of OCaml.
+2. Run the build with ocluster (voodoo-submit)
+3. Extract the all the information we need from each build, without making decisions about how it's presented (voodoo-prep)
+4. Assemble the build results and make decisions on presentation (voodoo-assemble)
+5. Perform the build, outputting html (voodoo-odoc)
+6. Goto 1
 
 
 This may be an ocurrent pipeline or a shell script.
@@ -40,7 +51,7 @@ The expansion of this will depend on which version of the standard library it wa
 
 A particular package is therefore specified by the triple of the package name, the package version, and the 'dependency universe hash'. This has is computed in the following way:
 
-1. Find all dependencies (including transitive dependencies) using opam.
+1. Find all dependencies (including transitive dependencies, though not going 'through' the ocaml package) using opam.
 2. Sort and write them to a string, one package per line, in the format `<package name>.<version>`
 3. Compute md5 hash of the string.
 
@@ -71,7 +82,7 @@ type package = universe_id * package_name * package_version
 
 Because odoc handles include paths in the same way that OCaml does, and because we would like references to behave in the same familiar way that normal OCaml paths do, it makes sense to keep the `odoc` files in the identical directory structure to that of the associated `cmt`, `cmti` and `cmi` files. This does _not_ imply that the directory structure of the output `html` files (or man/latex files) must mirror this. The implication of this is that we _cannot_ determine parent/child hierarchy by simple directory structure (in general).
 
-As an example of the various ways complex packages are layed out, we have the following two case studies:
+As an example of the various ways complex packages are layed out, we have the following case studies:
 
 #### Case study: yaml
 
@@ -134,16 +145,37 @@ dose3.versioning
 - The dose3 package contains multiple archives - `"common.cma algo.cma versioning.cma pef.cma debian.cma csw.cma opam.cma npm.cma"`
 - Sub-packages also contain the same archives - e.g. dose3.algo specifies `algo.cma`
 
+#### Case study: stdlib and associated libraries
+
+- Not compiled with dune
+- Contains multiple libraries, the exact list depends on the OCaml version:
+
+```
+bigarray
+bytes
+compiler-libs
+dynlink
+ocamldoc
+raw_spacetime
+stdlib
+str
+threads
+unix
+```
+
+- META files _not_ distributed with the package, they come with `ocamlfind`
+- META files in isolated directories, but many of the packages include dirs overlap
 
 #### Observations
 
-Different sub-packages containing the same libraries is unusual.
+- Different sub-packages containing the same libraries is unusual.
+- It would be useful to be able to tell which subpackage contains which module, by URL/breadcrumbs
 
 Suggested layout:
 
 ```
 /packages/$package/$version/TopLevelModules/index.html
-/packages/$package/$version/$subpackge/SubPackageModule/index.html
+/packages/$package/$version/$subpackage/SubPackageModule/index.html
 ```
 
 For example for `yaml`:
@@ -164,6 +196,42 @@ Questions:
 - What do we do for the OCaml libraries (stdlib, seq, raw_spacetime, str etc -- these don't have opam packages -- mostly the META files come from the `ocamlfind` package)
 
 - What other packages will be painful? We have the 'corpus' compiled already, but missing files like META, dune-packages and so on.
+
+### Package doc
+
+Most packages doesn't have documentation pages but have:
+
+- `doc/$/README.*` (.org or .md)
+- `doc/$/LICENSE.*`
+- `doc/$/CHANGES.*`
+- `lib/$/META`
+  Every packages except the stdlib have it.
+  It's the only way to know sub packages.
+- `lib/$/opam`
+  Added by opam.
+- `lib/$/dune-package`
+  Added by dune, only in projects using dune.
+  Contains the same informations as `META`.
+- `lib/$/**.ml?`
+  Source files, intended to be seen by merlin or why not, "see code" links from documentation. (Odoc should do that someday !)
+
+A few packages have documentation intended to be read by Odoc:
+
+- `doc/$/odoc-pages/index.mld`
+  This is intended to be the entry point of the package's doc.
+  `assemble` should use it has the package page, possibly modifying it to add a common header.
+- `doc/$/odoc-pages/*.mld`
+
+Various other files we can find sometimes:
+
+- `doc/$/*.ml`
+  In dbuezli's libraries, it is meant to be appended at the end of `index.mld` automatically.
+- Some packages have things in `share/$`
+  But these are not intended to be read by users (eg. emacs/vim plugins)
+
+`voodoo-prep` adds some other informations that may be useful:
+
+- List of dependencies to other packages
 
 ## Voodoo-submit
 
@@ -221,6 +289,8 @@ We also collect the non-hidden modules contained in `cmxa/cma` libraries install
 ocamlobjinfo <lib>.cma | grep -E "^Unit name" | grep -v "__"
 ```
 
+the output of which will be put in the field 'libraries' below.
+
 The data we collect per package looks like:
 
 ```ocaml
@@ -243,7 +313,7 @@ type libaries = {
 }
 
 type meta = {
-    libraries : libraries;
+    libraries : libraries list;
     deps : deps;
     blessed : bool;
 }
@@ -273,53 +343,69 @@ there will be exactly one that is 'blessed' and potentially many that are not.
 For each `(universe * package * version)` triple, we construct a directory tree and intermediate `mld` files. If the triple is 'blessed', we create the tree:
 
 ```
-assemble/packages/<package>/<version>/
+packages.mld
+packages/<package>.mld
+packages/<package>/<version>.mld
+packages/<package>/<version>/lib/
+packages/<package>/<version>/doc/
 ```
-
-and corresponding mld files:
-
-```
-assemble/packages.mld
-assemble/packages/<package>.mld
-assemble/packages/<package>/<version>.mld
-```
-
-Note that `version.mld` should contain the contents of `index.mld` if it exists in the package's `doc` dir.
 
 If the triple is not 'blessed', we construct the tree:
 
 ```
-assemble/universes/<universe>/<package>/<version>/
+universes.mld
+universes/<universe>.mld
+universes/<universe>/<package>.mld
+universes/<universe>/<package>/<version>.mld
+universes/<universe>/<package>/<version>/lib/
+universes/<universe>/<package>/<version>/doc/
 ```
 
-and corresponding mld files:
+These `mld` files must contains `{!childpage}` references to every sub pages. The `<version>.mld` file need more attention, see [Version.mld] below.
+
+### Version.mld
+
+The contents of this file will be rendered when someone visits the URL `http://docs.ocaml.org/packages/$package/$version/` and is therefore the landing page for the package as a whole. As such it needs to contain all the important info needed. It should contain:
+
+- Name
+- One-line description from opam
+- Longer description from opam
+- Link to rendered README, CHANGELOG, LICENSE (maybe later)
+- Package Contents
+- Package Dependencies (references)
+
+The package may contain an `index.mld` file. It must be concatenated at the end of `version.mld` with its level-0 headings removed.
+
+The "Package Contents" layout is dependent upon the type of package. Examples follow:
+
+#### Multiple packages
+
+If there is more than one package, we should have sections for each sub-package, including an explicit section for the main package:
 
 ```
-assemble/universes.mld
-assemble/universes/<universe>.mld
-assemble/universes/<universe>/<package>.mld
-assemble/universes/<universe>/<package>/<version>.mld
+{2 Package: yaml}
+
+Top-level module: {!module-Yaml}
+
+{!modules: Yaml.Stream ...}
+
+{2 Sub-package: yaml.bindings}
+
+...
+
 ```
 
-as before `version.mld` should be overriden by `index.mld` if it exists.
+### Unwrapped libraries
 
-The contents of these `mld` files must, at minimum, contain the `{!childpage}` or `{!childmodule}` references. The should also contain much more!
+If the library is not wrapped, we just omit the link to the 'Top-level module':
 
+```
+{2 API}
 
-This step goes through the tree created by voodoo-prep and adds:
-- Listing pages
-  Universes, packages within universes, versions of packages
-- Package pages
-  TODO: When the package contains an "index.mld" page, it should be used instead
-  Entry page for packages (lists modules, TODO: list more informations)
+{!modules: Foo Bar Baz}
+```
 
-Informations that would be nice to display (TODO):
-- User's doc pages
-- README, LICENSE, CHANGES
-- Various stuff from `dune-package` and `opam` files
-- Other files (`example.ml`)
-- Ensures that the user's package page contains the list of child pages/modules.
-  Maybe by concatenating at the beginning of the user's page, a common header shared by default package pages.
+Note these depend upon https://github.com/ocaml/odoc/issues/297 being fixed, also https://github.com/ocaml/odoc/issues/478
 
 ## Odocmkgen
 
@@ -329,6 +415,8 @@ Input: A directory tree in a specific format
 Output: A makefile describing the "compile" and "link" steps
 
 ### The directory tree format
+
+This tool won't try to understand universes and packages, the only API between `assemble` and `odocmkgen` is the way the directory tree.
 
 - Each intermediate directory is a "node"
 - Nodes can have a parent page, the "parent" of everything in that directory. Example:
@@ -351,17 +439,19 @@ Output: A makefile describing the "compile" and "link" steps
   The preference order is `.cmti`, `.cmt` and `.cmi`.
   There cannot be a name conflict between pages and modules because Odoc enforces a `page-` prefix.
 
-- TODO: "thing.dep" files to specify dependencies.
-  The format is `(uni1 dep1 dep2 ...) (unit2 ...) ...`. Won't try to guess missing informations.
-  By default, dependencies are queried with `odoc compile-deps` for every modules.
-
 ### Dependencies
 
-Dependencies are either queried with `odoc compile-deps` or specified in `.dep` files.
+Dependencies are queried with `odoc compile-deps` (they can also be specified, see `--dep` below).
 They are extended to entire node (eg. if `a/a.cmti` depends on `b/b.cmti` and `c/c.cmti`, the entire node `a` depends on the nodes `b` and `c`). Inside a node, exact dependencies are needed.
 The parent page is added to dependencies but not children.
 Direct dependencies are used when compiling but transitive dependencies are used for linking.
 Link-dependencies also include "--child" dependencies, recursively.
+
+It is possible to specify the dependencies of each files by passing the `--dep` option, for example to precompute them in a more efficient way.
+This option takes a file containing a list of paths separated by spaces and newlines. The first path of each line is the file is the target and the rest of the line is its dependencies.
+Every paths should be relative to the root path passed to `odocmkgen`. Missing targets are assumed to have no dependency, no attempt is made to compute missing dependencies.
+The "target" paths must be paths to files, the "dependencies" paths can either be files or directories (in which case, it is a dependency on everything directly in that directory).
+TODO: Use a better format to remove the implicit assumption about whitespaces, for example sexp.
 
 ### The generated Makefile
 
@@ -375,10 +465,18 @@ Compile step:
 
 Link step:
 - "compile-" rules are used to depend on compilation, link rules are independant.
-- `odoc link` is used to generate `.odol` files. The search paths (`-I`) points to the parent, children and transitive dependencies.
+- `odoc link` is used to generate `.odocl` files. The search paths (`-I`) points to the parent, children and transitive dependencies.
 
 The default targets will run both the compile and link steps. Object files will be stored in `odoc` and `odocl` directories (relative to the Makefile location).
 
 It also have a "generate" subcommand working on a tree of `.odocl`that outputs a Makefile describing the rules to build the final HTML (also man, latex).
 
 ## Voodoo-link
+
+## Further thoughts
+
+- Extra click in wrapped libraries
+  Some libraries have one top-level module, which has the whole library as submodules.
+  This module is generated by Dune and is often not very useful in the doc, it's an unordered list of modules.
+  We could inline it into the package page and avoid an unecessary click.
+  Some packages document this module carefully and it sometimes contains types and values (for example base).

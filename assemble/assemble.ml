@@ -1,18 +1,24 @@
 (** Prepare a "prep" tree for odocmkgen:
     - Add listing packages (universes, packages in universes, versions of packages)
     - Add default package page if there is not already one
+      TODO: Not currently detecting user's package pages.
     - TODO: Add some informations to user's package pages ?
       (dependencies to other packages, list of modules and pages)
     *)
 
 open Builder
 
+(** Example: [conv_compose Fpath.of_string Fpath.to_string Arg.dir] *)
+let conv_compose ?docv parse to_string c =
+  let open Cmdliner.Arg in
+  let docv = match docv with Some v -> v | None -> conv_docv c in
+  let parse v = match conv_parser c v with Ok x -> parse x | Error _ as e -> e
+  and print fmt t = conv_printer c fmt (to_string t) in
+  conv ~docv (parse, print)
+
 let ( / ) = Fpath.( / )
 
 let fpf = Printf.fprintf
-
-(* TODO: Take this as CLI argument. *)
-let top_path = Fpath.v "prep"
 
 module Deps : sig
   type t
@@ -226,7 +232,7 @@ let compute_compile_deps paths =
 
 (** Temporary: Will be done by [prep] when collecting object files. Collect deps
     for every object files. *)
-let assemble_dep_file deps dst =
+let assemble_dep_file ~top_path deps dst =
   let print_relpath p =
     (* Make sure the paths are relative to [top_path]. *)
     match Fpath.relativize ~root:top_path p with
@@ -243,15 +249,21 @@ let assemble_dep_file deps dst =
             fpf out "\n" ))
         deps ())
 
-let run () =
+let run top_path =
   let deps = list_dir_rec [] top_path |> compute_compile_deps in
   let universes = read_universes (top_path / "universes") in
   assemble_universes (top_path / "universes") universes;
-  assemble_dep_file deps (top_path / "dep")
+  assemble_dep_file ~top_path deps (top_path / "dep")
 
 open Cmdliner
 
-let cmd = Term.(const run $ const ())
+let a_top_path =
+  let doc = "Root directory." in
+  let fpath_dir = conv_compose Fpath.of_string Fpath.to_string Arg.dir in
+  (* [some string] and not [some dir] because we don't need it to exist yet. *)
+  Arg.(required & pos 0 (some fpath_dir) None & info [] ~doc)
+
+let cmd = Term.(const run $ a_top_path)
 
 let info =
   Term.info "assemble"

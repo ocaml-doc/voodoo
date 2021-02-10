@@ -20,42 +20,10 @@ let ( / ) = Fpath.( / )
 
 let fpf = Printf.fprintf
 
-module Deps : sig
-  type t
-  (** Mutable data-structure storing dependencies. *)
-
-  val create : unit -> t
-
-  val add : t -> target:Fpath.t -> Fpath.t list -> unit
-  (** Paths are internally normalized. [target] must be a path to a file, deps
-      can be paths to files or directories. *)
-
-  val fold : (Fpath.t -> Fpath.t list -> 'a -> 'a) -> t -> 'a -> 'a
-end = struct
-  module Tbl = Hashtbl.Make (struct
-    type t = Fpath.t
-
-    let equal = Fpath.equal
-
-    let hash = Hashtbl.hash
-  end)
-
-  type t = Fpath.t list Tbl.t
-
-  let create () = Tbl.create 50
-
-  let add tbl ~target extra_deps =
-    let target = Fpath.normalize target in
-    let deps = match Tbl.find_opt tbl target with Some d -> d | None -> [] in
-    let extra_deps = List.rev_map Fpath.normalize extra_deps in
-    Tbl.replace tbl target (List.rev_append extra_deps deps)
-
-  let fold = Tbl.fold
-end
-
 let write_file p f =
+  Format.eprintf "Create '%a'\n%!" Fpath.pp p;
+  Util.mkdir_p (Fpath.parent p);
   let out = open_out (Fpath.to_string p) in
-  Format.eprintf "Create '%a'\n" Fpath.pp p;
   Fun.protect ~finally:(fun () -> close_out out) (fun () -> f out)
 
 let index_page_of_dir d =
@@ -78,6 +46,8 @@ let is_hidden s =
 let page_name_of_string n =
   "page-" ^ String.concat "_" (String.split_on_char '-' n)
 
+(** {1 Interpret the directory tree} *)
+
 let module_name_of_string = String.capitalize_ascii
 
 (** This is an approximation. *)
@@ -87,6 +57,7 @@ let module_name_of_path f =
   else None
 
 type subpkg = { s_relpath : Fpath.t; s_modules : string list }
+(** The path to modules is [universes/u_name/p_name/v_name/s_relpath/module]. *)
 
 type version = { v_name : string; v_subpkgs : subpkg list }
 
@@ -122,12 +93,14 @@ let read_universes p =
   Util.list_dir p |> List.filter is_dir
   |> List.map (fun (u_name, p') -> { u_name; u_packages = read_packages p' })
 
+(** {1 Generating of pages} *)
+
 let pp_childpages out =
   List.iter (fun p -> fpf out "- {!childpage:%s}\n" (page_name_of_string p))
 
 let pp_childmodules out = List.iter (fpf out "- {!childmodule:%s}\n")
 
-let gen_universes_list universes out =
+let gen_universe_list universes out =
   fpf out
     "{0 Universes}\n\
      These universes are for those packages that are compiled against an \
@@ -144,7 +117,7 @@ let gen_universe_page universe out =
   pp_childpages out (List.map (fun p -> p.p_name) universe.u_packages);
   ()
 
-let gen_versions_list pkg out =
+let gen_version_list pkg out =
   fpf out "{0 Package '%s'}\n{1 Versions}\n" pkg.p_name;
   pp_childpages out (List.map (fun v -> v.v_name) pkg.p_versions);
   ()
@@ -161,23 +134,115 @@ let gen_package_page pkg_name ver out =
   List.iter gen_subpkg ver.v_subpkgs;
   ()
 
-let assemble_package p pkg_name ver =
-  let p = p / ver.v_name in
-  write_file (index_page_of_dir p) (gen_package_page pkg_name ver)
+let gen_blessed_package_list pkgs out =
+  fpf out "{0 Packages}\n";
+  pp_childpages out (List.map (fun p -> p.p_name) pkgs)
 
-let assemble_package_versions p pkg =
-  let p = p / pkg.p_name in
-  write_file (index_page_of_dir p) (gen_versions_list pkg);
-  List.iter (assemble_package p pkg.p_name) pkg.p_versions
+let gen_blessed_version_list = gen_version_list
 
-let assemble_universe p universe =
-  let p = p / universe.u_name in
-  write_file (index_page_of_dir p) (gen_universe_page universe);
-  List.iter (assemble_package_versions p) universe.u_packages
+(** {1 Assembling} *)
 
-let assemble_universes p universes =
-  write_file (index_page_of_dir p) (gen_universes_list universes);
-  List.iter (assemble_universe p) universes
+let fold_packages f acc universes =
+  List.fold_left
+    (fun acc u ->
+      List.fold_left
+        (fun acc p ->
+          List.fold_left (fun acc v -> f acc u p v) acc p.p_versions)
+        acc u.u_packages)
+    acc universes
+
+module Blessed_packages : sig
+  type t
+
+  val is_blessed : t -> universe -> package -> version -> bool
+
+  val compute : universe list -> t
+end = struct
+  module S = Set.Make (struct
+    type t = string * string * string [@@deriving ord]
+    (** universe * name * version *)
+  end)
+
+  type t = S.t
+
+  let is_blessed t uni pkg ver = S.mem (uni.u_name, pkg.p_name, ver.v_name) t
+
+  let compute universes =
+    let acc acc u p v = S.add (u.u_name, p.p_name, v.v_name) acc in
+    fold_packages acc S.empty universes
+end
+
+let universes_root ~root = root / "universes"
+
+let blessed_root ~root = root / "packages"
+
+let package_root ~root u p v =
+  universes_root ~root / u.u_name / p.p_name / v.v_name
+
+let blessed_versions_list_root ~root p = blessed_root ~root / p.p_name
+
+let blessed_package_root ~root p v = blessed_root ~root / p.p_name / v.v_name
+
+let universe_page ~root u = index_page_of_dir (universes_root ~root / u.u_name)
+
+let versions_list_page ~root u p =
+  index_page_of_dir (universes_root ~root / u.u_name / p.p_name)
+
+(** Generate listing pages for universes, packages in universes and versions of
+    packages. *)
+let assemble_listing_pages ~root universes =
+  write_file
+    (index_page_of_dir (universes_root ~root))
+    (gen_universe_list universes);
+  universes
+  |> List.iter (fun uni ->
+         write_file (universe_page ~root uni) (gen_universe_page uni);
+         uni.u_packages
+         |> List.iter (fun pkg ->
+                write_file
+                  (versions_list_page ~root uni pkg)
+                  (gen_version_list pkg)))
+
+(** Generate listing pages for blessed packages. *)
+let assemble_blessed_listing_pages ~blessed_packages ~root universes =
+  let blessed_pkgs =
+    let cmp_pkg a b = String.compare a.p_name b.p_name in
+    fold_packages
+      (fun acc uni pkg ver ->
+        if Blessed_packages.is_blessed blessed_packages uni pkg ver then
+          pkg :: acc
+        else acc)
+      [] universes
+    |> List.sort_uniq cmp_pkg
+    (* |> Util.group_by ~cmp:cmp_pkg (fun (_, pkg, _) -> pkg) *)
+  in
+  write_file
+    (index_page_of_dir (blessed_root ~root))
+    (gen_blessed_package_list blessed_pkgs);
+  blessed_pkgs
+  |> List.iter (fun pkg ->
+         write_file
+           (index_page_of_dir (blessed_versions_list_root ~root pkg))
+           (gen_blessed_version_list pkg))
+
+(** Generate package pages. Handle blessed packages. Mutate the tree. *)
+let assemble_package_pages ~blessed_packages ~deps ~root universes =
+  let assemble_package_page uni pkg ver =
+    if Blessed_packages.is_blessed blessed_packages uni pkg ver then (
+      (* Blessed package. *)
+      let dst = blessed_package_root ~root pkg ver in
+      (* Move the package tree to [dst]. *)
+      let src = package_root ~root uni pkg ver in
+      Util.mv src ~dst;
+      Deps.rename deps src ~dst;
+      let pkg_page = index_page_of_dir dst in
+      write_file pkg_page (gen_package_page pkg.p_name ver) )
+    else
+      write_file
+        (index_page_of_dir (package_root ~root uni pkg ver))
+        (gen_package_page pkg.p_name ver)
+  in
+  fold_packages (fun () -> assemble_package_page) () universes
 
 let query_comple_deps p =
   let process_line line =
@@ -225,17 +290,16 @@ let compute_compile_deps paths =
   List.iter2
     (fun target -> function
       | Some (_, deps) ->
-          Deps.add deps_tbl ~target (List.filter_map find_dep deps)
-      | None -> ())
+          Deps.add deps_tbl target (List.filter_map find_dep deps) | None -> ())
     paths deps_and_digests;
   deps_tbl
 
 (** Temporary: Will be done by [prep] when collecting object files. Collect deps
     for every object files. *)
-let assemble_dep_file ~top_path deps dst =
+let assemble_dep_file ~root deps dst =
   let print_relpath p =
-    (* Make sure the paths are relative to [top_path]. *)
-    match Fpath.relativize ~root:top_path p with
+    (* Make sure the paths are relative to [root]. *)
+    match Fpath.relativize ~root p with
     | Some r -> Fpath.to_string r
     | None -> assert false
   in
@@ -249,11 +313,14 @@ let assemble_dep_file ~top_path deps dst =
             fpf out "\n" ))
         deps ())
 
-let run top_path =
-  let deps = list_dir_rec [] top_path |> compute_compile_deps in
-  let universes = read_universes (top_path / "universes") in
-  assemble_universes (top_path / "universes") universes;
-  assemble_dep_file ~top_path deps (top_path / "dep")
+let run root =
+  let deps = list_dir_rec [] root |> compute_compile_deps in
+  let universes = read_universes (root / "universes") in
+  let blessed_packages = Blessed_packages.compute universes in
+  assemble_listing_pages ~root universes;
+  assemble_blessed_listing_pages ~blessed_packages ~root universes;
+  assemble_package_pages ~blessed_packages ~deps ~root universes;
+  assemble_dep_file ~root deps (root / "dep")
 
 open Cmdliner
 

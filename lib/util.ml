@@ -47,3 +47,17 @@ let list_dir p =
   | names ->
       Array.sort String.compare names;
       Array.map (fun n -> (n, Fpath.( / ) p n)) names |> Array.to_list
+
+let mv src ~dst =
+  let src = Fpath.to_string src and dst = Fpath.to_string dst in
+  Sys.rename src dst
+
+let group_by (type a) ~(cmp : a -> a -> int) (key : 'b -> a) lst =
+  let module M = Map.Make (struct
+    type t = a
+
+    let compare = cmp
+  end) in
+  let to_lst = function Some v -> v | None -> [] in
+  let multi_add acc b = M.update (key b) (fun v -> Some (b :: to_lst v)) acc in
+  List.fold_left multi_add M.empty lst |> M.bindings

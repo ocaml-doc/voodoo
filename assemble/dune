@@ -1,3 +1,5 @@
 (executable
  (public_name assemble)
- (libraries cmdliner builder))
+ (libraries cmdliner builder fpath)
+ (preprocess
+  (pps ppx_deriving.ord)))

@@ -7,30 +7,11 @@
     *)
 
 open Builder
-
-(** Example: [conv_compose Fpath.of_string Fpath.to_string Arg.dir] *)
-let conv_compose ?docv parse to_string c =
-  let open Cmdliner.Arg in
-  let docv = match docv with Some v -> v | None -> conv_docv c in
-  let parse v = match conv_parser c v with Ok x -> parse x | Error _ as e -> e
-  and print fmt t = conv_printer c fmt (to_string t) in
-  conv ~docv (parse, print)
-
-let ( / ) = Fpath.( / )
-
-let fpf = Printf.fprintf
-
-let write_file p f =
-  Format.eprintf "Create '%a'\n%!" Fpath.pp p;
-  Util.mkdir_p (Fpath.parent p);
-  let out = open_out (Fpath.to_string p) in
-  Fun.protect ~finally:(fun () -> close_out out) (fun () -> f out)
+open Util
 
 let index_page_of_dir d =
   let parent, base = Fpath.split_base d in
   Fpath.( // ) parent (Fpath.set_ext ".mld" base)
-
-let is_dir (_, p) = Sys.is_directory (Fpath.to_string p)
 
 let is_hidden s =
   let len = String.length s in
@@ -40,11 +21,6 @@ let is_hidden s =
     else aux (i + 1)
   in
   aux 0
-
-(** Replace '-' by '_' and add the "page-" prefix. That's what [odocmkgen] is
-    doing. *)
-let page_name_of_string n =
-  "page-" ^ String.concat "_" (String.split_on_char '-' n)
 
 (** {1 Interpret the directory tree} *)
 
@@ -94,6 +70,11 @@ let read_universes p =
   |> List.map (fun (u_name, p') -> { u_name; u_packages = read_packages p' })
 
 (** {1 Generating of pages} *)
+
+(** Replace '-' by '_' and add the "page-" prefix. That's what [odocmkgen] is
+    doing. *)
+let page_name_of_string n =
+  "page-" ^ String.concat "_" (String.split_on_char '-' n)
 
 let pp_childpages out =
   List.iter (fun p -> fpf out "- {!childpage:%s}\n" (page_name_of_string p))
@@ -244,56 +225,6 @@ let assemble_package_pages ~blessed_packages ~deps ~root universes =
   in
   fold_packages (fun () -> assemble_package_page) () universes
 
-let query_comple_deps p =
-  let process_line line =
-    match Astring.String.cuts ~sep:" " line with
-    | [ c_name; c_digest ] -> Some (c_name, c_digest)
-    | _ -> None
-  in
-  Util.lines_of_process "odoc" [ "compile-deps"; Fpath.to_string p ]
-  |> List.filter_map process_line
-
-let rec list_dir_rec acc p =
-  Util.list_dir p
-  |> List.fold_left
-       (fun acc ((_, f) as f') ->
-         if is_dir f' then list_dir_rec acc f else f :: acc)
-       acc
-
-module DigestMap = Map.Make (Digest)
-
-let compute_compile_deps paths =
-  let deps_and_digest f =
-    (* Query [odoc compile-deps]. *)
-    if not (Fpath.mem_ext [ ".cmti"; ".cmt"; ".cmi" ] f) then None
-    else
-      let unit_name =
-        String.capitalize_ascii Fpath.(to_string (rem_ext (base f)))
-      in
-      match
-        List.partition (fun (name, _) -> name = unit_name) (query_comple_deps f)
-      with
-      | [ self ], deps -> Some (snd self, List.map snd deps)
-      | _ ->
-          Format.eprintf "Failed to find digest for self (%a)\n%!" Fpath.pp f;
-          None
-  in
-  let deps_and_digests = List.rev_map deps_and_digest paths in
-  let inputs_by_digest =
-    List.fold_left2
-      (fun acc f -> function Some (digest, _) -> DigestMap.add digest f acc
-        | None -> acc)
-      DigestMap.empty paths deps_and_digests
-  in
-  let find_dep dep = DigestMap.find_opt dep inputs_by_digest in
-  let deps_tbl = Deps.create () in
-  List.iter2
-    (fun target -> function
-      | Some (_, deps) ->
-          Deps.add deps_tbl target (List.filter_map find_dep deps) | None -> ())
-    paths deps_and_digests;
-  deps_tbl
-
 (** Temporary: Will be done by [prep] when collecting object files. Collect deps
     for every object files. *)
 let assemble_dep_file ~root deps dst =
@@ -314,7 +245,7 @@ let assemble_dep_file ~root deps dst =
         deps ())
 
 let run root =
-  let deps = list_dir_rec [] root |> compute_compile_deps in
+  let deps = Compile_deps.of_dir_rec root in
   let universes = read_universes (root / "universes") in
   let blessed_packages = Blessed_packages.compute universes in
   assemble_listing_pages ~root universes;
@@ -323,6 +254,14 @@ let run root =
   assemble_dep_file ~root deps (root / "dep")
 
 open Cmdliner
+
+(** Example: [conv_compose Fpath.of_string Fpath.to_string Arg.dir] *)
+let conv_compose ?docv parse to_string c =
+  let open Arg in
+  let docv = match docv with Some v -> v | None -> conv_docv c in
+  let parse v = match conv_parser c v with Ok x -> parse x | Error _ as e -> e
+  and print fmt t = conv_printer c fmt (to_string t) in
+  conv ~docv (parse, print)
 
 let a_top_path =
   let doc = "Root directory." in

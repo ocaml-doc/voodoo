@@ -1,12 +1,17 @@
 (* util.ml *)
 
+let ( / ) = Fpath.( / )
+
+let fpf = Printf.fprintf
+
 let lines_of_channel ic =
   let rec inner acc =
     try
       let l = input_line ic in
-      inner (l::acc)
+      inner (l :: acc)
     with End_of_file -> List.rev acc
-  in inner []
+  in
+  inner []
 
 let lines_of_process prog args =
   let ic = Unix.open_process_in (Filename.quote_command prog args) in
@@ -14,21 +19,17 @@ let lines_of_process prog args =
     ~finally:(fun () -> ignore (Unix.close_process_in ic))
     (fun () -> lines_of_channel ic)
 
-let mkdir_p d =
-  let segs = Fpath.segs (Fpath.normalize d) |> List.filter (fun s -> String.length s > 0) in
-  let _ = List.fold_left (fun path seg ->
-  let d = Fpath.(path // v seg) in
-    try Unix.mkdir (Fpath.to_string d) 0o755; d with
-    | Unix.Unix_error (Unix.EEXIST, _, _) -> d
-    | exn -> raise exn) (Fpath.v ".") segs in
-  ()
+let rec mkdir_p d =
+  let d_str = Fpath.to_string d in
+  if not (Sys.file_exists d_str) then (
+    mkdir_p (Fpath.parent d);
+    Unix.mkdir d_str 0o755 )
 
-let write_file filename lines =
-  let dir = fst (Fpath.split_base filename) in
-  mkdir_p dir;
-  let oc = open_out (Fpath.to_string filename) in
-  List.iter (fun line -> Printf.fprintf oc "%s\n" line) lines;
-  close_out oc
+let write_file p f =
+  Format.eprintf "Create '%a'\n%!" Fpath.pp p;
+  mkdir_p (Fpath.parent p);
+  let out = open_out (Fpath.to_string p) in
+  Fun.protect ~finally:(fun () -> close_out out) (fun () -> f out)
 
 let time txt fn a =
   let start_time = Unix.gettimeofday () in
@@ -37,10 +38,9 @@ let time txt fn a =
   Format.eprintf "%s: %f\n%!" txt (end_time -. start_time);
   result
 
-let cp src dst =
-  Format.eprintf "%s -> %s\n%!" src dst;
-  assert (lines_of_process "cp" [ src; dst ] = [])
+let is_dir (_, p) = Sys.is_directory (Fpath.to_string p)
 
+(** Returns both the basename and the path of each files. *)
 let list_dir p =
   match Sys.readdir (Fpath.to_string p) with
   | exception Sys_error _ -> []
@@ -48,7 +48,19 @@ let list_dir p =
       Array.sort String.compare names;
       Array.map (fun n -> (n, Fpath.( / ) p n)) names |> Array.to_list
 
+let rec list_dir_rec acc p =
+  list_dir p
+  |> List.fold_left
+       (fun acc ((_, f) as f') ->
+         if is_dir f' then list_dir_rec acc f else f :: acc)
+       acc
+
+let list_dir_rec p = list_dir_rec [] p
+
+(** Parent directories of [dst] created automatically if needed. *)
 let mv src ~dst =
+  Format.eprintf "Move '%a' to '%a'\n%!" Fpath.pp src Fpath.pp dst;
+  mkdir_p (Fpath.parent dst);
   let src = Fpath.to_string src and dst = Fpath.to_string dst in
   Sys.rename src dst
 

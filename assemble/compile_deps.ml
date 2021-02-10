@@ -26,7 +26,7 @@ let compute paths =
           Format.eprintf "Failed to find digest for self (%a)\n%!" Fpath.pp f;
           None
   in
-  let deps_and_digests = List.rev_map deps_and_digest paths in
+  let deps_and_digests = List.map deps_and_digest paths in
   let inputs_by_digest =
     List.fold_left2
       (fun acc f -> function Some (digest, _) -> DigestMap.add digest f acc

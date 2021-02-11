@@ -216,8 +216,11 @@ let assemble_package_pages ~blessed_packages ~deps ~root universes =
       let src = package_root ~root uni pkg ver in
       Util.mv src ~dst;
       Deps.rename deps src ~dst;
-      let pkg_page = index_page_of_dir dst in
-      write_file pkg_page (gen_package_page pkg.p_name ver) )
+      write_file (index_page_of_dir dst) (gen_package_page pkg.p_name ver);
+      (* Update deps so the universe package page can still reference this. *)
+      Deps.add deps
+        (versions_list_page ~root uni pkg)
+        [ blessed_versions_list_root ~root pkg ] )
     else
       write_file
         (index_page_of_dir (package_root ~root uni pkg ver))

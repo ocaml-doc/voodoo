@@ -117,7 +117,10 @@ let gen_package_page pkg_name ver out =
 
 let gen_blessed_package_list pkgs out =
   fpf out "{0 Packages}\n";
-  pp_childpages out (List.map (fun p -> p.p_name) pkgs)
+  group_by ~cmp:Char.compare (fun p -> Char.uppercase_ascii p.p_name.[0]) pkgs
+  |> List.iter (fun (c, pkg_group) ->
+         fpf out "{1 %c}" c;
+         pp_childpages out (List.map (fun p -> p.p_name) pkg_group))
 
 let gen_blessed_version_list = gen_version_list
 

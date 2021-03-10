@@ -1,4 +1,16 @@
 (* util.ml *)
+open Bos
+
+
+(* Not present on 4.02.3 *)
+let protect ~finally f =
+  try
+    let result = f () in
+    finally ();
+    result
+  with e ->
+    finally ();
+    raise e
 
 let lines_of_channel ic =
   let rec inner acc =
@@ -8,11 +20,10 @@ let lines_of_channel ic =
     with End_of_file -> List.rev acc
   in inner []
 
-let lines_of_process prog args =
-  let ic = Unix.open_process_in (Filename.quote_command prog args) in
-  Fun.protect
-    ~finally:(fun () -> ignore (Unix.close_process_in ic))
-    (fun () -> lines_of_channel ic)
+let lines_of_process cmd =
+  match OS.Cmd.(run_out ~err:err_null cmd |> to_lines) with
+  | Ok x -> x
+  | Error (`Msg e) -> failwith ("Error: " ^ e)
 
 let mkdir_p d =
   let segs = Fpath.segs (Fpath.normalize d) |> List.filter (fun s -> String.length s > 0) in
@@ -39,4 +50,4 @@ let time txt fn a =
 
 let cp src dst =
   Format.eprintf "%s -> %s\n%!" src dst;
-  assert (lines_of_process "cp" [ src; dst ] = [])
+  assert (lines_of_process Cmd.(v "cp" % src % dst) = [])

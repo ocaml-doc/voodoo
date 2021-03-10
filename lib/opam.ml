@@ -1,4 +1,7 @@
 (* opam *)
+open Bos
+
+let opam = Cmd.v "opam"
 
 let switch = ref None
 
@@ -15,7 +18,7 @@ let of_string str =
 let rec get_switch () =
   match !switch with
   | None ->
-    let cur_switch = Util.lines_of_process "opam" [ "switch"; "show" ] |> List.hd in
+    let cur_switch = Util.lines_of_process Cmd.(opam % "switch" % "show") |> List.hd in
     switch := Some cur_switch;
     get_switch ()
   | Some s ->
@@ -62,36 +65,27 @@ let dependencies package =
   if package.name = "ocaml" then []
   else
     let package' = Format.asprintf "%a" pp_package package in
-    Util.lines_of_process "opam"
-      [
-        "list";
-        "--switch";
-        get_switch ();
-        "--required-by";
-        package';
-        "--columns=name,version";
-        "--color=never";
-        "--short";
-      ]
+    Util.lines_of_process Cmd.(opam % "list" % "--switch" % get_switch () % "--required-by" % package' % "--columns=name,version" % "--color=never" % "--short")
     >>= deps_of_opam_result
 
 let all_opam_packages () =
   let open Listm in
-  Util.lines_of_process "opam"
-    [
-      "list";
-      "--switch";
-      get_switch ();
-      "--columns=name,version";
-      "--color=never";
-      "--short";
-    ]
+  Util.lines_of_process Cmd.(opam % "list" % "--switch" % get_switch () % "--columns=name,version" % "--color=never" % "--short")
   >>= deps_of_opam_result
 
 let lib () =
-  Util.lines_of_process "opam" [ "var"; "--switch"; get_switch (); "lib" ]
+  Util.lines_of_process Cmd.(opam % "var" % "--switch" % get_switch () % "lib")
   |> List.hd
 
 let prefix () =
-  Util.lines_of_process "opam" [ "var"; "--switch"; get_switch (); "prefix" ]
+  Util.lines_of_process Cmd.(opam % "var" % "--switch" % get_switch () % "prefix" )
   |> List.hd
+
+let pkg_contents pkg =
+  let prefix = prefix () in
+  let changes_file = Format.asprintf "%s/.opam-switch/install/%s.changes" prefix pkg in
+  let ic = open_in changes_file in
+  let changed = OpamFile.Changes.read_from_channel ic in
+  close_in ic;
+  let added = OpamStd.String.Map.fold (fun file x acc -> match x with OpamDirTrack.Added _ -> file :: acc | _ -> acc) changed [] in
+  List.map (fun path -> Fpath.(v prefix // v path)) added

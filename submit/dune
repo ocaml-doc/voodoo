@@ -1,0 +1,13 @@
+(executable
+ (name submit)
+ (public_name voodoo-submit)
+ (package voodoo)
+ (enabled_if (>= %{ocaml_version} 4.03))
+ (libraries
+  astring
+  cmdliner
+  builder
+  lwt
+  obuilder-spec
+  ocluster-api
+  capnp-rpc-unix))

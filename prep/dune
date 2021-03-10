@@ -1,4 +1,6 @@
 (executable
- (public_name analyse)
- (libraries astring cmdliner builder lwt obuilder-spec ocluster-api
-   capnp-rpc-unix github-unix))
+ (name prep)
+ (public_name voodoo-prep)
+ (package voodoo_prep)
+ (libraries voodoo_lib cmdliner))
+

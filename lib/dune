@@ -1,4 +1,4 @@
 (library
- (name builder)
- (public_name odoc-builder.builder)
- (libraries astring sexplib fpath))
+ (name voodoo_lib)
+ (public_name voodoo_lib)
+ (libraries astring sexplib fpath bos opam-format))

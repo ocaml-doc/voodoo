@@ -137,10 +137,10 @@ module Current = struct
         let dir = Fpath.(top / "universes" // v u.id) in
         Util.mkdir_p dir;
         save Fpath.(dir // v "packages.usexp") u;
-        let v_str = Astring.String.cuts ~sep:"." package.Opam.version in
-        let v_str = String.concat "_" v_str in
         let dir =
-          Fpath.(top / "universes" // v u.id // v package.name // v v_str)
+          Fpath.(
+            top / "universes" // v u.id // v package.Opam.name
+            // v package.version)
         in
         Util.mkdir_p dir;
         Opam.save Fpath.(dir // v "package.psexp") package)
@@ -156,6 +156,14 @@ module All = struct
   let us = StringHashtbl.create 111
 
   let blessed = H.create 111
+
+  let add pkg universe =
+    match H.find v pkg with
+    | exception Not_found -> H.replace v pkg [ universe ]
+    | ls ->
+        if List.exists (fun u -> S.equal universe.packages u.packages) ls then
+          ()
+        else H.replace v pkg (universe :: ls)
 
   let init () =
     let inputs = Inputs.find_files [ "usexp" ] Fpath.(v "prep" / "universes") in

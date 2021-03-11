@@ -17,22 +17,6 @@ let pp_link_dep fmt l =
   Format.fprintf fmt "{ %s %s %s %s}" l.l_package l.l_name l.l_version
     (match l.l_universe with Some u -> Printf.sprintf "(%s)" u | None -> "")
 
-let lines_of_process p =
-  let ic = Unix.open_process_in p in
-  let lines =
-    Util.protect
-      ~finally:(fun () -> ignore (Unix.close_process_in ic))
-      (fun () ->
-        let rec inner acc =
-          try
-            let l = input_line ic in
-            inner (l :: acc)
-          with End_of_file -> List.rev acc
-        in
-        inner [])
-  in
-  lines
-
 let compile_deps version file =
   let deps_file = Fpath.add_ext "deps" file in
   let process_line line =
@@ -49,10 +33,13 @@ let compile_deps version file =
       lines)
     else
       let home = Sys.getenv "HOME" in
+      (* opam exec is very slow! *)
+      let odoc =
+        Bos.Cmd.v (Format.asprintf "%s/.opam/%s/bin/odoc" home version)
+      in
       let lines =
-        lines_of_process
-          (Format.asprintf "%s/.opam/%s/bin/odoc compile-deps %a" home version
-             Fpath.pp file)
+        Util.lines_of_process
+          Bos.Cmd.(odoc % "compile-deps" % Fpath.to_string file)
       in
       let tmp_file = Fpath.to_string (Fpath.add_ext "tmp" deps_file) in
       let oc = open_out tmp_file in
@@ -94,7 +81,8 @@ let link_deps dir =
       lines)
     else
       let lines =
-        lines_of_process (Format.asprintf "odoc link-deps %a" Fpath.pp dir)
+        Util.lines_of_process
+          Bos.Cmd.(v "odoc" % "link-deps" % Fpath.to_string dir)
       in
       let tmp_file = Fpath.to_string (Fpath.add_ext "tmp" deps_file) in
       let oc = open_out tmp_file in
@@ -106,14 +94,12 @@ let link_deps dir =
   lines >>= process_line
 
 let generate_targets odocl ty =
+  let targets lang =
+    Bos.Cmd.(
+      v "odoc" % (lang ^ "-targets") % Fpath.to_string odocl % "--output-dir"
+      % lang)
+  in
   match ty with
-  | `Html ->
-      lines_of_process
-        (Format.asprintf "odoc html-targets %a --output-dir html" Fpath.pp odocl)
-  | `Latex ->
-      lines_of_process
-        (Format.asprintf "odoc latex-targets %a --output-dir latex" Fpath.pp
-           odocl)
-  | `Man ->
-      lines_of_process
-        (Format.asprintf "odoc man-targets %a --output-dir man" Fpath.pp odocl)
+  | `Html -> Util.lines_of_process (targets "html")
+  | `Latex -> Util.lines_of_process (targets "latex")
+  | `Man -> Util.lines_of_process (targets "man")

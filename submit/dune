@@ -6,8 +6,8 @@
  (libraries
   astring
   cmdliner
-  builder
   lwt
   obuilder-spec
   ocluster-api
-  capnp-rpc-unix))
+  capnp-rpc-unix
+  voodoo_lib))

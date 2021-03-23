@@ -339,6 +339,10 @@ let run pkg_name is_blessed =
       ignore(Odoc.link (SourceInfo.output_file si) ~includes:all_includes);
       ignore(Odoc.html (SourceInfo.output_odocl si) Fpath.(v "html"))
       end) this_index;
-    
+    let () = Bos.OS.File.delete (Fpath.v "compile/page-packages.odoc") |> Result.get_ok in
+    let () = Bos.OS.File.delete (Fpath.v "compile/page-universes.odoc") |> Result.get_ok in
+    let () = Bos.OS.File.delete (Fpath.v ("compile/packages/page-" ^ pkg_name ^ ".odoc")) |> Result.get_ok in
+    ()
+  
     
 

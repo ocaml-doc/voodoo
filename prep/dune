@@ -1,6 +1,0 @@
-(executable
- (name prep)
- (public_name voodoo-prep)
- (package voodoo_prep)
- (libraries voodoo_lib cmdliner))
-

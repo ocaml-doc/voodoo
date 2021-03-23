@@ -8,18 +8,8 @@
 (license ISC)
 (source (github jonludlam/voodoo))
 
-
 (package
- (name voodoo)
- (synopsis "Tools to build docs.ocaml.org")
- (description "Description")
- (depends
-  voodoo_lib
-  astring
-  cmdliner))
-
-(package
- (name voodoo_lib)
+ (name voodoo-lib)
  (synopsis "Voodoo library")
  (description "Voodoo library")
  (depends
@@ -31,11 +21,20 @@
    ppx_sexp_conv))
 
 (package
- (name voodoo_prep)
+ (name voodoo-prep)
  (synopsis "Voodoo prep")
  (description "Voodoo prep")
  (depends
-   voodoo_lib
+   voodoo-lib
+   cmdliner))
+
+(package
+ (name voodoo-do)
+ (synopsis "Voodoo compilation step")
+ (description "Voodoo compilation step")
+ (depends
+   voodoo-lib
+   astring
    cmdliner))
 
   

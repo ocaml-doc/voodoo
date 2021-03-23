@@ -1,7 +1,9 @@
 (* Odoc *)
+open Sexplib.Std
 open Listm
 
-type compile_dep = { c_unit_name : string; c_digest : Digest.t }
+type compile_dep = { c_unit_name : string; c_digest : string } [@@deriving sexp]
+
 (** The name and optional digest of a dependency. Modules compiled with --no-alias-deps don't have
     digests for purely aliased modules *)
 
@@ -17,7 +19,7 @@ let pp_link_dep fmt l =
   Format.fprintf fmt "{ %s %s %s %s}" l.l_package l.l_name l.l_version
     (match l.l_universe with Some u -> Printf.sprintf "(%s)" u | None -> "")
 
-let compile_deps version file =
+let compile_deps file =
   let deps_file = Fpath.add_ext "deps" file in
   let process_line line =
     match Astring.String.cuts ~sep:" " line with
@@ -32,11 +34,7 @@ let compile_deps version file =
       close_in ic;
       lines)
     else
-      let home = Sys.getenv "HOME" in
-      (* opam exec is very slow! *)
-      let odoc =
-        Bos.Cmd.v (Format.asprintf "%s/.opam/%s/bin/odoc" home version)
-      in
+      let odoc = Bos.Cmd.v "odoc" in
       let lines =
         Util.lines_of_process
           Bos.Cmd.(odoc % "compile-deps" % Fpath.to_string file)
@@ -48,7 +46,17 @@ let compile_deps version file =
       Unix.rename tmp_file (Fpath.to_string deps_file);
       lines
   in
-  lines >>= process_line
+  let deps = lines >>= process_line in
+  let _, lname = Fpath.(split_base (rem_ext file)) in
+  let name = Astring.String.Ascii.capitalize (Fpath.to_string lname) in
+  match List.partition (fun d -> d.c_unit_name = name) deps with
+  | self :: _, deps ->
+      let digest = self.c_digest in
+      Some (name, digest, deps)
+  | _ ->
+    Format.eprintf "Failed to find digest for self (%s)\n%!" name;
+    None
+
 
 let link_deps dir =
   let deps_file = Fpath.(dir / "deps") in
@@ -103,3 +111,42 @@ let generate_targets odocl ty =
   | `Html -> Util.lines_of_process (targets "html")
   | `Latex -> Util.lines_of_process (targets "latex")
   | `Man -> Util.lines_of_process (targets "man")
+
+
+type child =
+  | CModule of string (* module name, e.g. 'String' *)
+  | CPage of string (* page name, e.g. 'packages' *)
+[@@deriving sexp]
+
+let compile ?parent ?output path ~includes ~children =
+  let cmd = Bos.Cmd.(v "odoc" % "compile" % Fpath.to_string path) in
+  let cmd =
+    match output with
+    | Some fpath -> Bos.Cmd.(cmd % "-o" % Fpath.to_string fpath)
+    | None -> cmd
+  in
+  let cmd =
+    match parent with
+    | Some str -> Bos.Cmd.(cmd % "--parent" % (Printf.sprintf "\"%s\"" str))
+    | None -> cmd
+  in
+  let cmd =
+    Fpath.Set.fold (fun i c -> Bos.Cmd.(c % "-I" % Fpath.to_string i)) includes cmd
+  in
+  let cmd =
+    List.fold_left (fun cmd c ->
+      let arg =
+        match c with
+        | CModule m -> "module-" ^ m
+        | CPage p -> "page-\"" ^ p ^ "\""
+      in
+      Bos.Cmd.(cmd % "--child" % arg)) cmd children
+  in
+  Util.lines_of_process cmd
+
+let link path ~includes =
+  let cmd = Bos.Cmd.(v "odoc" % "link" % Fpath.to_string path) in
+  let cmd =
+    Fpath.Set.fold (fun i c -> Bos.Cmd.(c % "-I" % Fpath.to_string i)) includes cmd
+  in
+  Util.lines_of_process cmd

@@ -79,9 +79,9 @@ endif
 end
 
 module Compile = struct
-  let compile whitelist lib_dir switch =
+  let compile _whitelist _lib_dir switch =
     Opam.switch := switch;
-    Compile.run whitelist lib_dir
+    (* Compile.run whitelist lib_dir*) ()
 
   let whitelist = Arg.(value & opt (list string) [] & info [ "w"; "whitelist" ])
 

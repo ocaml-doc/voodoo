@@ -1,0 +1,5 @@
+(executable
+ (name do)
+ (public_name voodoo-do)
+ (package voodoo)
+ (libraries voodoo_lib cmdliner))

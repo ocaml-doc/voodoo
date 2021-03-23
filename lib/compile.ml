@@ -1,39 +1,13 @@
+(*
 open Listm
-
+open Meta
 type source_info = {
-  root : Fpath.t;  (** Root path in which this was found *)
-  name : string;  (** 'Astring' *)
-  dir : Fpath.t;
-      (** full path to containing dir , e.g. /home/opam/.opam/4.10.0/lib/astring *)
-  fname : Fpath.t;
-  (* filename with extension *)
+  package : package;
+  path : Fpath.t;
+  name : string;
   digest : Digest.t;
-  package : Opam.package;
-  (* Package in which this file lives ("astring") *)
-  deps : Odoc.compile_dep list;  (** dependencies of this file *)
-  blessed : bool;
-  universe : Universe.t;
+  deps : Odoc.compile_dep list
 }
-(** Represents necessary information about a particular cmi/cmti/cmt file *)
-
-let pp fmt s =
-  Format.fprintf fmt
-    "@[<v 2>{@,\
-     root: %a@,\
-     name: %s@,\
-     dir: %a@,\
-     fname: %a@,\
-     digest: %s@,\
-     package: %a@,\
-     deps: [%s]@,\
-     blessed: %b@,\
-     universe: %s@,\
-     }@]"
-    Fpath.pp s.root s.name Fpath.pp s.dir Fpath.pp s.fname s.digest
-    Opam.pp_package s.package
-    (String.concat "," (List.map (fun o -> o.Odoc.c_unit_name) s.deps))
-    s.blessed s.universe.id
-
 module MLDChild = struct
   type t = Mld of Fpath.t | CU of source_info
 
@@ -99,50 +73,30 @@ let best_source_file base_path =
   List.find exists file_preference
 
 (* Get info given a base file (cmt, cmti or cmi) *)
-let get_info universe package root mod_file =
+let get_info universe package root _meta mod_file =
   let fname = best_source_file mod_file in
-  let v =
-    if package.Opam.name = "ocaml" || package.Opam.name = "ocaml-base-compiler"
-    then package.version
-    else
-      match Universe.package_version universe "ocaml" with
-      | Some v -> v
-      | None ->
-          Format.eprintf
-            "Failed to find ocaml dependency for package %a (universe id %s)"
-            Opam.pp_package package universe.Universe.id;
-          failwith "erk"
-  in
-  let deps = Odoc.compile_deps v fname in
-  let _, lname = Fpath.split_base mod_file in
-  let name = Astring.String.Ascii.capitalize (Fpath.to_string lname) in
-  let dir =
-    match Fpath.relativize ~root fname with
-    | Some p -> p
-    | None -> failwith "odd"
-  in
-  try
-    match List.partition (fun d -> d.Odoc.c_unit_name = name) deps with
-    | self :: _, deps ->
-        let digest = self.c_digest in
-        let dir, fname = Fpath.split_base dir in
-        [
-          {
-            root;
-            name;
-            dir;
-            digest;
-            deps;
-            package;
-            fname;
-            universe;
-            blessed = false;
-          };
-        ]
-    | _ ->
-        Format.eprintf "Failed to find digest for self (%s)\n%!" name;
-        []
-  with _ -> []
+  match Odoc.compile_deps fname with
+  | Some (name, digest, deps) ->
+    let dir =
+      match Fpath.relativize ~root fname with
+      | Some p -> p
+      | None -> failwith "odd"
+    in
+    let dir, fname = Fpath.split_base dir in
+    [
+      {
+        root;
+        name;
+        dir;
+        digest;
+        deps;
+        package;
+        fname;
+        universe;
+        blessed = false;
+      };
+    ]
+  | None -> []
 
 (* Returns the relative path to an odoc file based on an input file. For example, given
    `/home/opam/.opam/4.10.0/lib/ocaml/compiler-libs/lambda.cmi` it will return
@@ -543,7 +497,7 @@ let compile_fragment all_infos info =
         Fpath.(info.root // info.dir // info.fname)
         (String.concat " " dep_odocs);
       Format.asprintf
-        "\t/usr/bin/time -l %s/.opam/%s/bin/odoc compile --parent %s -I %a $< \
+        "\t%s/.opam/%s/bin/odoc compile --parent %s -I %a $< \
          %s -o %a"
         home ocaml_version parent_trio.mldname Fpath.pp
         (Fpath.split_base parent_trio.odoc |> fst)
@@ -703,15 +657,10 @@ let packages_path id = Fpath.(universe_path id // v "packages.usexp")
 
 let read_universe id =
   Format.eprintf "Reading universe: %s\n%!" id;
-  let universe = Universe.load (packages_path id) in
+  let _universe = Universe.load (packages_path id) in
   Inputs.(contents (universe_path id) >>= filter is_dir) >>= fun package_path ->
   Inputs.(contents package_path >>= filter is_dir) >>= fun version_path ->
-  let package = Opam.load Fpath.(version_path / "package.psexp") in
-  Inputs.find_files [ "cmi"; "cmt"; "cmti" ] version_path
-  |> List.filter (fun f ->
-         let segs = Fpath.segs f in
-         not (List.mem ".private" segs))
-  >>= get_info universe package version_path
+  [Meta.load Fpath.(version_path / "meta.sexp")]
 
 let run _whitelist _roots =
   Universe.All.init ();
@@ -770,3 +719,4 @@ let run _whitelist _roots =
   close_out oc;
   ignore infos;
   ()
+*)

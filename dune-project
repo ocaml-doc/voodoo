@@ -16,11 +16,7 @@
  (depends
   voodoo_lib
   astring
-  cmdliner
-  lwt
-  obuilder-spec
-  ocluster-api
-  capnp-rpc-unix))
+  cmdliner))
 
 (package
  (name voodoo_lib)

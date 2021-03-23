@@ -13,10 +13,6 @@ depends: [
   "voodoo_lib"
   "astring"
   "cmdliner"
-  "lwt"
-  "obuilder-spec"
-  "ocluster-api"
-  "capnp-rpc-unix"
   "odoc" {with-doc}
 ]
 build: [

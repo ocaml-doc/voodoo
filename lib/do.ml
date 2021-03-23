@@ -333,6 +333,7 @@ let run pkg_name is_blessed =
     let all_includes = Index.M.fold (fun _ si includes ->
       let i = IncludePaths.get index si in
       Fpath.Set.union i includes) this_index Fpath.Set.empty in
+    Util.mkdir_p Fpath.(v "html");
     Index.M.iter (fun _ si ->
       if SourceInfo.is_hidden si then () else begin
       ignore(Odoc.link (SourceInfo.output_file si) ~includes:all_includes);

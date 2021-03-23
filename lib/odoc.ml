@@ -150,3 +150,8 @@ let link path ~includes =
     Fpath.Set.fold (fun i c -> Bos.Cmd.(c % "-I" % Fpath.to_string i)) includes cmd
   in
   Util.lines_of_process cmd
+
+let html path output =
+  let cmd = Bos.Cmd.(v "odoc" % "html-generate" % Fpath.to_string path % "-o" % Fpath.to_string output) in
+  Util.lines_of_process cmd
+  

@@ -119,6 +119,9 @@ module SourceInfo = struct
   let output_file : t -> Fpath.t = function si ->
     Fpath.(output_dir si / (si.name ^ ".odoc"))
 
+  let output_odocl : t -> Fpath.t = function si ->
+    Fpath.(output_dir si / (si.name ^ ".odocl"))
+  
   let is_hidden t =
     let s = t.name in
     let len = String.length s in
@@ -306,8 +309,7 @@ let run pkg_name is_blessed =
           then Index.(combine (read p) acc)
           else acc) Index.empty Paths.compile in
     let index =
-      match index_res with Ok index -> index | Error _ -> Index.empty
-    in
+      match index_res with Ok index -> index | Error _ -> Index.empty in
     let parent = Package.gen_parent package ~blessed:is_blessed ~modules in
     let sis = prep >>= get_source_info parent in
     let this_index = InputSelect.select sis in
@@ -333,6 +335,8 @@ let run pkg_name is_blessed =
       Fpath.Set.union i includes) this_index Fpath.Set.empty in
     Index.M.iter (fun _ si ->
       if SourceInfo.is_hidden si then () else
-      ignore(Odoc.link (SourceInfo.output_file si) ~includes:all_includes)) this_index;
+      ignore(Odoc.link (SourceInfo.output_file si) ~includes:all_includes);
+      ignore(Odoc.html (SourceInfo.output_odocl si) Fpath.(v "html"))) this_index;
+    
     
 

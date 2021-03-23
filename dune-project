@@ -31,7 +31,8 @@
    astring
    sexplib
    fpath
-   opam-format))
+   opam-format
+   ppx_sexp_conv))
 
 (package
  (name voodoo_prep)

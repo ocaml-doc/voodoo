@@ -1,6 +1,7 @@
 (* util.ml *)
 open Bos
 
+let get_ok = function | Result.Ok x -> x | Error _ -> failwith "get_ok: Not OK"
 
 let is_hidden s =
   let len = String.length s in

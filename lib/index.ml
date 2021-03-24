@@ -10,9 +10,9 @@
 
   type serialisable = (string * Fpath.t) list
 
-  let find_opt name t = M.find_opt name t.intern
+  let find_opt name t = try Some (M.find name t.intern) with | _ -> None
 
-  let find_extern_opt name t = M.find_opt name t.extern
+  let find_extern_opt name t = try Some (M.find name t.extern) with | _ -> None
 
   let write t package is_blessed =
     let (id, pkg_name, pkg_version) = package in
@@ -30,7 +30,8 @@
 
   let read f =
     let ic = open_in Fpath.(to_string f) in
-    let extern = (Marshal.from_channel ic : serialisable) |> List.to_seq |> M.of_seq in
+    let extern_list = (Marshal.from_channel ic : serialisable) in
+    let extern = List.fold_left (fun acc (k,v) -> M.add k v acc) M.empty extern_list in
     { intern = M.empty; extern }
 
   let combine : t -> t -> t = fun t1 t2 ->

@@ -1,9 +1,11 @@
+
 type t = {
   path : Paths.t;
   name : string;
   parent : t option;
   children : Odoc.child list;
 }
+
 
 let rec output_dir : t -> Paths.t = fun mld ->
   match mld.parent with
@@ -15,7 +17,7 @@ let output_file mld = Fpath.(output_dir mld / ("page-" ^ mld.name ^ ".odoc"))
 let output_odocl mld = Fpath.(output_dir mld / ("page-" ^ mld.name ^ ".odocl"))
 
 let rec compile mld =
-  if Bos.OS.File.exists (output_file mld) |> Result.get_ok then () else begin
+  if Bos.OS.File.exists (output_file mld) |> Util.get_ok then () else begin
     let extra_include, parent =
       match mld.parent with
       | None -> [], None

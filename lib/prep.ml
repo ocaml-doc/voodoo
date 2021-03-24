@@ -52,10 +52,13 @@ let run _ (universes: (string * string) list) =
   | _ ->
   let packages = 
     Opam.all_opam_packages () 
-    |> List.filter_map
-    (fun pkg -> List.assoc_opt pkg.Opam.name universes 
-                |> Option.map (fun universe -> universe, pkg.name, pkg.version) 
-    )
+    |> List.fold_left
+    (fun acc pkg ->
+      try
+        (List.assoc pkg.Opam.name universes, pkg.name, pkg.version) :: acc
+      with
+      _ -> acc
+    ) []
   in
   let root = Opam.prefix () |> Fpath.v in
   let pkg_contents =

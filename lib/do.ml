@@ -87,12 +87,12 @@ let package_info_of_fpath p =
     failwith "Bad path"
 
 let find_universe_and_version pkg_name =
-  let universes = Bos.OS.Dir.contents Fpath.(Paths.prep / "universes") |> Result.get_ok in
+  let universes = Bos.OS.Dir.contents Fpath.(Paths.prep / "universes") |> Util.get_ok in
   let u = List.find (fun u ->
     match Bos.OS.Dir.exists Fpath.(u / pkg_name) with
     | Ok b -> b
     | Error _ -> false) universes in
-  let version = Bos.OS.Dir.contents ~rel:true Fpath.(u / pkg_name) |> Result.get_ok in
+  let version = Bos.OS.Dir.contents ~rel:true Fpath.(u / pkg_name) |> Util.get_ok in
   match Fpath.segs u, version with
   | _ :: _ :: u :: _, [version] -> Some (u, Fpath.to_string version)
   | _ -> None
@@ -100,8 +100,8 @@ let find_universe_and_version pkg_name =
 let run pkg_name is_blessed =
   let is_interesting p = List.mem (Fpath.get_ext p) [".cmti"; ".cmt"; ".cmi"] in
   (* Remove old pages *)
-  let () = Bos.OS.File.delete (Fpath.v "compile/page-packages.odoc") |> Result.get_ok in
-  let () = Bos.OS.File.delete (Fpath.v "compile/page-universes.odoc") |> Result.get_ok in
+  let () = Bos.OS.File.delete (Fpath.v "compile/page-packages.odoc") |> Util.get_ok in
+  let () = Bos.OS.File.delete (Fpath.v "compile/page-universes.odoc") |> Util.get_ok in
 
   let (universe,version) =
     match find_universe_and_version pkg_name with
@@ -118,7 +118,7 @@ let run pkg_name is_blessed =
           if is_interesting p && right_package p
           then p::acc
           else acc) [] Paths.prep
-      |> Result.get_ok
+      |> Util.get_ok
     in
     let modules = List.fold_left (fun acc f ->
       let (_, name) = Fpath.split_base f in
@@ -164,9 +164,9 @@ let run pkg_name is_blessed =
       end) this_index.intern;
     ignore(Odoc.link (Mld.output_file parent) ~includes:all_includes);
     ignore(Odoc.html (Mld.output_odocl parent) Fpath.(v "html"));
-    let () = Bos.OS.File.delete (Fpath.v "compile/page-packages.odoc") |> Result.get_ok in
-    let () = Bos.OS.File.delete (Fpath.v "compile/page-universes.odoc") |> Result.get_ok in
-    let () = Bos.OS.File.delete (Fpath.v ("compile/packages/page-" ^ pkg_name ^ ".odoc")) |> Result.get_ok in
+    let () = Bos.OS.File.delete (Fpath.v "compile/page-packages.odoc") |> Util.get_ok in
+    let () = Bos.OS.File.delete (Fpath.v "compile/page-universes.odoc") |> Util.get_ok in
+    let () = Bos.OS.File.delete (Fpath.v ("compile/packages/page-" ^ pkg_name ^ ".odoc")) |> Util.get_ok in
     ()
   
     

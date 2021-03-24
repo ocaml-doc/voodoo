@@ -29,6 +29,8 @@ module Mld = struct
   
   let output_file mld = Fpath.(output_dir mld / ("page-" ^ mld.name ^ ".odoc"))
 
+  let output_odocl mld = Fpath.(output_dir mld / ("page-" ^ mld.name ^ ".odocl"))
+
   let rec compile mld =
     if Bos.OS.File.exists (output_file mld) |> Result.get_ok then () else begin
       let extra_include, parent =
@@ -57,8 +59,7 @@ module Mld = struct
     } in
     Util.mkdir_p dir;
     write mld contents;
-    mld
-
+    mld    
 end
 
 module Package = struct
@@ -357,6 +358,8 @@ let run pkg_name is_blessed =
       ignore(Odoc.link (SourceInfo.output_file si) ~includes:all_includes);
       ignore(Odoc.html (SourceInfo.output_odocl si) Fpath.(v "html"))
       end) this_index;
+    ignore(Odoc.link (Mld.output_file parent) ~includes:all_includes);
+    ignore(Odoc.html (Mld.output_odocl parent) Fpath.(v "html"));
     let () = Bos.OS.File.delete (Fpath.v "compile/page-packages.odoc") |> Result.get_ok in
     let () = Bos.OS.File.delete (Fpath.v "compile/page-universes.odoc") |> Result.get_ok in
     let () = Bos.OS.File.delete (Fpath.v ("compile/packages/page-" ^ pkg_name ^ ".odoc")) |> Result.get_ok in

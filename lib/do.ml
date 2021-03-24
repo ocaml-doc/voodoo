@@ -141,19 +141,25 @@ module Index = struct
   (* Map of module digest to source info *)
   module M = Map.Make(String)
 
-  type t = SourceInfo.t M.t
+  type t = {
+    intern : SourceInfo.t M.t;
+    extern : Fpath.t M.t;
+  }
 
-  let empty = M.empty
+  let empty = { intern = M.empty; extern = M.empty }
 
-  type serialisable = (string * SourceInfo.t) list [@@deriving sexp]
+  type serialisable = (string * fpath) list [@@deriving sexp]
 
   let sexp_of_t t =
     let x = M.bindings t in sexp_of_serialisable x 
 
   let t_of_sexp s =
-    serialisable_of_sexp s |> List.to_seq |> M.of_seq
+    let extern = serialisable_of_sexp s |> List.to_seq |> M.of_seq in
+    { intern = M.empty; extern }
 
-  let find_opt = M.find_opt
+  let find_opt name t = M.find_opt name t.intern
+
+  let find_extern_opt name t = M.find_opt name t.extern
 
   let write t package is_blessed =
     let (id, pkg_name, pkg_version) = package in
@@ -164,7 +170,9 @@ module Index = struct
     in
     Util.mkdir_p output_dir;
     let oc = open_out Fpath.(to_string (output_dir / "index.sexp")) in
-    Printf.fprintf oc "%s" (Sexplib.Sexp.to_string_hum (sexp_of_t t));
+    (* Turn intern into extern for serialising *)
+    let extern = M.fold (fun k v acc -> M.add k (SourceInfo.output_dir v) acc) t.intern M.empty in
+    Printf.fprintf oc "%s" (Sexplib.Sexp.to_string_hum (sexp_of_t extern));
     close_out oc
 
   let read f =
@@ -173,11 +181,13 @@ module Index = struct
     t_of_sexp (Sexplib.Sexp.of_string (String.concat "\n" lines))
 
   let combine : t -> t -> t = fun t1 t2 ->
-    M.fold M.add t1 t2
+    { intern = M.fold M.add t1.intern t2.intern;
+      extern = M.fold M.add t1.extern t2.extern }
 
   let of_source_infos sis =
-    List.fold_left (fun t si ->
-      M.add si.SourceInfo.digest si t) M.empty sis
+    let intern = List.fold_left (fun t si ->
+      M.add si.SourceInfo.digest si t) M.empty sis in
+    { intern; extern=M.empty }
   
   let iter = M.iter
 end
@@ -220,8 +230,18 @@ module IncludePaths = struct
         match Index.find_opt dep.Odoc.c_digest index with
         | Some si -> Fpath.Set.add SourceInfo.(output_dir si) paths
         | None ->
-          Format.eprintf "Missing dependency: %s %s\n%!" dep.c_unit_name dep.c_digest;
-          paths) set si.deps        
+          match Index.find_extern_opt dep.Odoc.c_digest index with
+          | Some p -> Fpath.Set.add p paths
+          | None ->
+            Format.eprintf "Missing dependency: %s %s\n%!" dep.c_unit_name dep.c_digest;
+            paths) set si.deps
+  
+  let link : Index.t -> Fpath.Set.t =
+    fun index ->
+      let dirs = Index.M.fold (fun _ v acc ->
+        Fpath.Set.add (SourceInfo.output_dir v) acc) index.intern Fpath.Set.empty
+      in
+      Index.M.fold (fun _ v acc -> Fpath.Set.add v acc) index.extern dirs
 end
 
 
@@ -350,16 +370,14 @@ let run pkg_name is_blessed =
         ignore(Odoc.compile ~parent:parent.Mld.name ~output si.path ~includes ~children:[]);
         si.path :: compiled
     in
-    let _ = ignore(Index.M.fold compile this_index []) in
-    let all_includes = Index.M.fold (fun _ si includes ->
-      let i = IncludePaths.get index si in
-      Fpath.Set.union i includes) this_index Fpath.Set.empty in
+    let _ = ignore(Index.M.fold compile this_index.intern []) in
+    let all_includes = IncludePaths.link index in
     Util.mkdir_p Fpath.(v "html");
     Index.M.iter (fun _ si ->
       if SourceInfo.is_hidden si then () else begin
       ignore(Odoc.link (SourceInfo.output_file si) ~includes:all_includes);
       ignore(Odoc.html (SourceInfo.output_odocl si) Fpath.(v "html"))
-      end) this_index;
+      end) this_index.intern;
     ignore(Odoc.link (Mld.output_file parent) ~includes:all_includes);
     ignore(Odoc.html (Mld.output_odocl parent) Fpath.(v "html"));
     let () = Bos.OS.File.delete (Fpath.v "compile/page-packages.odoc") |> Result.get_ok in

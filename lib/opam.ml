@@ -25,35 +25,6 @@ let rec get_switch () =
 let pp_package fmt package =
   Format.fprintf fmt "%s.%s" package.name package.version
 
-let sexp_of v =
-  let open Sexplib.Sexp in
-  List
-    [
-      List [ Atom "name"; Atom v.name ]; List [ Atom "version"; Atom v.version ];
-    ]
-
-let of_sexp s =
-  let open Sexplib.Sexp in
-  match s with
-  | List
-      [ List [ Atom "name"; Atom name ]; List [ Atom "version"; Atom version ] ]
-    ->
-      { name; version }
-  | _ -> failwith "bad sexp"
-
-let save fname v =
-  let oc = open_out (Fpath.to_string fname) in
-  let fmt = Format.formatter_of_out_channel oc in
-  Format.fprintf fmt "%a%!" Sexplib.Sexp.pp_hum (sexp_of v);
-  close_out oc
-
-let load fname =
-  let ic = open_in (Fpath.to_string fname) in
-  let contents = String.concat "\n" (Util.lines_of_channel ic) in
-  let sexp = Sexplib.Sexp.of_string contents in
-  close_in ic;
-  of_sexp sexp
-
 module S = Set.Make (struct
   type t = package
 

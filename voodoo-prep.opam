@@ -10,7 +10,7 @@ homepage: "https://github.com/jonludlam/voodoo"
 bug-reports: "https://github.com/jonludlam/voodoo/issues"
 depends: [
   "dune" {>= "2.8"}
-  "voodoo_lib"
+  "voodoo-lib"
   "cmdliner"
   "odoc" {with-doc}
 ]

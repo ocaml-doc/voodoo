@@ -14,7 +14,7 @@ type source_info = {
 
 
 let process_package :
-    Fpath.t -> package -> Fpath.t list -> source_info list
+    Fpath.t -> package -> Fpath.t list -> unit
     =
  fun root package files ->
   let dest = package_path package in
@@ -44,89 +44,23 @@ let process_package :
       let dir, _ = Fpath.split_base dst in
       Util.mkdir_p dir;
       Util.cp (Fpath.to_string src) (Fpath.to_string dst))
-    actions.copy;
-  List.fold_right
-    (fun path acc ->
-      match Odoc.compile_deps Fpath.(root // path) with
-      | Some (name, digest, deps) ->
-          {package; path; name; digest; deps} :: acc
-      | None -> acc)
-    actions.info [];;
+    actions.copy;;
 
-let calculate_deps package source_infos =
-  let modules = List.filter (fun si -> si.package = package) source_infos in
-  let (packages, intra) =
-    List.fold_left (fun (inter,intra) si ->
-      let deps = si.deps in
-      let (inter, intra') =
-        List.fold_left (fun (inter, intra) dep ->
-          let digest = dep.Odoc.c_digest in
-          try
-            let dep_si = List.find (fun si -> si.digest = digest) source_infos in
-            if dep_si.package = package
-            then (inter, dep_si.digest :: intra)
-            else (
-              let (dir, _) = Fpath.split_base dep_si.path in
-              let inter_dep = (dep_si.package, dir) in
-              let inter = 
-                if List.mem inter_dep inter then inter else inter_dep :: inter
-              in
-              (inter, intra))
-            with Not_found ->
-              Format.eprintf "Not found handling %a (digest %s, module %s)\n%!" Fpath.pp si.path digest dep.Odoc.c_unit_name;
-              (inter, intra)
-          ) (inter,[]) deps
-      in
-      let intra_dep = { source_file = si.path; intra_deps = intra'} in
-      (inter, intra_dep :: intra)) ([],[]) modules
+let run _ (universes: (string * string) list) =
+  match universes with 
+  | [] -> Printf.eprintf "Warning: No universes have been specified.\n"
+  | _ ->
+  let packages = 
+    Opam.all_opam_packages () 
+    |> List.filter_map
+    (fun pkg -> List.assoc_opt pkg.Opam.name universes 
+                |> Option.map (fun universe -> universe, pkg.name, pkg.version) 
+    )
   in
-  let order path = 
-    let ext = Fpath.get_ext path in
-    match ext with
-    | ".cmti" -> 0
-    | ".cmt" -> 1
-    | ".cmi" -> 2
-    | _ -> 3
-  in
-  let hashtbl = Hashtbl.create 100 in
-  List.iter (fun si ->
-      if Hashtbl.mem hashtbl si.digest
-      then ()
-      else begin
-        let files =
-          List.filter (fun si' -> si.digest = si'.digest) source_infos |>
-          List.map (fun si -> si.path) |>
-          List.sort (fun x y -> compare (order x) (order y))
-        in
-        Hashtbl.add hashtbl si.digest files
-      end
-      ) modules;
-  
-  {modules = hashtbl; intra; packages}
-
-let run _whitelist _ =
-  let packages = Opam.all_opam_packages () in
-  let packages =
-    List.filter
-      (fun pkg -> pkg.Opam.name <> "ocaml-secondary-compiler")
-      packages
-  in
-  let packages = List.map (fun opam_package ->
-    let _, universe = Universe.Current.dep_universe opam_package.Opam.name in
-    (universe.Universe.id, opam_package.name, opam_package.version)
-    ) packages in
   let root = Opam.prefix () |> Fpath.v in
   let pkg_contents =
     List.map (fun ((_,pkg_name,_) as package) -> (package, Opam.pkg_contents pkg_name)) packages
   in
-  let (source_infos : source_info list) =
-    List.fold_right
-    (fun (package, files) acc ->
-      (process_package root package files) @ acc)
-    pkg_contents [] in
-  let metas =
-    List.map (fun package ->
-      let deps = calculate_deps package source_infos in
-      { package; deps; libraries = []}) packages in
-  List.iter Meta.save metas;
-  Universe.Current.save prep_path;;
+  List.iter
+    (fun (package, files) -> process_package root package files)
+    pkg_contents;;

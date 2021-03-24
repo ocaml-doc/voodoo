@@ -1,6 +1,0 @@
-(executable
-  (name link)
-  (public_name voodoo-link)
-  (package voodoo)
-  (libraries voodoo_lib cmdliner))
-

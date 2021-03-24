@@ -279,11 +279,30 @@ let package_info_of_fpath p =
     Format.eprintf "%s\n%!" (Fpath.to_string p);
     failwith "Bad path"
 
+let find_universe_and_version pkg_name =
+  let universes = Bos.OS.Dir.contents Fpath.(Paths.prep / "universes") |> Result.get_ok in
+  let u = List.find (fun u ->
+    match Bos.OS.Dir.exists Fpath.(u / pkg_name) with
+    | Ok b -> b
+    | Error _ -> false) universes in
+  let version = Bos.OS.Dir.contents ~rel:true Fpath.(u / pkg_name) |> Result.get_ok in
+  match Fpath.segs u, version with
+  | _ :: _ :: u :: _, [version] -> Some (u, Fpath.to_string version)
+  | _ -> None
+    
 let run pkg_name is_blessed =
   let is_interesting p = List.mem (Fpath.get_ext p) [".cmti"; ".cmt"; ".cmi"] in
   (* Remove old pages *)
   let () = Bos.OS.File.delete (Fpath.v "compile/page-packages.odoc") |> Result.get_ok in
   let () = Bos.OS.File.delete (Fpath.v "compile/page-universes.odoc") |> Result.get_ok in
+
+  let (universe,version) =
+    match find_universe_and_version pkg_name with
+    | Some x -> x
+    | None ->
+      Format.eprintf "Failed to find package\n%!";
+      exit 1
+  in
 
   let right_package p = let (_, n, _) = package_info_of_fpath p in n=pkg_name in
     let prep =
@@ -299,8 +318,7 @@ let run pkg_name is_blessed =
       let name = Fpath.rem_ext name |> Fpath.to_string in
       if List.mem name acc then acc else name :: acc) [] prep
     in
-    if List.length prep = 0 then exit 0;
-    let package = package_info_of_fpath (List.hd prep) in
+    let package = (universe,pkg_name,version) in
     let index_res =
       Bos.OS.Dir.fold_contents ~dotfiles:true
         (fun p acc ->

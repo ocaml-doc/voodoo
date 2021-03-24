@@ -4,6 +4,15 @@ open Sexplib.Std
 open Listm
 open Meta
 
+let is_hidden s =
+  let len = String.length s in
+  let rec aux i =
+    if i > len - 2 then false
+    else if s.[i] = '_' && s.[i + 1] = '_' then true
+    else aux (i + 1)
+  in
+  aux 0
+
 module Paths = struct
   type t = Fpath.t
 
@@ -73,7 +82,8 @@ module Package = struct
     fun package ~blessed ~modules ->
       let cwd = Fpath.v "." in
       let children = List.map (fun m -> Odoc.CModule m) modules in
-      let childrentxt = List.map (fun m -> Printf.sprintf "{!childmodule:%s}\n" m) modules in
+      let non_hidden = List.filter (fun m -> not (is_hidden m)) modules in
+      let childrentxt = List.map (fun m -> Printf.sprintf "{!childmodule:%s}\n" m) non_hidden in
       let (universe,package_name,package_version) = package in
       let top_parents =
         if blessed
@@ -123,15 +133,7 @@ module SourceInfo = struct
   let output_odocl : t -> Fpath.t = function si ->
     Fpath.(output_dir si / (si.name ^ ".odocl"))
   
-  let is_hidden t =
-    let s = t.name in
-    let len = String.length s in
-    let rec aux i =
-      if i > len - 2 then false
-      else if s.[i] = '_' && s.[i + 1] = '_' then true
-      else aux (i + 1)
-    in
-    aux 0
+  let is_hidden t = is_hidden t.name
   
 end
 

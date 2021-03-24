@@ -1,8 +1,7 @@
 (* Odoc *)
-open Sexplib.Std
 open Listm
 
-type compile_dep = { c_unit_name : string; c_digest : string } [@@deriving sexp]
+type compile_dep = { c_unit_name : string; c_digest : string }
 
 (** The name and optional digest of a dependency. Modules compiled with --no-alias-deps don't have
     digests for purely aliased modules *)
@@ -116,7 +115,6 @@ let generate_targets odocl ty =
 type child =
   | CModule of string (* module name, e.g. 'String' *)
   | CPage of string (* page name, e.g. 'packages' *)
-[@@deriving sexp]
 
 let compile ?parent ?output path ~includes ~children =
   let cmd = Bos.Cmd.(v "odoc" % "compile" % Fpath.to_string path) in
@@ -154,4 +152,3 @@ let link path ~includes =
 let html path output =
   let cmd = Bos.Cmd.(v "odoc" % "html-generate" % Fpath.to_string path % "-o" % Fpath.to_string output) in
   Util.lines_of_process cmd
-  

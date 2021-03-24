@@ -1,1 +1,0 @@
-base-bigarray.base base-ocamlbuild.base base-threads.base base-unix.base conf-libX11.1 conf-pkg-config.1.3 graphics.4.02.0 ocaml.4.02.0 ocaml-base-compiler.4.02.0 ocaml-config.1

@@ -15,10 +15,9 @@
  (depends
    bos
    astring
-   sexplib
    fpath
    opam-format
-   ppx_sexp_conv))
+   ))
 
 (package
  (name voodoo-prep)

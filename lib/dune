@@ -1,6 +1,4 @@
 (library
  (name voodoo_lib)
  (public_name voodoo-lib)
- (preprocess
-  (pps ppx_sexp_conv))
  (libraries astring sexplib fpath bos opam-format))

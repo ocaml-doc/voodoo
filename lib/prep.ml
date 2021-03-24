@@ -1,11 +1,11 @@
 (* Prep *)
-open Meta
 
 
 type actions = { copy : (Fpath.t * Fpath.t) list; info : Fpath.t list }
 
+
 type source_info = {
-  package : package;
+  package : Package.t;
   path : Fpath.t;
   name : string;
   digest : Digest.t;
@@ -14,10 +14,10 @@ type source_info = {
 
 
 let process_package :
-    Fpath.t -> package -> Fpath.t list -> unit
+    Fpath.t -> Package.t -> Fpath.t list -> unit
     =
  fun root package files ->
-  let dest = package_path package in
+  let dest = Package.prep_path package in
   let foldfn fpath acc =
     let is_in_doc_dir =
       match Fpath.segs fpath with "doc" :: _ -> true | _ -> false

@@ -12,10 +12,8 @@ depends: [
   "dune" {>= "2.8"}
   "bos"
   "astring"
-  "sexplib"
   "fpath"
   "opam-format"
-  "ppx_sexp_conv"
   "odoc" {with-doc}
 ]
 build: [

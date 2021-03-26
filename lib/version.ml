@@ -77,10 +77,13 @@ let gen_with_libraries (libraries : (string * string list) list) =
       let x =
         List.map
           (fun (name, modules) ->
+            let non_hidden =
+              List.filter (fun x -> not (Util.is_hidden x)) modules
+            in
             let a =
               [
                 Printf.sprintf "Documentation: {!modules:%s}"
-                  (String.concat " " modules);
+                  (String.concat " " non_hidden);
               ]
             in
             [ "{2 " ^ name ^ "}" ] @ a @ [ "" ])

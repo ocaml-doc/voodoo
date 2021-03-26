@@ -1,7 +1,7 @@
 (* Prep *)
 
 
-type actions = { copy : (Fpath.t * Fpath.t) list; info : Fpath.t list }
+type actions = { copy : (Fpath.t * Fpath.t) list; info : Fpath.t list; objinfo : Fpath.t list }
 
 
 type source_info = {
@@ -31,20 +31,28 @@ let process_package :
       is_in_doc_dir || is_module || is_opam
       || List.mem no_ext (List.map Fpath.v [ "META"; "dune-package" ])
     in
+    let is_cma = List.mem ext [".cma"; ".cmxa"] in      
     let copy =
       if do_copy then Fpath.(root // fpath, dest // fpath) :: acc.copy
       else acc.copy
     in
     let info = if is_module then fpath :: acc.info else acc.info in
-    { copy; info }
+    let objinfo = if is_cma then fpath :: acc.objinfo else acc.objinfo in
+    { copy; info; objinfo }
   in
-  let actions = List.fold_right foldfn files { copy = []; info = [] } in
+  let actions = List.fold_right foldfn files { copy = []; info = []; objinfo=[] } in
   List.iter
     (fun (src, dst) ->
       let dir, _ = Fpath.split_base dst in
       Util.mkdir_p dir;
-      Util.cp (Fpath.to_string src) (Fpath.to_string dst))
-    actions.copy;;
+      Util.cp (Fpath.to_string src) (Fpath.to_string dst);
+      )
+    actions.copy;
+  List.iter
+      (fun fpath ->
+        let lines = Util.lines_of_process Bos.Cmd.(v "ocamlobjinfo" % Fpath.(to_string (root // fpath))) in
+        Util.write_file Fpath.(dest // (set_ext "ocamlobjinfo" fpath)) lines
+  ) actions.objinfo
 
 let run _ (universes: (string * string) list) =
   match universes with 

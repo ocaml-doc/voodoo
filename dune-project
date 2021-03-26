@@ -17,6 +17,7 @@
    astring
    fpath
    opam-format
+   sexplib
    ))
 
 (package

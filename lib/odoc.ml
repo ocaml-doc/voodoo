@@ -53,9 +53,8 @@ let compile_deps file =
       let digest = self.c_digest in
       Some (name, digest, deps)
   | _ ->
-    Format.eprintf "Failed to find digest for self (%s)\n%!" name;
-    None
-
+      Format.eprintf "Failed to find digest for self (%s)\n%!" name;
+      None
 
 let link_deps dir =
   let deps_file = Fpath.(dir / "deps") in
@@ -111,10 +110,10 @@ let generate_targets odocl ty =
   | `Latex -> Util.lines_of_process (targets "latex")
   | `Man -> Util.lines_of_process (targets "man")
 
-
 type child =
   | CModule of string (* module name, e.g. 'String' *)
-  | CPage of string (* page name, e.g. 'packages' *)
+  | CPage of string
+(* page name, e.g. 'packages' *)
 
 let compile ?parent ?output path ~includes ~children =
   let cmd = Bos.Cmd.(v "odoc" % "compile" % Fpath.to_string path) in
@@ -125,30 +124,40 @@ let compile ?parent ?output path ~includes ~children =
   in
   let cmd =
     match parent with
-    | Some str -> Bos.Cmd.(cmd % "--parent" % (Printf.sprintf "\"%s\"" str))
+    | Some str -> Bos.Cmd.(cmd % "--parent" % Printf.sprintf "\"%s\"" str)
     | None -> cmd
   in
   let cmd =
-    Fpath.Set.fold (fun i c -> Bos.Cmd.(c % "-I" % Fpath.to_string i)) includes cmd
+    Fpath.Set.fold
+      (fun i c -> Bos.Cmd.(c % "-I" % Fpath.to_string i))
+      includes cmd
   in
   let cmd =
-    List.fold_left (fun cmd c ->
-      let arg =
-        match c with
-        | CModule m -> "module-" ^ m
-        | CPage p -> "page-\"" ^ p ^ "\""
-      in
-      Bos.Cmd.(cmd % "--child" % arg)) cmd children
+    List.fold_left
+      (fun cmd c ->
+        let arg =
+          match c with
+          | CModule m -> "module-" ^ m
+          | CPage p -> "page-\"" ^ p ^ "\""
+        in
+        Bos.Cmd.(cmd % "--child" % arg))
+      cmd children
   in
   Util.lines_of_process cmd
 
 let link path ~includes =
   let cmd = Bos.Cmd.(v "odoc" % "link" % Fpath.to_string path) in
   let cmd =
-    Fpath.Set.fold (fun i c -> Bos.Cmd.(c % "-I" % Fpath.to_string i)) includes cmd
+    Fpath.Set.fold
+      (fun i c -> Bos.Cmd.(c % "-I" % Fpath.to_string i))
+      includes cmd
   in
   Util.lines_of_process cmd
 
 let html path output =
-  let cmd = Bos.Cmd.(v "odoc" % "html-generate" % Fpath.to_string path % "-o" % Fpath.to_string output) in
+  let cmd =
+    Bos.Cmd.(
+      v "odoc" % "html-generate" % "--indent" % Fpath.to_string path % "-o"
+      % Fpath.to_string output)
+  in
   Util.lines_of_process cmd

@@ -1,5 +1,6 @@
 (* opam *)
 open Bos
+open Result
 
 let opam = Cmd.v "opam"
 
@@ -85,7 +86,11 @@ let pkg_contents pkg =
   in
   List.map (fun path -> Fpath.(v path)) added
 
-let (>>=) = Result.bind
+let bind r f = match r with Ok v -> f v | Error _ as e -> e
+
+let join = function Ok r -> r | Error _ as e -> e
+
+let ( >>= ) = bind
 
 let process_file f =
   let ic = open_in (Fpath.to_string f) in
@@ -96,10 +101,9 @@ let process_file f =
 let find package =
   let path = Package.prep_path package in
   Bos.OS.Dir.fold_contents ~dotfiles:true
-      (fun p acc ->
-        let (_, name) = Fpath.split_base p in
-        if name = Fpath.v "opam"
-        then begin
-          Ok p
-        end else acc) (Error (`Msg "No opam file found")) path |> Result.join
-
+    (fun p acc ->
+      let _, name = Fpath.split_base p in
+      if name = Fpath.v "opam" then Ok p else acc)
+    (Error (`Msg "No opam file found"))
+    path
+  |> join

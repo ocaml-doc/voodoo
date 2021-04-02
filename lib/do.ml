@@ -180,9 +180,12 @@ let run pkg_name is_blessed =
     | Error _ -> []
   in
 
+  let package_mlds = Package_mlds.find package in
+
   let parent =
-    Version.gen_parent package ~blessed:is_blessed ~modules ~dune ~opam
-      ~libraries
+    Version.gen_parent package ~blessed:is_blessed ~modules
+      ~docs_child:(List.length package_mlds > 0)
+      ~dune ~opam ~libraries
   in
   let sis = prep >>= get_source_info parent in
   let this_index = InputSelect.select sis in

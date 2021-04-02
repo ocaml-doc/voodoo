@@ -113,13 +113,17 @@ let gen_parent :
     Package.t ->
     blessed:bool ->
     modules:string list ->
+    docs_child:bool ->
     dune:Dune.t option ->
     opam:OpamFile.OPAM.t option ->
     libraries:(string * string list) list ->
     Mld.t =
- fun package ~blessed ~modules ~dune ~opam ~libraries ->
+ fun package ~blessed ~modules ~docs_child ~dune ~opam ~libraries ->
   let cwd = Fpath.v "." in
   let children = List.map (fun m -> Odoc.CModule m) modules in
+  let children =
+    if docs_child then Odoc.CPage "docs" :: children else children
+  in
   let universe, package_name, package_version = package in
   let top_parents =
     if blessed then

@@ -2,7 +2,7 @@
 
 (* Used to calculate the contents of the version page *)
 
-let gen_with_opam (opam : OpamFile.OPAM.t) =
+let gen_with_opam (opam : OpamFile.OPAM.t) docs_child =
   let descr =
     match opam.descr with
     | Some d ->
@@ -28,6 +28,13 @@ let gen_with_opam (opam : OpamFile.OPAM.t) =
       (OpamFile.OPAM.bug_reports opam)
   @ [ "{4 Maintainer}" ]
   @ OpamFile.OPAM.maintainer opam
+  @
+  if docs_child then
+    [
+      "{2 Package documentation}";
+      "There is {{!page-docs}package provided documentation}";
+    ]
+  else []
 
 let gen_with_dune (dune : Dune.t) =
   let libraries =
@@ -46,16 +53,17 @@ let gen_with_dune (dune : Dune.t) =
                     ]
                   else
                     [
-                      Printf.sprintf "Documentation: {!modules:%s}"
+                      Printf.sprintf
+                        "Documentation (non-hidden alias): {!modules:%s}"
                         (String.concat " " w.modules);
                     ]
               | Dune.Library.Unwrapped u ->
                   [
-                    Printf.sprintf "Documentation: {!modules:%s}"
+                    Printf.sprintf "Documentation (unwrapped): {!modules:%s}"
                       (String.concat " " u.modules);
                   ]
               | Dune.Library.Singleton s ->
-                  [ Printf.sprintf "Documentation: {!module-%s}" s ]
+                  [ Printf.sprintf "Documentation (singleton): {!module-%s}" s ]
             in
             let deps =
               if List.length l.dependencies > 0 then
@@ -66,7 +74,11 @@ let gen_with_dune (dune : Dune.t) =
           dune.libraries
         |> List.flatten
       in
-      [ "{1 Libraries}"; "This package provides the following libraries:" ] @ x
+      [
+        "{1 Libraries}";
+        "This package provides the following libraries (via dune):";
+      ]
+      @ x
   in
   libraries
 
@@ -90,7 +102,11 @@ let gen_with_libraries (libraries : (string * string list) list) =
           libraries
         |> List.flatten
       in
-      [ "{1 Libraries}"; "This package provides the following libraries:" ] @ x
+      [
+        "{1 Libraries}";
+        "This package provides the following libraries (via ocamlobjinfo):";
+      ]
+      @ x
   in
   libraries
 
@@ -98,15 +114,18 @@ let gen :
     dune:Dune.t option ->
     opam:OpamFile.OPAM.t option ->
     libraries:(string * string list) list ->
+    docs_child:bool ->
     string =
- fun ~dune ~opam ~libraries ->
+ fun ~dune ~opam ~libraries ~docs_child ->
   Format.eprintf "libraries: [%s]\n%!"
     (String.concat "," (List.map fst libraries));
   match (dune, opam) with
-  | Some d, Some o -> String.concat "\n" (gen_with_opam o @ gen_with_dune d)
+  | Some d, Some o ->
+      String.concat "\n" (gen_with_opam o docs_child @ gen_with_dune d)
   | None, Some o ->
       Format.eprintf "opam only...!\n%!";
-      String.concat "\n" (gen_with_opam o @ gen_with_libraries libraries)
+      String.concat "\n"
+        (gen_with_opam o docs_child @ gen_with_libraries libraries)
   | _ -> String.concat "\n" (gen_with_libraries libraries)
 
 let gen_parent :
@@ -122,7 +141,10 @@ let gen_parent :
   let cwd = Fpath.v "." in
   let children = List.map (fun m -> Odoc.CModule m) modules in
   let children =
-    if docs_child then Odoc.CPage "docs" :: children else children
+    if docs_child then (
+      Format.eprintf "Adding docs child\n%!";
+      Odoc.CPage "docs" :: children)
+    else children
   in
   let universe, package_name, package_version = package in
   let top_parents =
@@ -150,7 +172,7 @@ let gen_parent :
       [ Odoc.CPage package_version ]
       (Printf.sprintf "{0 %s}\n{!childpage:%s}\n" package_name package_version)
   in
-  let content = gen ~dune ~opam ~libraries in
+  let content = gen ~dune ~opam ~libraries ~docs_child in
   let version =
     Mld.v cwd package_version (Some package) children
       (Printf.sprintf "{0 %s %s}\n%s\n" package_name package_version content)

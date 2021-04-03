@@ -1,6 +1,5 @@
 (* opam *)
 open Bos
-open Result
 
 let opam = Cmd.v "opam"
 
@@ -85,6 +84,8 @@ let pkg_contents pkg =
       changed []
   in
   List.map (fun path -> Fpath.(v path)) added
+
+open Result
 
 let bind r f = match r with Ok v -> f v | Error _ as e -> e
 

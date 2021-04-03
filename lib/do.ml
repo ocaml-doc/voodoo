@@ -187,6 +187,7 @@ let run pkg_name is_blessed =
       ~docs_child:(List.length package_mlds > 0)
       ~dune ~opam ~libraries
   in
+
   let sis = prep >>= get_source_info parent in
   let this_index = InputSelect.select sis in
   Index.write this_index package is_blessed;
@@ -210,7 +211,11 @@ let run pkg_name is_blessed =
       si.path :: compiled
   in
   let _ = ignore (Index.M.fold compile this_index.intern []) in
-  let all_includes = IncludePaths.link index in
+  let mldvs = Package_mlds.compile package parent package_mlds in
+  let unit_includes = IncludePaths.link index in
+  let docs_includes = Package_mlds.include_paths mldvs in
+  let all_includes = Fpath.Set.union unit_includes docs_includes in
+  let all_includes = Fpath.Set.add (Mld.output_dir parent) all_includes in
   Util.mkdir_p Fpath.(v "html");
   Index.M.iter
     (fun _ si ->
@@ -220,7 +225,14 @@ let run pkg_name is_blessed =
         ignore (Odoc.html (Sourceinfo.output_odocl si) Fpath.(v "html"))))
     this_index.intern;
   ignore (Odoc.link (Mld.output_file parent) ~includes:all_includes);
+  List.iter
+    (fun mldv ->
+      ignore (Odoc.link (Mld.output_file mldv) ~includes:all_includes))
+    mldvs;
   ignore (Odoc.html (Mld.output_odocl parent) Fpath.(v "html"));
+  List.iter
+    (fun mldv -> ignore (Odoc.html (Mld.output_odocl mldv) Fpath.(v "html")))
+    mldvs;
   let () =
     Bos.OS.File.delete (Fpath.v "compile/page-packages.odoc") |> Util.get_ok
   in

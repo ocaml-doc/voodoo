@@ -53,17 +53,19 @@ let gen_with_dune (dune : Dune.t) =
                     ]
                   else
                     [
-                      Printf.sprintf
-                        "Documentation (non-hidden alias): {!modules:%s}"
-                        (String.concat " " w.modules);
+                      Printf.sprintf "Documentation: {!modules:%s}"
+                        (String.concat " "
+                           (List.map
+                              (fun s -> w.main_module_name ^ "." ^ s)
+                              w.modules));
                     ]
               | Dune.Library.Unwrapped u ->
                   [
-                    Printf.sprintf "Documentation (unwrapped): {!modules:%s}"
+                    Printf.sprintf "Documentation: {!modules:%s}"
                       (String.concat " " u.modules);
                   ]
               | Dune.Library.Singleton s ->
-                  [ Printf.sprintf "Documentation (singleton): {!module-%s}" s ]
+                  [ Printf.sprintf "Documentation: {!module-%s}" s ]
             in
             let deps =
               if List.length l.dependencies > 0 then

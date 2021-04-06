@@ -33,6 +33,17 @@ In this case, we need to run `voodoo-do -p ocaml-base-compiler -b` first.
 Note that when being used in this mode, the `-b` (blessed) switch should
 always be passed to `voodoo-do`
 
+To view the output, use odoc to generate the support files:
+
+```bash
+$ odoc support-files -o html
+```
+
+and load the package index in your browser:
+
+```bash
+$ open html/packages/ocaml-base-compiler/4.11.1/index.html
+```
 
 
 

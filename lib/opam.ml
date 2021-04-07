@@ -38,7 +38,8 @@ let deps_of_opam_result line =
 
 let dependencies package =
   let open Listm in
-  if package.name = "ocaml" then []
+  if package.name = "ocaml" then
+    [ { name = "ocaml-base-compiler"; version = package.version } ]
   else
     let package' = Format.asprintf "%a" pp_package package in
     Util.lines_of_process

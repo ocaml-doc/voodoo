@@ -45,5 +45,8 @@ and load the package index in your browser:
 $ open html/packages/ocaml-base-compiler/4.11.1/index.html
 ```
 
+An alternative to executing `voodoo-do -p ...` in order is simply to run
+`voodoo-do` with no arguments. This naively executes voodoo-do in order
+based on the current switch's dependencies, and is slow and inefficient.
 
 

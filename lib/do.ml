@@ -244,3 +244,27 @@ let run pkg_name is_blessed =
     |> Util.get_ok
   in
   ()
+
+let run_all () =
+  Format.eprintf
+    "Handling all packages. Getting dependency data from current opam switch\n\
+     %!";
+  let packages = Opam.all_opam_packages () in
+  Format.eprintf "Metadata found";
+  let deps = List.map (fun pkg -> (pkg, Opam.dependencies pkg)) packages in
+  let done_pkgs : Opam.package list ref = ref [] in
+  let rec doit pkg =
+    if List.mem pkg !done_pkgs then ()
+    else
+      let deps_opt = try Some (List.assoc pkg deps) with _ -> None in
+      match deps_opt with
+      | Some deps ->
+          List.iter doit deps;
+          Format.eprintf "Building docs for package %s\n%!" pkg.Opam.name;
+          (try run pkg.Opam.name true
+           with e ->
+             Format.eprintf "Ignoring failure %s!\n%!" (Printexc.to_string e));
+          done_pkgs := pkg :: !done_pkgs
+      | None -> ()
+  in
+  List.iter doit packages

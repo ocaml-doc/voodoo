@@ -3,15 +3,6 @@ open Bos
 
 let get_ok = function | Result.Ok x -> x | Error _ -> failwith "get_ok: Not OK"
 
-let is_hidden s =
-  let len = String.length s in
-  let rec aux i =
-    if i > len - 2 then false
-    else if s.[i] = '_' && s.[i + 1] = '_' then true
-    else aux (i + 1)
-  in
-  aux 0
-
 (* Not present on 4.02.3 *)
 let protect ~finally f =
   try
@@ -43,3 +34,14 @@ let mkdir_p d =
     | Unix.Unix_error (Unix.EEXIST, _, _) -> d
     | exn -> raise exn) (Fpath.v ".") segs in
   ()
+
+let write_file filename lines =
+  let dir = fst (Fpath.split_base filename) in
+  mkdir_p dir;
+  let oc = open_out (Fpath.to_string filename) in
+  List.iter (fun line -> Printf.fprintf oc "%s\n" line) lines;
+  close_out oc
+
+let cp src dst =
+  Format.eprintf "%s -> %s\n%!" src dst;
+  assert (lines_of_process Cmd.(v "cp" % src % dst) = [])

@@ -25,8 +25,10 @@
  (synopsis "Voodoo prep")
  (description "Voodoo prep")
  (depends
-   voodoo-lib
-   cmdliner))
+   cmdliner
+   fpath
+   bos
+   opam-format))
 
 (package
  (name voodoo-do)

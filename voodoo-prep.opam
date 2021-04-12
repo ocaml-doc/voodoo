@@ -10,8 +10,10 @@ homepage: "https://github.com/jonludlam/voodoo"
 bug-reports: "https://github.com/jonludlam/voodoo/issues"
 depends: [
   "dune" {>= "2.8"}
-  "voodoo-lib"
   "cmdliner"
+  "fpath"
+  "bos"
+  "opam-format"
   "odoc" {with-doc}
 ]
 build: [

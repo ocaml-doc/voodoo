@@ -56,49 +56,6 @@ let all_opam_packages () =
       % "--color=never" % "--short")
   >>= deps_of_opam_result
 
-let lib () =
-  Util.lines_of_process Cmd.(opam % "var" % "--switch" % get_switch () % "lib")
-  |> List.hd
-
-let prefix () =
-  Util.lines_of_process
-    Cmd.(opam % "var" % "--switch" % get_switch () % "prefix")
-  |> List.hd
-
-let pkg_contents pkg =
-  let prefix = Fpath.v (prefix ()) in
-  let changes_file =
-    Format.asprintf "%a/.opam-switch/install/%s.changes" Fpath.pp prefix pkg
-  in
-  let ic = open_in changes_file in
-  let changed = OpamFile.Changes.read_from_channel ic in
-  close_in ic;
-  let added =
-    OpamStd.String.Map.fold
-      (fun file x acc ->
-        match x with
-        | OpamDirTrack.Added _ ->
-            if not @@ Sys.is_directory Fpath.(to_string (prefix // v file)) then
-              file :: acc
-            else acc
-        | _ -> acc)
-      changed []
-  in
-  List.map (fun path -> Fpath.(v path)) added
-
-let opam_file name version =
-  let prefix = Fpath.v (prefix ()) in
-  let opam_file =
-    Format.asprintf "%a/.opam-switch/packages/%s.%s/opam" Fpath.pp prefix name
-      version
-  in
-  try
-    let ic = open_in opam_file in
-    let lines = Util.lines_of_channel ic in
-    close_in ic;
-    Some lines
-  with _ -> None
-
 open Result
 
 let bind r f = match r with Ok v -> f v | Error _ as e -> e

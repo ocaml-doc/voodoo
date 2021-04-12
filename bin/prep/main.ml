@@ -6,14 +6,6 @@ type actions = {
   objinfo : Fpath.t list;
 }
 
-type source_info = {
-  package : Package.t;
-  path : Fpath.t;
-  name : string;
-  digest : Digest.t;
-  deps : Odoc.compile_dep list;
-}
-
 let process_package : Fpath.t -> Package.t -> Fpath.t list -> unit =
  fun root package files ->
   let dest = Package.prep_path package in

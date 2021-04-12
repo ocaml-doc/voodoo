@@ -1,5 +1,4 @@
 (* Odoc makefile generator *)
-open Voodoo_lib
 open Cmdliner
 
 (** Example: [conv_compose Fpath.of_string Fpath.to_string Arg.dir] *)
@@ -28,7 +27,7 @@ module Prep = struct
   
   let prep lib_dir switch universes =
     Opam.switch := switch;
-    Prep.run lib_dir universes
+    Main.run lib_dir universes
 
   let lib_dir =
     let doc =

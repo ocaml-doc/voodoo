@@ -162,3 +162,15 @@ let html path output =
       % Fpath.to_string output)
   in
   Util.lines_of_process cmd
+
+let gen output files =
+  match files with
+  | [] -> ()
+  | _ ->
+      let cmd = Bos.Cmd.(v "voodoo-gen" % "-o" % Fpath.to_string output) in
+      let cmd =
+        List.fold_right
+          (fun f cmd -> Bos.Cmd.(cmd % Fpath.to_string f))
+          files cmd
+      in
+      Util.lines_of_process cmd |> ignore

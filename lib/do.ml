@@ -216,23 +216,27 @@ let run pkg_name is_blessed =
   let docs_includes = Package_mlds.include_paths mldvs in
   let all_includes = Fpath.Set.union unit_includes docs_includes in
   let all_includes = Fpath.Set.add (Mld.output_dir parent) all_includes in
-  Util.mkdir_p Fpath.(v "html");
+  let output = Fpath.(v "html") in
+  Util.mkdir_p output;
   Index.M.iter
     (fun _ si ->
       if Sourceinfo.is_hidden si then ()
-      else (
-        ignore (Odoc.link (Sourceinfo.output_file si) ~includes:all_includes);
-        ignore (Odoc.html (Sourceinfo.output_odocl si) Fpath.(v "html"))))
+      else ignore (Odoc.link (Sourceinfo.output_file si) ~includes:all_includes))
     this_index.intern;
+  let odocls =
+    Index.M.fold
+      (fun _ si acc ->
+        if Sourceinfo.is_hidden si then acc
+        else Sourceinfo.output_odocl si :: acc)
+      this_index.intern []
+  in
   ignore (Odoc.link (Mld.output_file parent) ~includes:all_includes);
   List.iter
     (fun mldv ->
       ignore (Odoc.link (Mld.output_file mldv) ~includes:all_includes))
     mldvs;
-  ignore (Odoc.html (Mld.output_odocl parent) Fpath.(v "html"));
-  List.iter
-    (fun mldv -> ignore (Odoc.html (Mld.output_odocl mldv) Fpath.(v "html")))
-    mldvs;
+  let odocls = odocls @ List.map Mld.output_odocl (parent :: mldvs) in
+  Odoc.gen output odocls;
   let () =
     Bos.OS.File.delete (Fpath.v "compile/page-packages.odoc") |> Util.get_ok
   in

@@ -163,11 +163,18 @@ let html path output =
   in
   Util.lines_of_process cmd
 
-let gen output files =
+let gen output name opam files =
   match files with
   | [] -> ()
   | _ ->
-      let cmd = Bos.Cmd.(v "voodoo-gen" % "-o" % Fpath.to_string output) in
+      let cmd =
+        Bos.Cmd.(v "voodoo-gen" % "-o" % Fpath.to_string output % "-n" % name)
+      in
+      let cmd =
+        match opam with
+        | Some o -> Bos.Cmd.(cmd % "--opam" % Fpath.to_string o)
+        | None -> cmd
+      in
       let cmd =
         List.fold_right
           (fun f cmd -> Bos.Cmd.(cmd % Fpath.to_string f))

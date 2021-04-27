@@ -35,7 +35,7 @@ module Path = struct
     Fpath.(v @@ String.concat Fpath.dir_sep @@ for_linking url)
 end
 
-let semantic_uris = ref false
+let semantic_uris = ref true
 
 type resolve = Current of Url.Path.t | Base of string
 

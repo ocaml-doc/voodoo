@@ -15,12 +15,16 @@
  *)
 
 module Html = Tyxml.Html
+module T = Tailwind
 
-let hdr = ref (Some "")
+let opam : OpamFile.OPAM.t option ref = ref None
+
+let namever : string ref = ref ""
 
 type uri = Absolute of string | Relative of string
 
-let page_creator ?(theme_uri = Relative "./") ~url name header toc content =
+let page_creator ?(theme_uri = Relative "./") ~url name header
+    (toc : Html_types.flow5 Html.elt list) content =
   let is_leaf_page = Link.Path.is_leaf_page url in
   let path = Link.Path.for_printing url in
   let rec add_dotdot ~n acc =
@@ -57,6 +61,9 @@ let page_creator ?(theme_uri = Relative "./") ~url name header toc content =
     let odoc_css_extra = theme_uri ^ "extra.css" in
 
     let highlight_js_uri = support_files_uri ^ "highlight.pack.js" in
+    let alpine_js_uri =
+      "https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js"
+    in
 
     Html.head
       (Html.title (Html.txt title_string))
@@ -76,6 +83,9 @@ let page_creator ?(theme_uri = Relative "./") ~url name header toc content =
           ();
         Html.script ~a:[ Html.a_src highlight_js_uri ] (Html.txt "");
         Html.script (Html.txt "hljs.initHighlightingOnLoad();");
+        Html.script
+          ~a:[ Html.a_src alpine_js_uri; Html.a_defer () ]
+          (Html.txt "");
       ]
   in
 
@@ -89,64 +99,93 @@ let page_creator ?(theme_uri = Relative "./") ~url name header toc content =
                 (Link.href ~resolve:(Current url)
                    { Link.Url.Anchor.page = url'; anchor = ""; kind = "" });
               Html.a_class
-                [
-                  "ml-4";
-                  "text-sm";
-                  "font-medium";
-                  "text-black";
-                  "hover:text-gray-500";
-                ];
+                T.
+                  [
+                    ml 4;
+                    text_sm;
+                    font_medium;
+                    text_gray 100;
+                    hover @@ text_gray 500;
+                  ];
             ]
           [ Html.txt url'.Link.Url.Path.name ]
       in
       let icon =
         Html.Unsafe.data
           {|
-      <svg class="flex-shrink-0 w-6 h-full text-black" viewBox="0 0 24 44" preserveAspectRatio="none" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <svg class="flex-shrink-0 w-6 h-full text-gray-100" viewBox="0 0 24 44" preserveAspectRatio="none" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
           <path d="M.293 0l22 22-22 22h1.414l22-22-22-22H.293z" />
         </svg>
       |}
       in
       let div =
-        Html.div ~a:[ Html.a_class [ "flex"; "items-center" ] ] [ icon; link ]
+        Html.div
+          ~a:[ Html.a_class T.[ flex; items_center; text_gray 100 ] ]
+          [ icon; link ]
       in
-      let li = Html.li ~a:[ Html.a_class [ "flex" ] ] [ div ] in
+      let li = Html.li ~a:[ Html.a_class T.[ flex ] ] [ div ] in
       match url'.Link.Url.Path.parent with
       | Some p -> li :: handle p
       | None -> [ li ]
     in
+    let home_svg =
+      Html.Unsafe.data
+        {|
+    <svg class="flex-shrink-0 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+          </svg>
+    |}
+    in
+    let home_link =
+      Html.a
+        ~a:
+          [
+            Html.a_href "#";
+            Html.a_class T.[ text_gray 100; hover @@ text_gray 500 ];
+          ]
+        [
+          home_svg;
+          Html.span ~a:[ Html.a_class T.[ sr_only ] ] [ Html.txt "Home" ];
+        ]
+    in
+    let home_div =
+      Html.div ~a:[ Html.a_class T.[ flex; items_center ] ] [ home_link ]
+    in
+    let home_li = Html.li ~a:[ Html.a_class T.[ flex ] ] [ home_div ] in
     Html.div
-      ~a:[ Html.a_class [ "flex-row"; "flex-1" ] ]
+      ~a:[ Html.a_class T.[ flex_row; flex_1 ] ]
       [
         Html.nav
           ~a:
             [
               Html.a_class
-                [
-                  "bg-yellow-500";
-                  "border-t";
-                  "border-b";
-                  "border-yellow-700";
-                  "flex";
-                  "flex-row";
-                ];
+                T.
+                  [
+                    bg_gray 900;
+                    border_t;
+                    border_b;
+                    border_gray 700;
+                    flex;
+                    flex_row;
+                  ];
             ]
           [
             Html.ol
               ~a:
                 [
                   Html.a_class
-                    [
-                      "max-w-screen-xl";
-                      "w-full";
-                      "px-4";
-                      "flex";
-                      "space-x-4";
-                      "sm:px-6";
-                      "lg:px-8";
-                    ];
+                    T.
+                      [
+                        max_w_screen_xl;
+                        w_full;
+                        px 4;
+                        flex;
+                        space_x 4;
+                        sm @@ px 6;
+                        lg @@ px 8;
+                      ];
                 ]
-              (handle url |> List.rev);
+              (home_li :: (handle url |> List.rev));
           ];
       ]
   in
@@ -156,90 +195,162 @@ let page_creator ?(theme_uri = Relative "./") ~url name header toc content =
       ~a:
         [
           Html.a_class
-            [ "w-72"; "bg-gray-100"; "h-screen"; "border-r"; "border-gray-200" ];
+            T.
+              [
+                w 72;
+                bg_gray 100;
+                h_screen;
+                border_r;
+                border_gray 200;
+                sticky;
+                top 0;
+                hidden;
+                lg block;
+              ];
         ]
-      [
-        Html.div
-          ~a:[ Html.a_class [ "flex"; "h-20"; "border-b"; "relative" ] ]
+      (Html.div
+         ~a:[ Html.a_class T.[ flex; h 20; border_b; relative ] ]
+         [
+           Html.h2
+             ~a:
+               [
+                 Html.a_class
+                   T.
+                     [
+                       text_xl;
+                       absolute;
+                       inset_x 0;
+                       p 3;
+                       px 5;
+                       bottom 0;
+                       mt 7;
+                       border_gray 200;
+                       font_semibold;
+                       text_gray 500;
+                       font_sans;
+                     ];
+               ]
+             [ Html.txt "On this page" ];
+         ]
+       :: toc)
+  in
+
+  let metadata =
+    match !opam with
+    | None -> [ Html.txt "No opam file" ]
+    | Some o ->
+        let title = !namever in
+        let synopsis =
+          Option.to_list (OpamFile.OPAM.synopsis o)
+          |> List.map (fun s ->
+                 Html.p
+                   ~a:[ Html.a_class T.[ mb 5; italic; text_sm ] ]
+                   [ Html.txt s ])
+        in
+        let links name x =
           [
             Html.h2
-              ~a:
-                [
-                  Html.a_class
-                    [
-                      "text-xl";
-                      "absolute";
-                      "inset-x-0";
-                      "p-3";
-                      "px-5";
-                      "bottom-0";
-                      "mt-7";
-                      "border-gray-200";
-                      "font-semibold";
-                      "text-gray-500";
-                      "font-sans";
-                    ];
-                ]
-              [ Html.txt "On this page" ];
-          ];
-        toc;
-      ]
+              ~a:[ Html.a_class T.[ font_semibold; mb 2; text_sm ] ]
+              [ Html.txt name ];
+            Html.div
+              ~a:[ Html.a_class T.[ mb 3 ] ]
+              (List.map
+                 (fun h ->
+                   Html.a
+                     ~a:
+                       [
+                         Html.a_class
+                           T.[ text_blue 500; cursor_pointer; mb 2; text_sm ];
+                         Html.a_href h;
+                       ]
+                     [ Html.txt h ])
+                 x);
+          ]
+        in
+        let text name x =
+          [
+            Html.h2
+              ~a:[ Html.a_class T.[ font_semibold; mb 2; text_sm ] ]
+              [ Html.txt name ];
+            Html.p
+              ~a:[ Html.a_class T.[ mb 3; text_sm ] ]
+              [ Html.txt (String.concat "," x) ];
+          ]
+        in
+        let homepage = links "Homepage" o.homepage in
+        let authors = text "Authors" (OpamFile.OPAM.author o) in
+        let issues = links "Issues" (OpamFile.OPAM.bug_reports o) in
+        [
+          Html.div
+            ~a:[ Html.a_class T.[ flex; h 20; border_b; relative ] ]
+            [
+              Html.h2
+                ~a:
+                  [
+                    Html.a_class
+                      T.
+                        [
+                          text_xl;
+                          absolute;
+                          inset_x 0;
+                          p 3;
+                          bottom 0;
+                          mt 7;
+                          font_semibold;
+                          text_gray 500;
+                        ];
+                  ]
+                [ Html.txt title ];
+            ];
+          Html.div
+            ~a:[ Html.a_class T.[ m 3 ] ]
+            (synopsis @ homepage @ authors @ issues);
+        ]
   in
 
   let opam_container =
     Html.div
-      ~a:[ Html.a_class [ "flex"; "flex-1"; "flex-col"; "lg:flex-row" ] ]
+      ~a:[ Html.a_class T.[ flex; flex_1; flex_col; lg flex_row ] ]
       [
         Html.div
-          ~a:[ Html.a_class [ "flex-1" ] ]
+          ~a:[ Html.a_class T.[ flex_1 ] ]
           [
             Html.div
-              ~a:[ Html.a_class [ "lg:max-w-5xl"; "mx-auto" ] ]
+              ~a:[ Html.a_class T.[ lg max_w_5xl; mx_auto; px 10 ] ]
               (header @ content);
           ];
         Html.div
           ~a:
             [
               Html.a_class
-                [
-                  "w-full"; "lg:w-64"; "border-t"; "lg:border-l"; "bg-gray-100";
-                ];
+                T.[ w_full; lg @@ w 72; border_t; lg border_l; bg_gray 100 ];
             ]
-          [];
+          metadata;
       ]
   in
 
   let content_div =
     Html.div
-      ~a:[ Html.a_class [ "flex"; "flex-row"; "h-full"; "w-full" ] ]
+      ~a:[ Html.a_class T.[ flex; flex_row; flex_1 ] ]
       [ toc_div; opam_container ]
   in
 
   let main_div =
     Html.div
-      ~a:[ Html.a_class [ "flex"; "flex-col"; "w-full" ] ]
+      ~a:[ Html.a_class T.[ flex; flex_col; w_full; h_full ] ]
       [ breadcrumbs; content_div ]
   in
-  let body = [ toc_div; main_div ] in
   Html.html head
     (Html.body ~a:[ Html.a_class [] ]
        [
+         Main_header.v;
          Html.div
-           ~a:
-             [
-               Html.a_class
-                 [
-                   "h-screen";
-                   "flex";
-                   "overflow-hidden";
-                   "bg-white";
-                   "font-serif";
-                 ];
-             ]
-           body;
+           ~a:[ Html.a_class T.[ h_screen; flex; bg_white; font_sans ] ]
+           [ main_div ];
        ])
 
-let make ?theme_uri ~indent ~url ~header ~toc title content children =
+let make ?theme_uri ~indent ~url ~header ~(toc : Html_types.flow5 Html.elt list)
+    title content children =
   let filename = Link.Path.as_filename url in
   let html = page_creator ?theme_uri ~url title header toc content in
   let content ppf = (Html.pp ~indent ()) ppf html in

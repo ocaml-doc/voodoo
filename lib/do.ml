@@ -165,14 +165,7 @@ let run pkg_name is_blessed =
         Format.eprintf "No dune: %s\n%!" m;
         None
   in
-
-  let opam =
-    match Opam.(find package >>= process_file) with
-    | Ok x ->
-        Format.eprintf "Got opam\n%!";
-        Some x
-    | Error _ -> None
-  in
+  let opam_file = match Opam.find package with Ok f -> Some f | _ -> None in
 
   let libraries =
     match Ocamlobjinfo.(find package >>= process) with
@@ -183,9 +176,7 @@ let run pkg_name is_blessed =
   let package_mlds = Package_mlds.find package in
 
   let parent =
-    Version.gen_parent package ~blessed:is_blessed ~modules
-      ~docs_child:(List.length package_mlds > 0)
-      ~dune ~opam ~libraries
+    Version.gen_parent package ~blessed:is_blessed ~modules ~dune ~libraries
   in
 
   let sis = prep >>= get_source_info parent in
@@ -236,7 +227,8 @@ let run pkg_name is_blessed =
       ignore (Odoc.link (Mld.output_file mldv) ~includes:all_includes))
     mldvs;
   let odocls = odocls @ List.map Mld.output_odocl (parent :: mldvs) in
-  Odoc.gen output odocls;
+  let name = Printf.sprintf "%s.%s" pkg_name version in
+  Odoc.gen output name opam_file odocls;
   let () =
     Bos.OS.File.delete (Fpath.v "compile/page-packages.odoc") |> Util.get_ok
   in

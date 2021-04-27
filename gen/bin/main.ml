@@ -2,6 +2,12 @@ open Cmdliner
 
 let docs = "ARGUMENTS"
 
+let process_file f =
+  let ic = open_in f in
+  let result = OpamFile.OPAM.read_from_channel ic in
+  close_in ic;
+  result
+
 let files = Arg.(non_empty & pos_all file [] & info [] ~docv:"FILE")
 
 let convert_directory ?(create = false) () :
@@ -25,11 +31,24 @@ let output =
     & opt (some (convert_directory ~create:true ())) None
     & info ~docs ~docv:"DIR" ~doc [ "o"; "output-dir" ])
 
-let generate output files = List.map (Odoc_thtml.render ~output) files
+let generate output opam namever files =
+  let opam = Option.map process_file opam in
+  List.map (Odoc_thtml.render ~opam ~namever ~output) files
+
+let opam =
+  let doc = "Opam file from which to take metadata" in
+  Arg.(value & opt (some file) None & info ~docs ~docv:"OPAM" ~doc [ "opam" ])
+
+let package_name_ver =
+  let doc = "Package name and version (e.g. voodoo.0.0.1)" in
+  Arg.(
+    required
+    & opt (some string) None
+    & info ~docs ~docv:"NAMEVER" ~doc [ "n"; "name" ])
 
 let cmd =
   let doc = "Generate HTML pages from odocl files" in
-  ( Term.(const generate $ output $ files),
+  ( Term.(const generate $ output $ opam $ package_name_ver $ files),
     Term.info "generate" ~version:"v0.0.1" ~doc ~exits:Term.default_exits )
 
 let () = Term.(exit @@ eval cmd)

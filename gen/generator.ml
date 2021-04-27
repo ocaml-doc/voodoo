@@ -150,7 +150,15 @@ and inline ?(emph_level = 0) ~resolve (l : Inline.t) : phrasing Html.elt list =
         [ app_style @@ inline ~emph_level ~resolve c ]
     | Link (href, c) ->
         let content = inline_nolink ~emph_level c in
-        [ Html.a ~a:[ Html.a_href href ] content ]
+        [
+          Html.a
+            ~a:
+              [
+                Html.a_href href;
+                Html.a_class [ "cursor-pointer"; "text-blue-500" ];
+              ]
+            content;
+        ]
     | InternalLink c -> internallink ~emph_level ~resolve c
     | Source c -> source (inline ~emph_level ~resolve) c
     | Raw_markup r -> raw_markup r
@@ -468,7 +476,7 @@ module Toc = struct
     | `Inline -> true
 
   let from_items ~resolve ~path i =
-    render_toc ~resolve @@ Toc.compute path ~on_sub i
+    (render_toc ~resolve @@ Toc.compute path ~on_sub i :> any Html.elt list)
 end
 
 module Page = struct
@@ -487,23 +495,26 @@ module Page = struct
     @@ Doctree.Subpages.compute i
 
   and mktitle page_type title =
-    Html.h1
-      ~a:
-        [
-          Html.a_class
-            [
-              "text-3xl mt-7 border-b-2 border-gray-200 font-semibold \
-               text-gray-500 font-sans";
-            ];
-        ]
-      (Html.code
-         ~a:[ Html.a_class [ "font-mono"; "text-gray-800" ] ]
-         [ Html.txt title ]
-       ::
-       (match page_type with
-       | None -> []
-       | Some t ->
-           [ Html.span ~a:[ Html.a_class [ "float-right" ] ] [ Html.txt t ] ]))
+    let h1 =
+      Html.h1
+        ~a:
+          [
+            Html.a_class
+              [
+                "text-3xl absolute inset-x-0 py-3 mt-7 border-b bottom-0 \
+                 border-gray-200 font-semibold text-gray-500 font-sans";
+              ];
+          ]
+        (Html.code
+           ~a:[ Html.a_class [ "font-mono"; "text-gray-800" ] ]
+           [ Html.txt title ]
+         ::
+         (match page_type with
+         | None -> []
+         | Some t ->
+             [ Html.span ~a:[ Html.a_class [ "float-right" ] ] [ Html.txt t ] ]))
+    in
+    Html.div ~a:[ Html.a_class [ "flex"; "h-20"; "relative" ] ] [ h1 ]
 
   and unparse_header h =
     let open Odoc_document.Types in
@@ -533,19 +544,27 @@ module Page = struct
         }
       :: rest ->
         Some (Astring.String.trim ty, name, rest)
+    | Item.Heading
+        {
+          level = _;
+          label = _;
+          title = { Inline.attr = _; desc = Inline.Text name } :: _;
+        }
+      :: rest ->
+        Some ("", name, rest)
     | _ -> None
 
   and page ?theme_uri indent ({ Page.title; header; items = i; url } as p) =
     let resolve = Link.Current url in
     let i = Doctree.Shift.compute ~on_sub i in
-    let toc = Toc.from_items ~resolve ~path:url i in
+    let toc = (Toc.from_items ~resolve ~path:url i :> any Html.elt list) in
     let subpages = subpages ?theme_uri indent p in
     let header =
       match unparse_header header with
       | Some (ty, name, rest) ->
           let t = mktitle (Some ty) name in
-          t :: items ~resolve rest
-      | None -> items ~resolve header
+          (t :: items ~resolve rest :> any Html.elt list)
+      | None -> (items ~resolve header :> any Html.elt list)
     in
     let content = (items ~resolve i :> any Html.elt list) in
     let page =

@@ -25,7 +25,9 @@ let render_document ~output:root_dir odoctree =
       close_out oc);
   Ok ()
 
-let render ~output file =
+let render ~opam ~output ~namever file =
+  Tree.opam := opam;
+  Tree.namever := namever;
   let f = Fs.File.of_string file in
   document_of_odocl ~syntax:Odoc_document.Renderer.OCaml f
   >>= render_document ~output

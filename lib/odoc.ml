@@ -143,6 +143,7 @@ let compile ?parent ?output path ~includes ~children =
         Bos.Cmd.(cmd % "--child" % arg))
       cmd children
   in
+  Format.eprintf "compile command: %a\n%!" Bos.Cmd.pp cmd;
   Util.lines_of_process cmd
 
 let link path ~includes =
@@ -163,12 +164,14 @@ let html path output =
   in
   Util.lines_of_process cmd
 
-let gen output name opam files =
+let gen output name opam parent otherdocs files =
   match files with
   | [] -> ()
   | _ ->
       let cmd =
-        Bos.Cmd.(v "voodoo-gen" % "-o" % Fpath.to_string output % "-n" % name)
+        Bos.Cmd.(
+          v "voodoo-gen" % "-o" % Fpath.to_string output % "-n" % name
+          % "--parent" % parent)
       in
       let cmd =
         match opam with
@@ -180,4 +183,10 @@ let gen output name opam files =
           (fun f cmd -> Bos.Cmd.(cmd % Fpath.to_string f))
           files cmd
       in
+      let cmd =
+        List.fold_right
+          (fun f cmd -> Bos.Cmd.(cmd % "--otherdoc" % Fpath.to_string f))
+          otherdocs cmd
+      in
+      Format.eprintf "Odoc.gen: %a\n%!" Bos.Cmd.pp cmd;
       Util.lines_of_process cmd |> ignore

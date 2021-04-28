@@ -5,4 +5,11 @@
   (backend bisect_ppx))
  (preprocess
   (pps tyxml-ppx))
- (libraries odoc.model odoc.document odoc.odoc tyxml tyxml-ppx opam-format))
+ (libraries
+  odoc.model
+  odoc.document
+  odoc.odoc
+  tyxml
+  tyxml-ppx
+  opam-format
+  omd bos))

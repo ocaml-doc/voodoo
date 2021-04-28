@@ -34,7 +34,7 @@ let v =
           Html.a_class
             T.
               [
-                "-m-3";
+                m (-3);
                 p 3;
                 block;
                 rounded_md;

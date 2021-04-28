@@ -44,7 +44,6 @@ let mk_anchor_link id pr =
               Html.a_class
                 [
                   "align-middle";
-                  "whitespace-pre";
                   "text-gray-200";
                   "transition";
                   "text-base";
@@ -250,13 +249,15 @@ let rec block ~resolve (l : Block.t) : flow Html.elt list =
     | Verbatim s ->
         [
           Html.pre
-            ~a:[ Html.a_class [ "bg-gray-100"; "p-3"; "my-2" ] ]
+            ~a:
+              [ Html.a_class [ "bg-gray-100"; "p-3"; "my-2"; "overflow-auto" ] ]
             [ Html.txt s ];
         ]
     | Source c ->
         [
           Html.pre
-            ~a:[ Html.a_class [ "bg-gray-100"; "p-3"; "my-2" ] ]
+            ~a:
+              [ Html.a_class [ "bg-gray-100"; "p-3"; "my-2"; "overflow-auto" ] ]
             (source (inline ~resolve) c);
         ]
   in

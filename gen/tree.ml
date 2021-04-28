@@ -21,6 +21,8 @@ let opam : OpamFile.OPAM.t option ref = ref None
 
 let namever : string ref = ref ""
 
+let otherdocs : (Odoc_model.Paths.Identifier.t * Fpath.t) list ref = ref []
+
 type uri = Absolute of string | Relative of string
 
 let page_creator ?(theme_uri = Relative "./") ~url name header
@@ -198,6 +200,7 @@ let page_creator ?(theme_uri = Relative "./") ~url name header
             T.
               [
                 w 72;
+                flex_none;
                 bg_gray 100;
                 h_screen;
                 border_r;
@@ -238,74 +241,7 @@ let page_creator ?(theme_uri = Relative "./") ~url name header
   let metadata =
     match !opam with
     | None -> [ Html.txt "No opam file" ]
-    | Some o ->
-        let title = !namever in
-        let synopsis =
-          Option.to_list (OpamFile.OPAM.synopsis o)
-          |> List.map (fun s ->
-                 Html.p
-                   ~a:[ Html.a_class T.[ mb 5; italic; text_sm ] ]
-                   [ Html.txt s ])
-        in
-        let links name x =
-          [
-            Html.h2
-              ~a:[ Html.a_class T.[ font_semibold; mb 2; text_sm ] ]
-              [ Html.txt name ];
-            Html.div
-              ~a:[ Html.a_class T.[ mb 3 ] ]
-              (List.map
-                 (fun h ->
-                   Html.a
-                     ~a:
-                       [
-                         Html.a_class
-                           T.[ text_blue 500; cursor_pointer; mb 2; text_sm ];
-                         Html.a_href h;
-                       ]
-                     [ Html.txt h ])
-                 x);
-          ]
-        in
-        let text name x =
-          [
-            Html.h2
-              ~a:[ Html.a_class T.[ font_semibold; mb 2; text_sm ] ]
-              [ Html.txt name ];
-            Html.p
-              ~a:[ Html.a_class T.[ mb 3; text_sm ] ]
-              [ Html.txt (String.concat "," x) ];
-          ]
-        in
-        let homepage = links "Homepage" o.homepage in
-        let authors = text "Authors" (OpamFile.OPAM.author o) in
-        let issues = links "Issues" (OpamFile.OPAM.bug_reports o) in
-        [
-          Html.div
-            ~a:[ Html.a_class T.[ flex; h 20; border_b; relative ] ]
-            [
-              Html.h2
-                ~a:
-                  [
-                    Html.a_class
-                      T.
-                        [
-                          text_xl;
-                          absolute;
-                          inset_x 0;
-                          p 3;
-                          bottom 0;
-                          mt 7;
-                          font_semibold;
-                          text_gray 500;
-                        ];
-                  ]
-                [ Html.txt title ];
-            ];
-          Html.div
-            ~a:[ Html.a_class T.[ m 3 ] ]
-            (synopsis @ homepage @ authors @ issues);
-        ]
+    | Some o -> Metadata.v url o !otherdocs !namever
   in
 
   let opam_container =
@@ -323,7 +259,15 @@ let page_creator ?(theme_uri = Relative "./") ~url name header
           ~a:
             [
               Html.a_class
-                T.[ w_full; lg @@ w 72; border_t; lg border_l; bg_gray 100 ];
+                T.
+                  [
+                    w_full;
+                    flex_none;
+                    lg @@ w 72;
+                    border_t;
+                    lg border_l;
+                    bg_gray 100;
+                  ];
             ]
           metadata;
       ]

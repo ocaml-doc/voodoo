@@ -10,6 +10,8 @@ let inline_block = "inline-block"
 
 let flex = "flex"
 
+let flex_none = "flex-none"
+
 let inline_flex = "inline-flex"
 
 let hidden = "hidden"
@@ -62,27 +64,31 @@ let items_center = "items-center"
 
 (* {2 Spacing} *)
 
-let px n = "px-" ^ string_of_int n
+let numeric base n =
+  if n < 0 then "-" ^ base ^ "-" ^ string_of_int n
+  else base ^ "-" ^ string_of_int n
 
-let py n = "py-" ^ string_of_int n
+let px = numeric "px"
 
-let p n = "p-" ^ string_of_int n
+let py = numeric "py"
 
-let ml n = "ml-" ^ string_of_int n
+let p = numeric "p"
 
-let mt n = "mt-" ^ string_of_int n
+let ml = numeric "ml"
 
-let mb n = "mb-" ^ string_of_int n
+let mt = numeric "mt"
+
+let mb = numeric "mb"
 
 let mx_auto = "mx-auto"
 
-let m n = "m-" ^ string_of_int n
+let m = numeric "m"
 
-let space_x n = "space-x-" ^ string_of_int n
+let space_x = numeric "space-x"
 
 (** {2 Sizing} *)
 
-let w n = "w-" ^ string_of_int n
+let w = numeric "w"
 
 let max_w_5xl = "max-w-5xl"
 
@@ -98,7 +104,7 @@ let h_screen = "h-screen"
 
 let h_full = "h-full"
 
-let h n = "h-" ^ string_of_int n
+let h = numeric "h"
 
 let max_w_screen_xl = "max-w-screen-xl"
 
@@ -107,6 +113,8 @@ let max_w_xs = "max-w-xs"
 (** {2 Typeography} *)
 
 let font_medium = "font-medium"
+
+let font_normal = "font-normal"
 
 let italic = "italic"
 
@@ -196,4 +204,4 @@ let transition = "transition"
 
 let ease_in_out = "ease-in-out"
 
-let duration n = "duration-" ^ string_of_int n
+let duration = numeric "duration-"

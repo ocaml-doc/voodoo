@@ -93,10 +93,22 @@ let gen_parent :
     modules:string list ->
     dune:Dune.t option ->
     libraries:(string * string list) list ->
+    package_mlds:Fpath.t list ->
     Mld.t =
- fun package ~blessed ~modules ~dune ~libraries ->
+ fun package ~blessed ~modules ~dune ~libraries ~package_mlds ->
   let cwd = Fpath.v "." in
-  let children = List.map (fun m -> Odoc.CModule m) modules in
+  let mld_index, mld_children =
+    List.partition (fun mld -> Fpath.basename mld = "index.mld") package_mlds
+  in
+  let m_children = List.map (fun m -> Odoc.CModule m) modules in
+  let p_children =
+    List.map
+      (fun p ->
+        Format.eprintf "page child: %a\n%!" Fpath.pp p;
+        Odoc.CPage Fpath.(rem_ext p |> basename))
+      mld_children
+  in
+  let children = m_children @ p_children in
   let universe, package_name, package_version = package in
   let top_parents =
     if blessed then
@@ -123,7 +135,15 @@ let gen_parent :
       [ Odoc.CPage package_version ]
       (Printf.sprintf "{0 %s}\n{!childpage:%s}\n" package_name package_version)
   in
-  let content = gen ~dune ~libraries in
+  let content =
+    match mld_index with
+    | [] -> gen ~dune ~libraries
+    | x :: _ ->
+        let ic = open_in (Fpath.to_string x) in
+        let result = really_input_string ic (in_channel_length ic) in
+        close_in ic;
+        result
+  in
   let version =
     Mld.v cwd package_version (Some package) children
       (Printf.sprintf "{0 %s %s}\n%s\n" package_name package_version content)

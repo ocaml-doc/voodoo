@@ -31,9 +31,15 @@ let output =
     & opt (some (convert_directory ~create:true ())) None
     & info ~docs ~docv:"DIR" ~doc [ "o"; "output-dir" ])
 
-let generate output opam namever files =
+let generate output opam namever otherdocs parent files =
+  let parent = Fpath.v parent in
+  let otherdocs = List.map Fpath.v otherdocs in
   let opam = Option.map process_file opam in
-  List.map (Odoc_thtml.render ~opam ~namever ~output) files
+  ignore
+  @@ List.map
+       (Odoc_thtml.render ~opam ~namever ~parent ~otherdocs ~output)
+       files;
+  ignore @@ Odoc_thtml.render_other ~parent ~otherdocs ~output
 
 let opam =
   let doc = "Opam file from which to take metadata" in
@@ -46,9 +52,22 @@ let package_name_ver =
     & opt (some string) None
     & info ~docs ~docv:"NAMEVER" ~doc [ "n"; "name" ])
 
+let otherdocs =
+  let doc = "Path to other documentation distributed with the package" in
+  Arg.(value & opt_all file [] & info ~docs ~docv:"DOCFILE" ~doc [ "otherdoc" ])
+
+let parent =
+  let doc = "Parent odoc for other docs" in
+  Arg.(
+    required
+    & opt (some file) None
+    & info ~docs ~docv:"ODOCFILE" ~doc [ "parent" ])
+
 let cmd =
   let doc = "Generate HTML pages from odocl files" in
-  ( Term.(const generate $ output $ opam $ package_name_ver $ files),
+  ( Term.(
+      const generate $ output $ opam $ package_name_ver $ otherdocs $ parent
+      $ files),
     Term.info "generate" ~version:"v0.0.1" ~doc ~exits:Term.default_exits )
 
 let () = Term.(exit @@ eval cmd)

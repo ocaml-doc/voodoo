@@ -3,13 +3,10 @@
  (public_name voodoo-do.odoc_thtml)
  (instrumentation
   (backend bisect_ppx))
- (preprocess
-  (pps tyxml-ppx))
  (libraries
   odoc.model
   odoc.document
   odoc.odoc
   tyxml
-  tyxml-ppx
   opam-format
   omd bos))

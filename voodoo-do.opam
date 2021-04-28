@@ -13,8 +13,11 @@ depends: [
   "voodoo-lib"
   "astring"
   "cmdliner"
-  "odoc" {with-doc}
+  "odoc"
+  "omd"
+  "tyxml"
 ]
+
 build: [
   ["dune" "subst"] {dev}
   [

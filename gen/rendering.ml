@@ -1,4 +1,5 @@
 open Odoc_odoc
+open Result
 
 let ( >>= ) r f = match r with Ok v -> f v | Error _ as e -> e
 

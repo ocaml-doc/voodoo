@@ -36,6 +36,9 @@
  (description "Voodoo compilation step")
  (depends
    voodoo-lib
+   omd
+   odoc
+   tyxml
    astring
    cmdliner))
 

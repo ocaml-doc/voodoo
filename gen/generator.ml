@@ -233,14 +233,14 @@ let rec block ~resolve (l : Block.t) : flow Html.elt list =
         ]
     | Description l ->
         [
-          (let item i =
-             let a = class_ i.Description.attr in
+          (let item (i : Odoc_document.Types.Description.one) =
+             let a = class_ i.attr in
              let term =
-               (inline ~resolve i.Description.key
+               (inline ~resolve i.key
                  : phrasing Html.elt list
                  :> flow Html.elt list)
              in
-             let def = block ~resolve i.Description.definition in
+             let def = block ~resolve i.definition in
              Html.li ~a (term @ Html.txt " " :: def)
            in
            Html.ul ~a (List.map item l));

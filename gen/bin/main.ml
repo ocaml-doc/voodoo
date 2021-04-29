@@ -31,10 +31,12 @@ let output =
     & opt (some (convert_directory ~create:true ())) None
     & info ~docs ~docv:"DIR" ~doc [ "o"; "output-dir" ])
 
+let opt_map f = function | Some x -> Some (f x) | None -> None
+
 let generate output opam namever otherdocs parent files =
   let parent = Fpath.v parent in
   let otherdocs = List.map Fpath.v otherdocs in
-  let opam = Option.map process_file opam in
+  let opam = opt_map process_file opam in
   ignore
   @@ List.map
        (Odoc_thtml.render ~opam ~namever ~parent ~otherdocs ~output)

@@ -1,4 +1,5 @@
 (* Opam metadata sidebar *)
+open Result
 
 module Html = Tyxml.Html
 module T = Tailwind
@@ -31,6 +32,9 @@ let changes_icon =
 </svg>
   |}
 
+let opt_to_list = function | None -> [] | Some x -> [x]
+let get_ok = function | Ok x -> x | _ -> failwith "Not OK"
+
 let v cur o (otherdocs : (Odoc_model.Paths.Identifier.t * Fpath.t) list) namever
     =
   let stripped x =
@@ -43,7 +47,7 @@ let v cur o (otherdocs : (Odoc_model.Paths.Identifier.t * Fpath.t) list) namever
   in
   let title = namever in
   let synopsis =
-    Option.to_list (OpamFile.OPAM.synopsis o)
+    opt_to_list (OpamFile.OPAM.synopsis o)
     |> List.map (fun s ->
            Html.p ~a:[ Html.a_class T.[ mb 5; italic; text_sm ] ] [ Html.txt s ])
   in
@@ -129,7 +133,7 @@ let v cur o (otherdocs : (Odoc_model.Paths.Identifier.t * Fpath.t) list) namever
             let url =
               Odoc_document.Url.Anchor.from_identifier
                 (id :> Odoc_model.Paths.Identifier.t)
-              |> Result.get_ok
+              |> get_ok
             in
             let l = Link.href ~resolve:(Current cur) url in
             (license_icon, l, name))
@@ -140,7 +144,7 @@ let v cur o (otherdocs : (Odoc_model.Paths.Identifier.t * Fpath.t) list) namever
             let url =
               Odoc_document.Url.Anchor.from_identifier
                 (id :> Odoc_model.Paths.Identifier.t)
-              |> Result.get_ok
+              |> get_ok
             in
             let l = Link.href ~resolve:(Current cur) url in
             (readme_icon, l, name))
@@ -151,7 +155,7 @@ let v cur o (otherdocs : (Odoc_model.Paths.Identifier.t * Fpath.t) list) namever
             let url =
               Odoc_document.Url.Anchor.from_identifier
                 (id :> Odoc_model.Paths.Identifier.t)
-              |> Result.get_ok
+              |> get_ok
             in
             let l = Link.href ~resolve:(Current cur) url in
             (changes_icon, l, name))
@@ -170,7 +174,7 @@ let v cur o (otherdocs : (Odoc_model.Paths.Identifier.t * Fpath.t) list) namever
                let url =
                  Odoc_document.Url.Anchor.from_identifier
                    (id :> Odoc_model.Paths.Identifier.t)
-                 |> Result.get_ok
+                 |> get_ok
                in
                let l = Link.href ~resolve:(Current cur) url in
                l)

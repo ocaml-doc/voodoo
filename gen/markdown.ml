@@ -1,7 +1,9 @@
 (* Markdown renderer *)
 open Omd
+open Result
 
-let ( >>= ) = Result.bind
+let ( >>= ) = fun m f -> match m with | Ok x -> f x | Error y -> Error y
+
 
 type intermediate =
   | Bl of Odoc_document.Types.Block.t

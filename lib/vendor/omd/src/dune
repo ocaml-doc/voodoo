@@ -1,6 +1,6 @@
 (library
  (name omd)
- (public_name omd)
+ (public_name voodoo-do.omd)
  (libraries astring)
  (flags :standard -w -30))
 

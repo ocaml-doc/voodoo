@@ -56,5 +56,5 @@ let mkdir_p d =
 
 let copy src dst =
   let open Result in
-  let ( >>= ) = bind in
+  let ( >>= ) m f = match m with Ok x -> f x | Error y -> Error y in
   Bos.OS.File.read src >>= Bos.OS.File.write dst

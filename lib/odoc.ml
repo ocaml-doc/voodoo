@@ -143,17 +143,20 @@ let compile ?parent ?output path ~includes ~children =
         Bos.Cmd.(cmd % "--child" % arg))
       cmd children
   in
-  Format.eprintf "compile command: %a\n%!" Bos.Cmd.pp cmd;
+  (* Format.eprintf "compile command: %a\n%!" Bos.Cmd.pp cmd; *)
   Util.lines_of_process cmd
 
-let link path ~includes =
-  let cmd = Bos.Cmd.(v "odoc" % "link" % Fpath.to_string path) in
+let link path ~includes ~output =
+  let cmd =
+    Bos.Cmd.(
+      v "odoc" % "link" % Fpath.to_string path % "-o" % Fpath.to_string output)
+  in
   let cmd =
     Fpath.Set.fold
       (fun i c -> Bos.Cmd.(c % "-I" % Fpath.to_string i))
       includes cmd
   in
-  (* Format.eprintf "link: cmd=%a\n%!" Bos.Cmd.pp cmd; *)
+  Format.eprintf "link: cmd=%a\n%!" Bos.Cmd.pp cmd;
   Util.lines_of_process cmd
 
 let html path output =

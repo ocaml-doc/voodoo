@@ -34,12 +34,12 @@ end
 module IncludePaths = struct
   let get : Index.t -> Sourceinfo.t -> Fpath.Set.t =
    fun index si ->
-    let s = Mld.output_dir si.parent in
+    let s = Mld.compile_dir si.parent in
     let set = Fpath.Set.of_list [ s ] in
     List.fold_left
       (fun paths dep ->
         match Index.find_opt dep.Odoc.c_digest index with
-        | Some si -> Fpath.Set.add Sourceinfo.(output_dir si) paths
+        | Some si -> Fpath.Set.add Sourceinfo.(compile_dir si) paths
         | None -> (
             match Index.find_extern_opt dep.Odoc.c_digest index with
             | Some p -> Fpath.Set.add p paths
@@ -53,7 +53,7 @@ module IncludePaths = struct
    fun index ->
     let dirs =
       Index.M.fold
-        (fun _ v acc -> Fpath.Set.add (Sourceinfo.output_dir v) acc)
+        (fun _ v acc -> Fpath.Set.add (Sourceinfo.compile_dir v) acc)
         index.intern Fpath.Set.empty
     in
     Index.M.fold (fun _ v acc -> Fpath.Set.add v acc) index.extern dirs
@@ -111,10 +111,12 @@ let run pkg_name is_blessed =
   in
   (* Remove old pages *)
   let () =
-    Bos.OS.File.delete (Fpath.v "compile/page-packages.odoc") |> Util.get_ok
+    Bos.OS.File.delete Fpath.(Paths.compile / "page-packages.odoc")
+    |> Util.get_ok
   in
   let () =
-    Bos.OS.File.delete (Fpath.v "compile/page-universes.odoc") |> Util.get_ok
+    Bos.OS.File.delete Fpath.(Paths.compile / "page-universes.odoc")
+    |> Util.get_ok
   in
 
   let universe, version =
@@ -182,7 +184,7 @@ let run pkg_name is_blessed =
 
   let sis = prep >>= get_source_info parent in
   let this_index = InputSelect.select sis in
-  Index.write this_index package is_blessed;
+  Index.write this_index parent;
   let index = Index.combine this_index index in
   let rec compile h si compiled =
     if List.mem si.Sourceinfo.path compiled then compiled
@@ -207,13 +209,18 @@ let run pkg_name is_blessed =
   let unit_includes = IncludePaths.link index in
   let docs_includes = Package_mlds.include_paths mldvs in
   let all_includes = Fpath.Set.union unit_includes docs_includes in
-  let all_includes = Fpath.Set.add (Mld.output_dir parent) all_includes in
+  let all_includes = Fpath.Set.add (Mld.compile_dir parent) all_includes in
   let output = Fpath.(v "html") in
   Util.mkdir_p output;
   Index.M.iter
     (fun _ si ->
       if Sourceinfo.is_hidden si then ()
-      else ignore (Odoc.link (Sourceinfo.output_file si) ~includes:all_includes))
+      else
+        ignore
+          (Odoc.link
+             (Sourceinfo.output_file si)
+             ~includes:all_includes
+             ~output:(Sourceinfo.output_odocl si)))
     this_index.intern;
   let odocls =
     Index.M.fold
@@ -222,15 +229,20 @@ let run pkg_name is_blessed =
         else Sourceinfo.output_odocl si :: acc)
       this_index.intern []
   in
-  ignore (Odoc.link (Mld.output_file parent) ~includes:all_includes);
+  ignore
+    (Odoc.link (Mld.output_file parent) ~includes:all_includes
+       ~output:(Mld.output_odocl parent));
   List.iter
     (fun mldv ->
-      ignore (Odoc.link (Mld.output_file mldv) ~includes:all_includes))
+      ignore
+        (Odoc.link (Mld.output_file mldv) ~includes:all_includes
+           ~output:(Mld.output_odocl mldv)))
     mldvs;
   let odocls = odocls @ List.map Mld.output_odocl (parent :: mldvs) in
   let name = Printf.sprintf "%s.%s" pkg_name version in
+  let otherdocs, opam_file = Otherdocs.copy parent otherdocs opam_file in
   Odoc.gen output name opam_file
-    (Mld.output_file parent |> Fpath.to_string)
+    (Mld.output_odocl parent |> Fpath.to_string)
     otherdocs odocls;
   let () =
     Bos.OS.File.delete (Fpath.v "compile/page-packages.odoc") |> Util.get_ok

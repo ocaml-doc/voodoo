@@ -39,5 +39,5 @@ let include_paths mlds =
     match mlds with { Mld.parent = Some p; _ } :: _ -> p :: mlds | _ -> mlds
   in
   List.fold_left
-    (fun acc mld -> Fpath.Set.add (Mld.output_dir mld) acc)
+    (fun acc mld -> Fpath.Set.add (Mld.compile_dir mld) acc)
     Fpath.Set.empty all_mlds

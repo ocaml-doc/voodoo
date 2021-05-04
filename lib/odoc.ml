@@ -167,29 +167,11 @@ let html path output =
   in
   Util.lines_of_process cmd
 
-let gen output name opam parent otherdocs files =
-  match files with
-  | [] -> ()
-  | _ ->
-      let cmd =
-        Bos.Cmd.(
-          v "voodoo-gen" % "-o" % Fpath.to_string output % "-n" % name
-          % "--parent" % parent)
-      in
-      let cmd =
-        match opam with
-        | Some o -> Bos.Cmd.(cmd % "--opam" % Fpath.to_string o)
-        | None -> cmd
-      in
-      let cmd =
-        List.fold_right
-          (fun f cmd -> Bos.Cmd.(cmd % Fpath.to_string f))
-          files cmd
-      in
-      let cmd =
-        List.fold_right
-          (fun f cmd -> Bos.Cmd.(cmd % "--otherdoc" % Fpath.to_string f))
-          otherdocs cmd
-      in
-      Format.eprintf "Odoc.gen: %a\n%!" Bos.Cmd.pp cmd;
-      Util.lines_of_process cmd |> ignore
+let gen output name version =
+  let cmd =
+    Bos.Cmd.(
+      v "voodoo-gen" % "-o" % Fpath.to_string output % "-n" % name
+      % "--pkg-version" % version)
+  in
+  Format.eprintf "Odoc.gen: %a\n%!" Bos.Cmd.pp cmd;
+  Util.lines_of_process cmd |> ignore

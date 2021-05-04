@@ -53,7 +53,7 @@ let render ~opam ~output ~namever ~parent ~otherdocs file =
   Tree.opam := opam;
   Tree.namever := namever;
   Tree.otherdocs := docs;
-  let f = Fs.File.of_string file in
+  let f = Fs.File.of_string (Fpath.to_string file) in
   document_of_odocl ~syntax:Odoc_document.Renderer.OCaml f
   >>= render_document ~output
 

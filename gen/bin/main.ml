@@ -2,8 +2,8 @@ open Cmdliner
 
 let docs = "ARGUMENTS"
 
-let process_file f =
-  let ic = open_in f in
+let process_opam_file f =
+  let ic = open_in (Fpath.to_string f) in
   let result = OpamFile.OPAM.read_from_channel ic in
   close_in ic;
   result
@@ -33,43 +33,88 @@ let output =
 
 let opt_map f = function Some x -> Some (f x) | None -> None
 
-let generate output opam namever otherdocs parent files =
-  let parent = Fpath.v parent in
-  let otherdocs = List.map Fpath.v otherdocs in
-  let opam = opt_map process_file opam in
-  ignore
-  @@ List.map
-       (Odoc_thtml.render ~opam ~namever ~parent ~otherdocs ~output)
-       files;
-  ignore @@ Odoc_thtml.render_other ~parent ~otherdocs ~output
+type files = {
+  opam : Fpath.t option;
+  otherdocs : Fpath.t list;
+  odocls : Fpath.t list;
+}
 
-let opam =
-  let doc = "Opam file from which to take metadata" in
-  Arg.(value & opt (some file) None & info ~docs ~docv:"OPAM" ~doc [ "opam" ])
+let empty = { opam = None; otherdocs = []; odocls = [] }
 
-let package_name_ver =
-  let doc = "Package name and version (e.g. voodoo.0.0.1)" in
+let generate output name_filter version_filter =
+  let linkedpath = Fpath.(v "linked") in
+  match
+    Bos.OS.Dir.fold_contents ~elements:`Dirs
+      (fun p acc ->
+        let optmatch opt v = match opt with Some x -> x = v | None -> true in
+        match Fpath.segs p with
+        | [ "linked"; "packages"; pkg_name; pkg_version ]
+          when optmatch name_filter pkg_name
+               && optmatch version_filter pkg_version ->
+            (p, pkg_name, pkg_version) :: acc
+        | [ "linked"; "universes"; _; pkg_name; pkg_version ]
+          when optmatch name_filter pkg_name
+               && optmatch version_filter pkg_version ->
+            (p, pkg_name, pkg_version) :: acc
+        | _ -> acc)
+      [] linkedpath
+  with
+  | Error (`Msg m) ->
+      Format.eprintf "Failed to find any packages: %s\n%!" m;
+      exit 1
+  | Ok pkgs ->
+      let handle_package (pkg_path, pkg_name, ver) =
+        match
+          Bos.OS.Dir.fold_contents ~elements:`Files ~dotfiles:false
+            (fun p files ->
+              match Fpath.get_ext p with
+              | ".odocl" -> { files with odocls = p :: files.odocls }
+              | _ -> (
+                  match Fpath.basename p with
+                  | "opam" -> { files with opam = Some p }
+                  | _ -> { files with otherdocs = p :: files.otherdocs }))
+            empty pkg_path
+        with
+        | Error (`Msg m) ->
+            Format.eprintf "Failed to handle package %s.%s: %s\n%!" pkg_name ver
+              m;
+            exit 1
+        | Ok files ->
+            let opam = opt_map process_opam_file files.opam in
+            let namever = pkg_name ^ "." ^ ver in
+            let parent = Fpath.(pkg_path / ".." / ("page-" ^ ver ^ ".odocl")) in
+            let otherdocs = files.otherdocs in
+            let files = parent :: files.odocls in
+            ignore
+            @@ List.map
+                 (Odoc_thtml.render ~opam ~namever ~parent ~otherdocs ~output)
+                 files;
+            Odoc_thtml.render_other ~parent ~otherdocs ~output
+      in
+      List.map handle_package pkgs
+
+let package_name =
+  let doc =
+    "Package name (e.g. voodoo) - will only handle the named package if set"
+  in
   Arg.(
-    required
+    value
     & opt (some string) None
-    & info ~docs ~docv:"NAMEVER" ~doc [ "n"; "name" ])
+    & info ~docs ~docv:"NAME" ~doc [ "n"; "name" ])
 
-let otherdocs =
-  let doc = "Path to other documentation distributed with the package" in
-  Arg.(value & opt_all file [] & info ~docs ~docv:"DOCFILE" ~doc [ "otherdoc" ])
-
-let parent =
-  let doc = "Parent odoc for other docs" in
+let package_version =
+  let doc =
+    "Package version (e.g. 0.0.1) - will only handle the specified version \
+     package if set"
+  in
   Arg.(
-    required
-    & opt (some file) None
-    & info ~docs ~docv:"ODOCFILE" ~doc [ "parent" ])
+    value
+    & opt (some string) None
+    & info ~docs ~docv:"VERSION" ~doc [ "pkg-version" ])
 
 let cmd =
   let doc = "Generate HTML pages from odocl files" in
-  ( Term.(
-      const generate $ output $ opam $ package_name_ver $ otherdocs $ parent
-      $ files),
+  ( Term.(const generate $ output $ package_name $ package_version),
     Term.info "generate" ~version:"v0.0.1" ~doc ~exits:Term.default_exits )
 
 let () = Term.(exit @@ eval cmd)

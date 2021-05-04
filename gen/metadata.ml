@@ -1,6 +1,5 @@
 (* Opam metadata sidebar *)
 open Result
-
 module Html = Tyxml.Html
 module T = Tailwind
 
@@ -32,8 +31,9 @@ let changes_icon =
 </svg>
   |}
 
-let opt_to_list = function | None -> [] | Some x -> [x]
-let get_ok = function | Ok x -> x | _ -> failwith "Not OK"
+let opt_to_list = function None -> [] | Some x -> [ x ]
+
+let get_ok = function Ok x -> x | _ -> failwith "Not OK"
 
 let v cur o (otherdocs : (Odoc_model.Paths.Identifier.t * Fpath.t) list) namever
     =
@@ -219,7 +219,7 @@ let v cur o (otherdocs : (Odoc_model.Paths.Identifier.t * Fpath.t) list) namever
 
   [
     Html.div
-      ~a:[ Html.a_class T.[ flex; h 20; border_b; relative ] ]
+      ~a:[ Html.a_class T.[ flex; h 20; border_b `b1; relative ] ]
       [
         Html.h2
           ~a:

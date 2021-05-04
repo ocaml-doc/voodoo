@@ -31,7 +31,7 @@ let output =
     & opt (some (convert_directory ~create:true ())) None
     & info ~docs ~docv:"DIR" ~doc [ "o"; "output-dir" ])
 
-let opt_map f = function | Some x -> Some (f x) | None -> None
+let opt_map f = function Some x -> Some (f x) | None -> None
 
 let generate output opam namever otherdocs parent files =
   let parent = Fpath.v parent in

@@ -71,6 +71,7 @@ let v =
                 px 2;
                 w_screen;
                 max_w_xs;
+                hidden;
                 sm @@ px 0;
               ];
         ]

@@ -17,6 +17,7 @@
 open Odoc_document.Types
 module Html = Tyxml.Html
 module Doctree = Odoc_document.Doctree
+module T = Tailwind
 
 type any = Html_types.flow5
 
@@ -28,29 +29,29 @@ type phrasing = Html_types.phrasing
 
 type non_link_phrasing = Html_types.phrasing_without_interactive
 
-let mk_anchor_link id pr =
+let mk_anchor_link id prn =
   [
     Html.a
       ~a:
         [
           Html.a_href ("#" ^ id);
-          Html.a_class
-            [ "hover-link"; "inline-block"; "-ml-7"; "pr-" ^ string_of_int pr ];
+          Html.a_class T.[ "hover-link"; inline_block; ml (-7); pr prn ];
         ]
       [
         Html.span
           ~a:
             [
               Html.a_class
-                [
-                  "align-middle";
-                  "text-gray-200";
-                  "transition";
-                  "text-base";
-                  "font-serif";
-                  "opacity-0";
-                  "hover:text-gray-700";
-                ];
+                T.
+                  [
+                    align_middle;
+                    text_gray 200;
+                    transition;
+                    text_base;
+                    font_sans;
+                    opacity 0;
+                    hover @@ text_gray 700;
+                  ];
             ]
           [ Html.txt "#" ];
       ];
@@ -98,7 +99,7 @@ and source k ?a (t : Source.t) =
         [ Html.span ~a:[ Html.a_class (class_of_keyword cls) ] (tokens l) ]
   and tokens t = Utils.list_concat_map t ~f:token in
   let a' = match a with Some xs -> xs | None -> [] in
-  let a = Html.a_class [ "font-normal"; "text-base" ] :: a' in
+  let a = Html.a_class T.[ font_normal; text_base ] :: a' in
   Utils.optional_elt Html.code ~a (tokens t)
 
 and styled style ~emph_level =
@@ -115,7 +116,7 @@ let rec internallink ~emph_level ~resolve (t : InternalLink.t) =
   match t with
   | Resolved (uri, content) ->
       let href = Link.href ~resolve uri in
-      let a = [ Html.a_class [ "cursor-pointer"; "text-blue-500" ] ] in
+      let a = [ Html.a_class T.[ cursor_pointer; text_blue 500 ] ] in
       let elt =
         Html.a ~a:(Html.a_href href :: a) (inline_nolink ~emph_level content)
       in
@@ -154,7 +155,7 @@ and inline ?(emph_level = 0) ~resolve (l : Inline.t) : phrasing Html.elt list =
             ~a:
               [
                 Html.a_href href;
-                Html.a_class [ "cursor-pointer"; "text-blue-500" ];
+                Html.a_class T.[ cursor_pointer; text_blue 500 ];
               ]
             content;
         ]
@@ -192,17 +193,15 @@ let heading ~resolve (h : Heading.t) =
     | None -> ([], [], [])
   in
   let content = inline ~resolve h.title in
-  let common = [ "text-gray-800"; "font-sans" ] @ extracls in
+  let common = T.[ text_gray 800; font_sans ] @ extracls in
   let mk, classes =
     match h.level with
     | 0 ->
         ( Html.h1,
-          [
-            "text-3xl"; "mt-7"; "border-b-2"; "border-gray-200"; "font-semibold";
-          ] )
-    | 1 -> (Html.h2, [ "text-2xl"; "my-4" ])
-    | 2 -> (Html.h3, [ "text-xl"; "my-4"; "text-gray-900" ])
-    | 3 -> (Html.h4, [ "text-lg"; "text-gray-900" ])
+          T.[ text_3xl; mt 7; border_b `b2; border_gray 200; font_semibold ] )
+    | 1 -> (Html.h2, T.[ text_2xl; my 4 ])
+    | 2 -> (Html.h3, T.[ text_xl; my 4; text_gray 900 ])
+    | 3 -> (Html.h4, T.[ text_lg; text_gray 900 ])
     | 4 -> (Html.h5, [])
     | _ -> (Html.h6, [])
   in
@@ -217,18 +216,18 @@ let rec block ~resolve (l : Block.t) : flow Html.elt list =
         if a = [] then as_flow @@ inline ~resolve i
         else [ Html.span ~a (inline ~resolve i) ]
     | Paragraph i ->
-        [ Html.p ~a:[ Html.a_class [ "mt-4" ] ] (inline ~resolve i) ]
+        [ Html.p ~a:[ Html.a_class T.[ mt 4 ] ] (inline ~resolve i) ]
     | List (typ, l) ->
         let mk, cls =
           match typ with
-          | Ordered -> (Html.ol, [ "list-decimal"; "mt-2"; "mb-4" ])
-          | Unordered -> (Html.ul, [ "list-disc"; "mt-2"; "mb-4" ])
+          | Ordered -> (Html.ol, T.[ list_decimal; mt 2; mb 4 ])
+          | Unordered -> (Html.ul, T.[ list_disc; mt 2; mb 4 ])
         in
         [
           mk ~a:[ Html.a_class cls ]
             (List.map
                (fun x ->
-                 Html.li ~a:[ Html.a_class [ "ml-6" ] ] (block ~resolve x))
+                 Html.li ~a:[ Html.a_class T.[ ml 6 ] ] (block ~resolve x))
                l);
         ]
     | Description l ->
@@ -249,15 +248,13 @@ let rec block ~resolve (l : Block.t) : flow Html.elt list =
     | Verbatim s ->
         [
           Html.pre
-            ~a:
-              [ Html.a_class [ "bg-gray-100"; "p-3"; "my-2"; "overflow-auto" ] ]
+            ~a:[ Html.a_class T.[ bg_gray 100; p 3; my 2; overflow_auto ] ]
             [ Html.txt s ];
         ]
     | Source c ->
         [
           Html.pre
-            ~a:
-              [ Html.a_class [ "bg-gray-100"; "p-3"; "my-2"; "overflow-auto" ] ]
+            ~a:[ Html.a_class T.[ bg_gray 100; p 3; my 2; overflow_auto ] ]
             (source (inline ~resolve) c);
         ]
   in
@@ -322,11 +319,11 @@ let rec documentedSrc ~resolve (t : DocumentedSrc.t) : item Html.elt list =
                 let opening, closing = markers in
                 [
                   Html.td
-                    ~a:(class_ [ "def-doc"; "pl-4" ])
-                    (Html.span ~a:(class_ [ "sr-only" ]) [ Html.txt opening ]
+                    ~a:(class_ T.[ "def-doc"; pl 4 ])
+                    (Html.span ~a:(class_ T.[ sr_only ]) [ Html.txt opening ]
                      :: (inline ~resolve doc :> flow Html.elt list)
                     @ [
-                        Html.span ~a:(class_ [ "sr-only" ]) [ Html.txt closing ];
+                        Html.span ~a:(class_ T.[ sr_only ]) [ Html.txt closing ];
                       ]);
                 ]
             | _ -> []
@@ -337,7 +334,7 @@ let rec documentedSrc ~resolve (t : DocumentedSrc.t) : item Html.elt list =
           let content =
             let c = link @ content in
             Html.td
-              ~a:(class_ ((*attrs @*) classes @ [ "pl-4" ]))
+              ~a:(class_ ((*attrs @*) classes @ T.[ pl 4 ]))
               (c :> any Html.elt list)
           in
           Html.tr ~a (content :: doc)
@@ -376,18 +373,20 @@ and items ~resolve l : item Html.elt list =
               ~a:
                 [
                   Html.a_class
-                    [
-                      "absolute";
-                      "bg-gray-500";
-                      "opacity-10";
-                      "border-gray-500";
-                      "rounded-lg";
-                      "border-r-8";
-                      "rounded-l-none";
-                      "top-1";
-                      "-right-5";
-                      "bottom-1 w-4";
-                    ];
+                    T.
+                      [
+                        absolute;
+                        bg_gray 500;
+                        opacity 10;
+                        border_gray 500;
+                        rounded_lg;
+                        border_r `b8;
+                        rounded_l_none;
+                        top 1;
+                        right (-5);
+                        bottom 1;
+                        w 4;
+                      ];
                 ]
               [];
           ]
@@ -395,7 +394,7 @@ and items ~resolve l : item Html.elt list =
         let content =
           let details ~open' =
             let open' = if open' then [ Html.a_open () ] else [] in
-            let cls = [ Html.a_class [ "relative" ] ] in
+            let cls = [ Html.a_class T.[ relative ] ] in
             let summary =
               let anchor_attrib, classes, anchor_link = mk_anchor anchor in
               let a = spec_class (attr @ classes) @ anchor_attrib in
@@ -418,21 +417,22 @@ and items ~resolve l : item Html.elt list =
         let a =
           spec_class
             (attr @ classes
-            @ [
-                "p-2";
-                "text-base";
-                "rounded";
-                "border-l-4";
-                "border-blue-500";
-                "my-3";
-                "bg-gray-100";
-              ])
+            @ T.
+                [
+                  p 2;
+                  text_base;
+                  rounded;
+                  border_l `b4;
+                  border_blue 500;
+                  my 3;
+                  bg_gray 100;
+                ])
           @ anchor_attrib
         in
         let content = anchor_link @ documentedSrc ~resolve content in
         let spec =
           let doc = spec_doc_div ~resolve doc in
-          [ div ~a:[ Html.a_class [ "mt-8" ] ] (div ~a content :: doc) ]
+          [ div ~a:[ Html.a_class T.[ mt 8 ] ] (div ~a content :: doc) ]
         in
         (continue_with [@tailcall]) rest spec
   and items l = walk_items [] l in
@@ -454,8 +454,7 @@ module Toc = struct
         Html.a
           ~a:
             [
-              Html.a_href href;
-              Html.a_class [ "cursor-pointer"; "text-blue-500" ];
+              Html.a_href href; Html.a_class T.[ cursor_pointer; text_blue 500 ];
             ]
           text
       in
@@ -468,9 +467,7 @@ module Toc = struct
     match toc with
     | [] -> []
     | _ ->
-        [
-          Html.nav ~a:[ Html.a_class [ "bg-gray-100"; "p-5" ] ] [ sections toc ];
-        ]
+        [ Html.nav ~a:[ Html.a_class T.[ bg_gray 100; p 5 ] ] [ sections toc ] ]
 
   let on_sub : Subpage.status -> bool = function
     | `Closed | `Open | `Default -> false
@@ -501,21 +498,31 @@ module Page = struct
         ~a:
           [
             Html.a_class
-              [
-                "text-3xl absolute inset-x-0 py-3 mt-7 border-b bottom-0 \
-                 border-gray-200 font-semibold text-gray-500 font-sans";
-              ];
+              T.
+                [
+                  text_3xl;
+                  absolute;
+                  inset_x 0;
+                  py 3;
+                  mt 7;
+                  border_b `b1;
+                  bottom 0;
+                  border_gray 200;
+                  font_semibold;
+                  text_gray 500;
+                  font_sans;
+                ];
           ]
         (Html.code
-           ~a:[ Html.a_class [ "font-mono"; "text-gray-800" ] ]
+           ~a:[ Html.a_class T.[ font_mono; text_gray 800 ] ]
            [ Html.txt title ]
          ::
          (match page_type with
          | None -> []
          | Some t ->
-             [ Html.span ~a:[ Html.a_class [ "float-right" ] ] [ Html.txt t ] ]))
+             [ Html.span ~a:[ Html.a_class T.[ float_right ] ] [ Html.txt t ] ]))
     in
-    Html.div ~a:[ Html.a_class [ "flex"; "h-20"; "relative" ] ] [ h1 ]
+    Html.div ~a:[ Html.a_class T.[ flex; h 20; relative ] ] [ h1 ]
 
   and unparse_header h =
     let open Odoc_document.Types in

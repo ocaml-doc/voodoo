@@ -45,24 +45,29 @@ let generate output name_filter version_filter =
   let linkedpath = Fpath.(v "linked") in
   match
     Bos.OS.Dir.fold_contents ~elements:`Dirs
-      (fun p acc ->
+      (fun p (pkgs, othervers) ->
         let optmatch opt v = match opt with Some x -> x = v | None -> true in
         match Fpath.segs p with
         | [ "linked"; "packages"; pkg_name; pkg_version ]
           when optmatch name_filter pkg_name
                && optmatch version_filter pkg_version ->
-            (p, pkg_name, pkg_version) :: acc
+            ((p, pkg_name, pkg_version) :: pkgs, othervers)
+        | [ "linked"; "packages"; pkg_name; pkg_version ]
+          when optmatch name_filter pkg_name ->
+            (pkgs, pkg_version :: othervers)
         | [ "linked"; "universes"; _; pkg_name; pkg_version ]
           when optmatch name_filter pkg_name
                && optmatch version_filter pkg_version ->
-            (p, pkg_name, pkg_version) :: acc
-        | _ -> acc)
-      [] linkedpath
+            ((p, pkg_name, pkg_version) :: pkgs, othervers)
+        | _ -> (pkgs, othervers))
+      ([], []) linkedpath
   with
   | Error (`Msg m) ->
       Format.eprintf "Failed to find any packages: %s\n%!" m;
       exit 1
-  | Ok pkgs ->
+  | Ok (pkgs, vs) ->
+      Format.eprintf "%d other versons, %d packages\n%!" (List.length vs)
+        (List.length pkgs);
       let handle_package (pkg_path, pkg_name, ver) =
         match
           Bos.OS.Dir.fold_contents ~elements:`Files ~dotfiles:false
@@ -87,7 +92,8 @@ let generate output name_filter version_filter =
             let files = parent :: files.odocls in
             ignore
             @@ List.map
-                 (Odoc_thtml.render ~opam ~namever ~parent ~otherdocs ~output)
+                 (Odoc_thtml.render ~opam ~namever ~parent ~otherdocs ~vs
+                    ~output)
                  files;
             Odoc_thtml.render_other ~parent ~otherdocs ~output
       in

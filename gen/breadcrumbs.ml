@@ -69,10 +69,10 @@ let breadcrumbs home_url items =
             Html.a_class
               T.
                 [
-                  bg_gray 900;
+                  "bg-orange";
                   border_t `b1;
                   border_b `b1;
-                  border_gray 700;
+                  "border-orange";
                   flex;
                   flex_row;
                 ];

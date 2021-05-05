@@ -177,7 +177,7 @@ let v =
       ]
   in
   Html.div
-    ~a:[ Html.a_class T.[ relative; shadow ] ]
+    ~a:[ Html.a_class T.[ relative ] ]
     [
       Html.div
         ~a:[ Html.a_class T.[ relative ] ]

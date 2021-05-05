@@ -35,8 +35,21 @@ let opt_to_list = function None -> [] | Some x -> [ x ]
 
 let get_ok = function Ok x -> x | _ -> failwith "Not OK"
 
-let v cur o (otherdocs : (Odoc_model.Paths.Identifier.t * Fpath.t) list) namever
-    =
+let package_url name : Link.Url.t =
+  {
+    page =
+      {
+        kind = "container-page";
+        name;
+        parent =
+          Some { kind = "container-page"; name = "packages"; parent = None };
+      };
+    anchor = "";
+    kind = "";
+  }
+
+let v cur o (otherversions : Odoc_model.Paths.Identifier.t list)
+    (otherdocs : (Odoc_model.Paths.Identifier.t * Fpath.t) list) namever =
   let stripped x =
     let strip prefix x =
       if Astring.String.is_prefix ~affix:prefix x then
@@ -45,6 +58,7 @@ let v cur o (otherdocs : (Odoc_model.Paths.Identifier.t * Fpath.t) list) namever
     in
     List.fold_right strip [ "https://"; "http://" ] x
   in
+  Format.eprintf "%d other versions in metadata\n%!" (List.length otherversions);
   let title = namever in
   let synopsis =
     opt_to_list (OpamFile.OPAM.synopsis o)
@@ -65,7 +79,7 @@ let v cur o (otherdocs : (Odoc_model.Paths.Identifier.t * Fpath.t) list) namever
                    ~a:
                      [
                        Html.a_class
-                         T.[ text_blue 500; cursor_pointer; mb 2; text_sm ];
+                         T.[ "text-orange"; cursor_pointer; mb 2; text_sm ];
                        Html.a_href h;
                      ]
                    [ Html.txt txt ];
@@ -86,7 +100,7 @@ let v cur o (otherdocs : (Odoc_model.Paths.Identifier.t * Fpath.t) list) namever
                ~a:
                  [
                    Html.a_class
-                     T.[ text_blue 500; cursor_pointer; mb 2; text_sm ];
+                     T.[ "text-orange"; cursor_pointer; mb 2; text_sm ];
                    Html.a_href h;
                  ]
                [ Html.txt (stripped h) ])
@@ -161,6 +175,33 @@ let v cur o (otherdocs : (Odoc_model.Paths.Identifier.t * Fpath.t) list) namever
             (changes_icon, l, name))
           changes)
   in
+
+  let otherversions =
+    match otherversions with
+    | [] -> []
+    | xs ->
+        [
+          Html.details
+            ~a:[ Html.a_class T.[ font_normal; mb 2; text_sm ] ]
+            (Html.summary [ Html.txt "Other versions" ])
+            [
+              Html.ul
+                ~a:[ Html.a_class T.[ ml 4; "test-orange" ] ]
+                (List.map
+                   (fun id ->
+                     let name = Odoc_model.Paths.Identifier.name id in
+                     let url =
+                       Odoc_document.Url.Anchor.from_identifier
+                         (id :> Odoc_model.Paths.Identifier.t)
+                       |> get_ok
+                     in
+                     let l = Link.href ~resolve:(Current cur) url in
+                     Html.li [ Html.a ~a:[ Html.a_href l ] [ Html.txt name ] ])
+                   xs);
+            ];
+        ]
+  in
+
   let authors = text "Authors" (OpamFile.OPAM.author o) in
   let issues = links "Issues" (OpamFile.OPAM.bug_reports o) in
 
@@ -193,7 +234,18 @@ let v cur o (otherdocs : (Odoc_model.Paths.Identifier.t * Fpath.t) list) namever
         (* let name, constr =
              html_atom univ.st ~prefix:(Uri.of_string prefix) pkg (name, f)
            in *)
-        Html.li [ Html.span [ Html.txt (OpamPackage.Name.to_string name) ] ]
+        let sname = OpamPackage.Name.to_string name in
+        let package_url = package_url sname in
+        Html.li
+          [
+            Html.a
+              ~a:
+                [
+                  Html.a_href (Link.href ~resolve:(Current cur) package_url);
+                  Html.a_class T.[ "text-orange"; cursor_pointer ];
+                ]
+              [ Html.txt sname ];
+          ]
         :: formula_list r
   and and_formula : OpamTypes.filtered_formula -> Html_types.flow5 Html.elt =
     function
@@ -241,5 +293,6 @@ let v cur o (otherdocs : (Odoc_model.Paths.Identifier.t * Fpath.t) list) namever
       ];
     Html.div
       ~a:[ Html.a_class T.[ m 3 ] ]
-      (synopsis @ homepage @ otherdocs @ authors @ issues @ dependencies);
+      (synopsis @ homepage @ otherdocs @ otherversions @ authors @ issues
+     @ dependencies);
   ]

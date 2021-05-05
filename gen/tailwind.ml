@@ -26,6 +26,8 @@ let overflow_auto = "overflow-auto"
 
 let overflow_hidden = "overflow-hidden"
 
+let truncate = "truncate"
+
 let sticky = "sticky"
 
 let relative = "relative"
@@ -190,7 +192,7 @@ let rounded_lg = "rounded-lg"
 
 let rounded = "rounded"
 
-let rounded_l_none = "rounded_l_none"
+let rounded_l_none = "rounded-l-none"
 
 let border_t = border_fn "border-t"
 

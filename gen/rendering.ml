@@ -48,11 +48,30 @@ let docs_ids parent docs =
           Ok result)
   | _ -> Error (`Msg "Parent is not a page!")
 
-let render ~opam ~output ~namever ~parent ~otherdocs file =
+let otherversions parent vs =
+  Root.read parent >>= fun root ->
+  match root.file with
+  | Page _ -> (
+      Page.load parent >>= fun odoctree ->
+      match odoctree.Odoc_model.Lang.Page.name with
+      | `LeafPage _ -> Error (`Msg "Parent is a leaf!")
+      | `RootPage _ -> Error (`Msg "Parent is a root!")
+      | `Page (parent_id, _) ->
+          let result =
+            List.map
+              (fun v -> `Page (parent_id, Odoc_model.Names.PageName.make_std v))
+              vs
+          in
+          Ok result)
+  | _ -> Error (`Msg "Parent is not a page!")
+
+let render ~opam ~output ~namever ~parent ~otherdocs ~vs file =
   docs_ids parent otherdocs >>= fun docs ->
+  otherversions parent vs >>= fun otherversions ->
   Tree.opam := opam;
   Tree.namever := namever;
   Tree.otherdocs := docs;
+  Tree.othervers := otherversions;
   let f = Fs.File.of_string (Fpath.to_string file) in
   document_of_odocl ~syntax:Odoc_document.Renderer.OCaml f
   >>= render_document ~output

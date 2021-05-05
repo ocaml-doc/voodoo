@@ -23,6 +23,8 @@ let namever : string ref = ref ""
 
 let otherdocs : (Odoc_model.Paths.Identifier.t * Fpath.t) list ref = ref []
 
+let othervers : Odoc_model.Paths.Identifier.t list ref = ref []
+
 type uri = Absolute of string | Relative of string
 
 let page_creator ?(theme_uri = Relative "./") ~url name header
@@ -156,7 +158,7 @@ let page_creator ?(theme_uri = Relative "./") ~url name header
   let metadata =
     match !opam with
     | None -> [ Html.txt "No opam file" ]
-    | Some o -> Metadata.v url o !otherdocs !namever
+    | Some o -> Metadata.v url o !othervers !otherdocs !namever
   in
 
   let opam_container =
@@ -167,7 +169,14 @@ let page_creator ?(theme_uri = Relative "./") ~url name header
           ~a:[ Html.a_class T.[ flex_1 ] ]
           [
             Html.div
-              ~a:[ Html.a_class T.[ lg max_w_5xl; mx_auto; px 10 ] ]
+              ~a:
+                [
+                  Html.a_class
+                    T.
+                      [
+                        lg max_w_5xl; mx_auto; px 3; lg @@ px 10; mb 10; text_sm;
+                      ];
+                ]
               (header @ content);
           ];
         Html.div
@@ -200,7 +209,8 @@ let page_creator ?(theme_uri = Relative "./") ~url name header
       [ breadcrumbs; content_div ]
   in
   Html.html head
-    (Html.body ~a:[ Html.a_class [] ]
+    (Html.body
+       ~a:[ Html.a_class T.[ mx_auto; "max-w-screen-2xl" ] ]
        [
          Main_header.v;
          Html.div

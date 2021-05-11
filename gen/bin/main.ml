@@ -90,6 +90,7 @@ let generate output name_filter version_filter =
             let parent = Fpath.(pkg_path / ".." / ("page-" ^ ver ^ ".odocl")) in
             let otherdocs = files.otherdocs in
             let files = parent :: files.odocls in
+            Format.eprintf "Found %d files\n%!" (List.length files);
             ignore
             @@ List.map
                  (Odoc_thtml.render ~opam ~namever ~parent ~otherdocs ~vs

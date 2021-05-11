@@ -159,15 +159,15 @@ let link path ~includes ~output =
   Format.eprintf "link: cmd=%a\n%!" Bos.Cmd.pp cmd;
   Util.lines_of_process cmd
 
-let html path output =
+let html output path =
   let cmd =
     Bos.Cmd.(
       v "odoc" % "html-generate" % "--indent" % Fpath.to_string path % "-o"
       % Fpath.to_string output)
   in
-  Util.lines_of_process cmd
+  Util.lines_of_process cmd |> ignore
 
-let gen output name version =
+let voodoo_gen output name version =
   let cmd =
     Bos.Cmd.(
       v "voodoo-gen" % "-o" % Fpath.to_string output % "-n" % name

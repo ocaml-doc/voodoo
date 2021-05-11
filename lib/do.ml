@@ -238,9 +238,10 @@ let run pkg_name is_blessed =
         (Odoc.link (Mld.output_file mldv) ~includes:all_includes
            ~output:(Mld.output_odocl mldv)))
     mldvs;
-  let _odocls = odocls @ List.map Mld.output_odocl (parent :: mldvs) in
+  let odocls = odocls @ List.map Mld.output_odocl (parent :: mldvs) in
   let _otherdocs, _opam_file = Otherdocs.copy parent otherdocs opam_file in
-  Odoc.gen output pkg_name version;
+  List.iter (Odoc.html output) odocls;
+  Odoc.voodoo_gen Fpath.(output / "tailwind") pkg_name version;
   let () =
     Bos.OS.File.delete (Fpath.v "compile/page-packages.odoc") |> Util.get_ok
   in

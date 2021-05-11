@@ -15,7 +15,7 @@ let document_of_odocl ~syntax input =
       Ok (Renderer.document_of_compilation_unit ~syntax odoctree)
 
 let render_document ~output:root_dir odoctree =
-  let pages = Generator.render ~indent:false odoctree in
+  let pages = Generator.render ~indent:true odoctree in
   Odoc_document.Renderer.traverse pages ~f:(fun filename content ->
       let filename = Fpath.normalize @@ Fs.File.append root_dir filename in
       let directory = Fs.File.dirname filename in

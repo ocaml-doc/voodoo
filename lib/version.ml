@@ -1,6 +1,40 @@
-(* Version page  *)
+(* Version page *)
 
 (* Used to calculate the contents of the version page *)
+
+let gen_with_opam (opam : OpamFile.OPAM.t) docs_child =
+  let descr =
+    match opam.descr with
+    | Some d ->
+        [
+          Printf.sprintf "{b %s}" (OpamFile.Descr.synopsis d);
+          "";
+          OpamFile.Descr.body d;
+        ]
+    | None -> []
+  in
+
+  descr
+  @ [
+      "{4 Author}";
+      String.concat ", " (OpamFile.OPAM.author opam);
+      "";
+      "{4 Homepage}";
+    ]
+  @ List.map (fun s -> Printf.sprintf "{:%s}" s) (OpamFile.OPAM.homepage opam)
+  @ [ "{4 Issue tracker}" ]
+  @ List.map
+      (fun s -> Printf.sprintf "{:%s}" s)
+      (OpamFile.OPAM.bug_reports opam)
+  @ [ "{4 Maintainer}" ]
+  @ OpamFile.OPAM.maintainer opam
+  @
+  if docs_child then
+    [
+      "{2 Package documentation}";
+      "There is {{!page-docs}package provided documentation}";
+    ]
+  else []
 
 let gen_with_dune (dune : Dune.t) =
   let libraries =
@@ -78,37 +112,42 @@ let gen_with_libraries (libraries : (string * string list) list) =
   in
   libraries
 
-let gen : dune:Dune.t option -> libraries:(string * string list) list -> string
-    =
- fun ~dune ~libraries ->
+let gen :
+    dune:Dune.t option ->
+    opam:OpamFile.OPAM.t option ->
+    libraries:(string * string list) list ->
+    docs_child:bool ->
+    string =
+ fun ~dune ~opam ~libraries ~docs_child ->
   Format.eprintf "libraries: [%s]\n%!"
     (String.concat "," (List.map fst libraries));
-  match dune with
-  | Some d -> String.concat "\n" (gen_with_dune d)
+  match (dune, opam) with
+  | Some d, Some o ->
+      String.concat "\n" (gen_with_opam o docs_child @ gen_with_dune d)
+  | None, Some o ->
+      Format.eprintf "opam only...!\n%!";
+      String.concat "\n"
+        (gen_with_opam o docs_child @ gen_with_libraries libraries)
   | _ -> String.concat "\n" (gen_with_libraries libraries)
 
 let gen_parent :
     Package.t ->
     blessed:bool ->
     modules:string list ->
+    docs_child:bool ->
     dune:Dune.t option ->
+    opam:OpamFile.OPAM.t option ->
     libraries:(string * string list) list ->
-    package_mlds:Fpath.t list ->
     Mld.t =
- fun package ~blessed ~modules ~dune ~libraries ~package_mlds ->
+ fun package ~blessed ~modules ~docs_child ~dune ~opam ~libraries ->
   let cwd = Fpath.v "." in
-  let mld_index, mld_children =
-    List.partition (fun mld -> Fpath.basename mld = "index.mld") package_mlds
+  let children = List.map (fun m -> Odoc.CModule m) modules in
+  let children =
+    if docs_child then (
+      Format.eprintf "Adding docs child\n%!";
+      Odoc.CPage "docs" :: children)
+    else children
   in
-  let m_children = List.map (fun m -> Odoc.CModule m) modules in
-  let p_children =
-    List.map
-      (fun p ->
-        Format.eprintf "page child: %a\n%!" Fpath.pp p;
-        Odoc.CPage Fpath.(rem_ext p |> basename))
-      mld_children
-  in
-  let children = m_children @ p_children in
   let universe, package_name, package_version = package in
   let top_parents =
     if blessed then
@@ -135,15 +174,7 @@ let gen_parent :
       [ Odoc.CPage package_version ]
       (Printf.sprintf "{0 %s}\n{!childpage:%s}\n" package_name package_version)
   in
-  let content =
-    match mld_index with
-    | [] -> gen ~dune ~libraries
-    | x :: _ ->
-        let ic = open_in (Fpath.to_string x) in
-        let result = really_input_string ic (in_channel_length ic) in
-        close_in ic;
-        result
-  in
+  let content = gen ~dune ~opam ~libraries ~docs_child in
   let version =
     Mld.v cwd package_version (Some package) children
       (Printf.sprintf "{0 %s %s}\n%s\n" package_name package_version content)

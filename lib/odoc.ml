@@ -143,35 +143,22 @@ let compile ?parent ?output path ~includes ~children =
         Bos.Cmd.(cmd % "--child" % arg))
       cmd children
   in
-  (* Format.eprintf "compile command: %a\n%!" Bos.Cmd.pp cmd; *)
   Util.lines_of_process cmd
 
-let link path ~includes ~output =
-  let cmd =
-    Bos.Cmd.(
-      v "odoc" % "link" % Fpath.to_string path % "-o" % Fpath.to_string output)
-  in
+let link path ~includes =
+  let cmd = Bos.Cmd.(v "odoc" % "link" % Fpath.to_string path) in
   let cmd =
     Fpath.Set.fold
       (fun i c -> Bos.Cmd.(c % "-I" % Fpath.to_string i))
       includes cmd
   in
-  Format.eprintf "link: cmd=%a\n%!" Bos.Cmd.pp cmd;
+  (* Format.eprintf "link: cmd=%a\n%!" Bos.Cmd.pp cmd; *)
   Util.lines_of_process cmd
 
-let html output path =
+let html path output =
   let cmd =
     Bos.Cmd.(
       v "odoc" % "html-generate" % "--indent" % Fpath.to_string path % "-o"
       % Fpath.to_string output)
   in
-  Util.lines_of_process cmd |> ignore
-
-let voodoo_gen output name version =
-  let cmd =
-    Bos.Cmd.(
-      v "voodoo-gen" % "-o" % Fpath.to_string output % "-n" % name
-      % "--pkg-version" % version)
-  in
-  Format.eprintf "Odoc.gen: %a\n%!" Bos.Cmd.pp cmd;
-  Util.lines_of_process cmd |> ignore
+  Util.lines_of_process cmd

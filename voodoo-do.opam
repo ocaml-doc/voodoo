@@ -11,9 +11,10 @@ bug-reports: "https://github.com/jonludlam/voodoo/issues"
 depends: [
   "dune" {>= "2.8"}
   "voodoo-lib"
+  "odoc"
+  "tyxml"
   "astring"
   "cmdliner"
-  "odoc" {with-doc}
 ]
 build: [
   ["dune" "subst"] {dev}

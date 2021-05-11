@@ -11,14 +11,19 @@ let find_opt name t = try Some (M.find name t.intern) with _ -> None
 
 let find_extern_opt name t = try Some (M.find name t.extern) with _ -> None
 
-let write t parent_mld =
-  let output_dir = Mld.compile_dir parent_mld in
+let write t package is_blessed =
+  let id, pkg_name, pkg_version = package in
+  let output_dir =
+    if is_blessed then
+      Fpath.(Paths.compile / "packages" / pkg_name / pkg_version)
+    else Fpath.(Paths.compile / "universes" / id / pkg_name / pkg_version)
+  in
   Util.mkdir_p output_dir;
   let oc = open_out Fpath.(to_string (output_dir / "index.m")) in
   (* Turn intern into extern for serialising *)
   let extern : serialisable =
     M.fold
-      (fun k v acc -> M.add k (Sourceinfo.compile_dir v) acc)
+      (fun k v acc -> M.add k (Sourceinfo.output_dir v) acc)
       t.intern M.empty
     |> M.bindings
   in

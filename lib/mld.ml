@@ -5,23 +5,15 @@ type t = {
   children : Odoc.child list;
 }
 
-let rec output_dir : base:Fpath.t -> t -> Paths.t =
- fun ~base mld ->
+let rec output_dir : t -> Paths.t =
+ fun mld ->
   match mld.parent with
-  | None -> base
-  | Some p ->
-      let pdir = output_dir ~base p in
-      Fpath.(pdir / p.name)
+  | None -> Paths.compile
+  | Some p -> Fpath.(output_dir p / p.name)
 
-let compile_dir = output_dir ~base:Paths.compile
+let output_file mld = Fpath.(output_dir mld / ("page-" ^ mld.name ^ ".odoc"))
 
-let link_dir = output_dir ~base:Paths.link
-
-let output_file mld =
-  Fpath.(output_dir ~base:Paths.compile mld / ("page-" ^ mld.name ^ ".odoc"))
-
-let output_odocl mld =
-  Fpath.(output_dir ~base:Paths.link mld / ("page-" ^ mld.name ^ ".odocl"))
+let output_odocl mld = Fpath.(output_dir mld / ("page-" ^ mld.name ^ ".odocl"))
 
 let rec compile mld =
   if Bos.OS.File.exists (output_file mld) |> Util.get_ok then ()
@@ -31,7 +23,7 @@ let rec compile mld =
       | None -> ([], None)
       | Some parent ->
           compile parent;
-          ([ compile_dir parent ], Some parent.name)
+          ([ output_dir parent ], Some parent.name)
     in
     let includes = Fpath.Set.of_list extra_include in
     ignore

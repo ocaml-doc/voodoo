@@ -170,7 +170,7 @@ let v =
         Html.a
           ~a:[ Html.a_href "https://v3.ocaml.org/" ]
           [
-            Html.img ~src:"/logo1.jpeg" ~alt:""
+            Html.img ~src:"/colour-logo.svg" ~alt:""
               ~a:[ Html.a_class T.[ h 8; w_auto; sm @@ h 10 ] ]
               ();
           ];

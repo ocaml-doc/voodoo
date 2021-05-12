@@ -11,3 +11,29 @@
   tyxml
   opam-format
   bos))
+
+(rule
+ (targets static.ml)
+ (deps
+  (:tailwind static/tailwind.css)
+  (:extra static/extra.css)
+  (:logo static/colour-logo.svg)
+  (:highlight static/highlight.pack.js)
+  )
+ (action
+  (with-stdout-to
+   %{targets}
+   (progn
+    (echo "let tailwind_css = {css|")
+    (cat %{tailwind})
+    (echo "|css}")
+    (echo "let extra_css = {css|")
+    (cat %{extra})
+    (echo "|css}")
+    (echo "let colour_logo_svg = {svg|")
+    (cat %{logo})
+    (echo "|svg}")
+    (echo "let highlight_pack_js = {js|")
+    (cat %{highlight})
+    (echo "|js}")))))
+

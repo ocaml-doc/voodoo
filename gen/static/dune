@@ -1,0 +1,9 @@
+
+(install
+ (package voodoo-do)
+ (section share)
+ (files
+  (tailwind.css as tailwind.css)
+  (extra.css as extra.css)
+  (highlight.pack.js as highlight.pack.js)
+  (logo1.jpeg as logo1.jpeg)))

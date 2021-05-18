@@ -41,7 +41,7 @@ type files = {
 
 let empty = { opam = None; otherdocs = []; odocls = [] }
 
-let get_ok = function | Result.Ok x -> x | Error _ -> failwith "get_ok: Not OK"
+let get_ok = function Result.Ok x -> x | Error _ -> failwith "get_ok: Not OK"
 
 let generate output name_filter version_filter =
   let linkedpath = Fpath.(v "linked") in
@@ -100,12 +100,28 @@ let generate output name_filter version_filter =
                  files;
             Odoc_thtml.render_other ~parent ~otherdocs ~output |> get_ok;
             let foutput = Fpath.v (Odoc_odoc.Fs.Directory.to_string output) in
-            Bos.OS.File.write Fpath.(foutput / "tailwind.css") Odoc_thtml.Static.tailwind_css |> get_ok;
-            Bos.OS.File.write Fpath.(foutput / "extra.css") Odoc_thtml.Static.extra_css |> get_ok;
-            Bos.OS.File.write Fpath.(foutput / "highlight.pack.js") Odoc_thtml.Static.highlight_pack_js |> get_ok;
-            Bos.OS.File.write Fpath.(foutput / "colour-logo.svg") Odoc_thtml.Static.colour_logo_svg |> get_ok;
-          
+            Bos.OS.File.write
+              Fpath.(foutput / "tailwind.css")
+              Odoc_thtml.Static.tailwind_css
+            |> get_ok;
+            Bos.OS.File.write
+              Fpath.(foutput / "extra.css")
+              Odoc_thtml.Static.extra_css
+            |> get_ok;
+            Bos.OS.File.write
+              Fpath.(foutput / "highlight.pack.js")
+              Odoc_thtml.Static.highlight_pack_js
+            |> get_ok;
+            Bos.OS.File.write
+              Fpath.(foutput / "colour-logo.svg")
+              Odoc_thtml.Static.colour_logo_svg
+            |> get_ok;
+            Bos.OS.File.write
+              Fpath.(foutput / "voodoo_client.js")
+              Odoc_thtml.Static.voodoo_client_js
+            |> get_ok
       in
+
       List.map handle_package pkgs
 
 let package_name =

@@ -1,8 +1,6 @@
 (library
  (name odoc_thtml)
  (public_name voodoo-do.odoc_thtml)
- (instrumentation
-  (backend bisect_ppx))
  (libraries
   odoc.model
   odoc.document
@@ -19,6 +17,7 @@
   (:extra static/extra.css)
   (:logo static/colour-logo.svg)
   (:highlight static/highlight.pack.js)
+  (:voodoo_client static/voodoo_client.bc.js)
   )
  (action
   (with-stdout-to
@@ -35,5 +34,9 @@
     (echo "|svg}")
     (echo "let highlight_pack_js = {js|")
     (cat %{highlight})
-    (echo "|js}")))))
+    (echo "|js}")
+    (echo "let voodoo_client_js = {js|")
+    (cat %{voodoo_client})
+    (echo "|js}")
+    ))))
 

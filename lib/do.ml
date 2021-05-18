@@ -105,7 +105,7 @@ let find_universe_and_version pkg_name =
   | _ :: _ :: u :: _, [ version ] -> Some (u, Fpath.to_string version)
   | _ -> None
 
-let run pkg_name is_blessed =
+let run pkg_name is_blessed gen_redirect =
   let is_interesting p =
     List.mem (Fpath.get_ext p) [ ".cmti"; ".cmt"; ".cmi" ]
   in
@@ -252,6 +252,20 @@ let run pkg_name is_blessed =
     Bos.OS.File.delete (Fpath.v ("compile/packages/page-" ^ pkg_name ^ ".odoc"))
     |> Util.get_ok
   in
+  if gen_redirect then begin
+    let redirect_path = Fpath.(output / "tailwind" / "packages" / pkg_name / "index.html") in
+    let html = Printf.sprintf {|
+    <html>
+     <head>
+      <title>%s</title>
+      <meta http-equiv="refresh" content="0;URL='%s/index.html'" />
+     </head>
+     <body>
+      <p>The latest version is <a href="%s/index.html">here</a></p>
+     </body>
+    </html>|} pkg_name version version in
+    Bos.OS.File.write redirect_path html |> Util.get_ok
+  end;
   ()
 
 let run_all () =
@@ -270,7 +284,7 @@ let run_all () =
       | Some deps ->
           List.iter doit deps;
           Format.eprintf "Building docs for package %s\n%!" pkg.Opam.name;
-          (try run pkg.Opam.name true
+          (try run pkg.Opam.name true true
            with e ->
              Format.eprintf "Ignoring failure %s!\n%!" (Printexc.to_string e));
           done_pkgs := pkg :: !done_pkgs

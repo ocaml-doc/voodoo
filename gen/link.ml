@@ -23,10 +23,15 @@ module Path = struct
     let ppath = match parent with Some p -> get_dir p | None -> [] in
     match kind with
     | "page" -> ppath
+    | "raw" -> ppath
     | _ -> ppath @ [ segment_to_string (kind, name) ]
 
   let get_file : Url.Path.t -> string =
-   fun t -> match t.kind with "page" -> t.name ^ ".html" | _ -> "index.html"
+   fun t ->
+    match t.kind with
+    | "page" -> t.name ^ ".html"
+    | "raw" -> t.name
+    | _ -> "index.html"
 
   let for_linking : Url.Path.t -> string list =
    fun url -> get_dir url @ [ get_file url ]

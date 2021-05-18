@@ -10,6 +10,8 @@ type resolve = Current of Url.Path.t | Base of string
 val href : resolve:resolve -> Url.t -> string
 
 module Path : sig
+  val to_list : Url.Path.t -> (string * string) list
+
   val is_leaf_page : Url.Path.t -> bool
 
   val for_printing : Url.Path.t -> string list

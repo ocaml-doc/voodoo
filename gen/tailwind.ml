@@ -16,6 +16,8 @@ let flex = "flex"
 
 let flex_none = "flex-none"
 
+let flex_shrink = numeric "flex-shrink"
+
 let inline_flex = "inline-flex"
 
 let hidden = "hidden"
@@ -174,6 +176,8 @@ let bg_yellow n = "bg-yellow-" ^ string_of_int n
 
 let bg_white = "bg-white"
 
+let bg_green n = "bg-green-" ^ string_of_int n
+
 (** {2 Borders} *)
 
 type border_width = [ `b0 | `b1 | `b2 | `b4 | `b6 | `b8 ]
@@ -189,6 +193,8 @@ let border_fn stem : border_width -> string = function
 let rounded_md = "rounded-md"
 
 let rounded_lg = "rounded-lg"
+
+let rounded_full = "rounded-full"
 
 let rounded = "rounded"
 

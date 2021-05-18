@@ -41,6 +41,14 @@
    astring
    cmdliner))
 
-  
-
+(package
+ (name voodoo-client)
+ (synopsis "Voodoo client javascript")
+ (description "Voodoo client javascript")
+ (depends
+  js_of_ocaml
+  js_of_ocaml-ppx
+  js_of_ocaml-tyxml
+  yojson
+  ppx_deriving_yojson))
 

@@ -177,29 +177,12 @@ let v cur o (otherversions : Odoc_model.Paths.Identifier.t list)
   in
 
   let otherversions =
-    match otherversions with
-    | [] -> []
-    | xs ->
-        [
-          Html.details
-            ~a:[ Html.a_class T.[ font_normal; mb 2; text_sm ] ]
-            (Html.summary [ Html.txt "Other versions" ])
-            [
-              Html.ul
-                ~a:[ Html.a_class T.[ ml 4; "test-orange" ] ]
-                (List.map
-                   (fun id ->
-                     let name = Odoc_model.Paths.Identifier.name id in
-                     let url =
-                       Odoc_document.Url.Anchor.from_identifier
-                         (id :> Odoc_model.Paths.Identifier.t)
-                       |> get_ok
-                     in
-                     let l = Link.href ~resolve:(Current cur) url in
-                     Html.li [ Html.a ~a:[ Html.a_href l ] [ Html.txt name ] ])
-                   xs);
-            ];
-        ]
+    [
+      Html.details
+        ~a:[ Html.a_class T.[ font_normal; mb 2; text_sm ] ]
+        (Html.summary [ Html.txt "Other versions" ])
+        [ Html.div ~a:[ Html.a_id "versions_container" ] [] ];
+    ]
   in
 
   let authors = text "Authors" (OpamFile.OPAM.author o) in

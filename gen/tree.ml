@@ -27,10 +27,46 @@ let othervers : Odoc_model.Paths.Identifier.t list ref = ref []
 
 type uri = Absolute of string | Relative of string
 
+let find_version_json_url url =
+  let list = Link.Path.to_list url in
+  Format.eprintf "LIST: %a\n%!"
+    Fmt.(
+      list
+        ~sep:(fun fmt () -> Format.fprintf fmt ";")
+        (pair ~sep:(fun fmt () -> Format.fprintf fmt ",") string string))
+    list;
+  let rec drop_until_packages xs =
+    match xs with
+    | ((_, "packages") as x) :: next :: _ -> [ x; next ]
+    | x :: xs -> x :: drop_until_packages xs
+    | [] -> failwith "Bad URL"
+  in
+  Format.eprintf "LIST2: %a\n%!"
+    Fmt.(
+      list
+        ~sep:(fun fmt () -> Format.fprintf fmt ";")
+        (pair ~sep:(fun fmt () -> Format.fprintf fmt ",") string string))
+    (drop_until_packages list);
+
+  let rec reconstruct parent l =
+    match l with
+    | (kind, name) :: xs ->
+        reconstruct (Some { Odoc_document.Url.Path.parent; name; kind }) xs
+    | [] -> parent
+  in
+  {
+    Odoc_document.Url.Path.parent = reconstruct None (drop_until_packages list);
+    kind = "raw";
+    name = "state.json";
+  }
+
 let page_creator ?(theme_uri = Relative "./") ~url name header
     (toc : Html_types.flow5 Html.elt list) content =
   let is_leaf_page = Link.Path.is_leaf_page url in
   let path = Link.Path.for_printing url in
+  let version_js = find_version_json_url url in
+  Format.eprintf "versions.json: %a\n%!" Fpath.pp
+    (Link.Path.as_filename version_js);
   let rec add_dotdot ~n acc =
     if n <= 0 then acc else add_dotdot ~n:(n - 1) ("../" ^ acc)
   in
@@ -65,6 +101,8 @@ let page_creator ?(theme_uri = Relative "./") ~url name header
     let odoc_css_extra = theme_uri ^ "extra.css" in
 
     let highlight_js_uri = support_files_uri ^ "highlight.pack.js" in
+    let voodoo_client_uri = support_files_uri ^ "voodoo_client.js" in
+
     let alpine_js_uri =
       "https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js"
     in
@@ -87,6 +125,7 @@ let page_creator ?(theme_uri = Relative "./") ~url name header
           ();
         Html.script ~a:[ Html.a_src highlight_js_uri ] (Html.txt "");
         Html.script (Html.txt "hljs.initHighlightingOnLoad();");
+        Html.script ~a:[ Html.a_src voodoo_client_uri ] (Html.txt "");
         Html.script
           ~a:[ Html.a_src alpine_js_uri; Html.a_defer () ]
           (Html.txt "");
@@ -216,6 +255,11 @@ let page_creator ?(theme_uri = Relative "./") ~url name header
          Html.div
            ~a:[ Html.a_class T.[ h_screen; flex; bg_white; font_sans ] ]
            [ main_div ];
+         Html.script
+           (Html.txt
+              (Printf.sprintf "Voodoo.update('%s')"
+                 (Link.href ~resolve:(Current url)
+                    { page = version_js; anchor = ""; kind = "page" })));
        ])
 
 let make ?theme_uri ~indent ~url ~header ~(toc : Html_types.flow5 Html.elt list)

@@ -5,6 +5,16 @@ type t = {
   children : Odoc.child list;
 }
 
+let rec pp fmt v =
+  let child_pp fmt = function
+    | Odoc.CModule m -> Format.fprintf fmt "CModule %s" m
+    | CPage p -> Format.fprintf fmt "CPage %s" p
+  in
+  Format.fprintf fmt "{ path: %a; name: %s; parent: %a; children: %a }" Fpath.pp
+    v.path v.name (Fmt.option pp) v.parent
+    (Fmt.list ~sep:(fun fmt () -> Format.fprintf fmt ",") child_pp)
+    v.children
+
 let rec output_dir : base:Fpath.t -> t -> Paths.t =
  fun ~base mld ->
   match mld.parent with

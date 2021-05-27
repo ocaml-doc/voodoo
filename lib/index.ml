@@ -11,10 +11,16 @@ let find_opt name t = try Some (M.find name t.intern) with _ -> None
 
 let find_extern_opt name t = try Some (M.find name t.extern) with _ -> None
 
+(* Write the index file into 'packages/<pkg_name>/<version>/index.m or
+   universes/<universe>/<pkg_name>/<version>/index.m *)
 let write t parent_mld =
+  (* Format.eprintf "Index.write: parent_mld=%a\n%!" Mld.pp parent_mld; *)
   let output_dir = Mld.compile_dir parent_mld in
+  (* Format.eprintf "Output dir: %a\n%!" Fpath.pp output_dir; *)
   Util.mkdir_p output_dir;
-  let oc = open_out Fpath.(to_string (output_dir / "index.m")) in
+  let oc =
+    open_out Fpath.(to_string (output_dir / parent_mld.name / "index.m"))
+  in
   (* Turn intern into extern for serialising *)
   let extern : serialisable =
     M.fold

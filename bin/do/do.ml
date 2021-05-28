@@ -5,7 +5,9 @@ open Cmdliner
 
 let run package blessed switch redirect =
   Opam.switch := switch;
-  match package with None -> Do.run_all () | Some p -> Do.run p blessed redirect
+  match package with
+  | None -> Do.run_all ()
+  | Some p -> Do.run p blessed redirect
 
 let package =
   let doc = "Select the package to process" in
@@ -22,7 +24,10 @@ let switch =
     value & opt (some string) None & info [ "s"; "switch" ] ~doc ~docv:"SWITCH")
 
 let gen_redirect =
-  let doc = "Generate redirect page in the package directory. Set if this is the latest version" in
+  let doc =
+    "Generate redirect page in the package directory. Set if this is the \
+     latest version"
+  in
   Arg.(value & flag & info [ "r"; "redirect" ] ~doc)
 
 let cmd =

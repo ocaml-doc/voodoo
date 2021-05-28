@@ -2,8 +2,7 @@
 open Omd
 open Result
 
-let ( >>= ) = fun m f -> match m with | Ok x -> f x | Error y -> Error y
-
+let ( >>= ) m f = match m with Ok x -> f x | Error y -> Error y
 
 type intermediate =
   | Bl of Odoc_document.Types.Block.t

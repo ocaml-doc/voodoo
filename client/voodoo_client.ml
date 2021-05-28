@@ -4,20 +4,12 @@ open Js_of_ocaml_tyxml
 module Html = Tyxml_js.Html5
 module T = Tailwind
 
-type versions = { 
-  version : string;
-  link : string;
-  status : string;
-} [@@deriving yojson]
+type versions = { version : string; link : string; status : string }
+[@@deriving yojson]
 
 type v_list = versions list [@@deriving yojson]
 
-
-let error f =
-  Printf.ksprintf
-    (fun s ->
-      Firebug.console##log (Js.string s))
-    f
+let error f = Printf.ksprintf (fun s -> Firebug.console##log (Js.string s)) f
 
 let by_id s = Dom_html.getElementById s
 
@@ -29,7 +21,7 @@ let versions vs =
   Html.ul
     ~a:[ Html.a_class T.[ ml 4; "test-orange" ] ]
     (List.map
-       (fun { version; link; status=_} ->
+       (fun { version; link; status = _ } ->
          Html.li
            [
              Html.span
@@ -47,7 +39,9 @@ let versions vs =
                        ];
                  ]
                [];
-             Html.a ~a:[ Html.a_href link; Html.a_class T.[ml 2] ] [ Html.txt version ];
+             Html.a
+               ~a:[ Html.a_href link; Html.a_class T.[ ml 2 ] ]
+               [ Html.txt version ];
            ])
        vs)
   |> Tyxml_js.To_dom.of_element

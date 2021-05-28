@@ -252,9 +252,13 @@ let run pkg_name is_blessed gen_redirect =
     Bos.OS.File.delete (Fpath.v ("compile/packages/page-" ^ pkg_name ^ ".odoc"))
     |> Util.get_ok
   in
-  if gen_redirect then begin
-    let redirect_path = Fpath.(output / "tailwind" / "packages" / pkg_name / "index.html") in
-    let html = Printf.sprintf {|
+  (if gen_redirect then
+   let redirect_path =
+     Fpath.(output / "tailwind" / "packages" / pkg_name / "index.html")
+   in
+   let html =
+     Printf.sprintf
+       {|
     <html>
      <head>
       <title>%s</title>
@@ -263,9 +267,10 @@ let run pkg_name is_blessed gen_redirect =
      <body>
       <p>The latest version is <a href="%s/index.html">here</a></p>
      </body>
-    </html>|} pkg_name version version in
-    Bos.OS.File.write redirect_path html |> Util.get_ok
-  end;
+    </html>|}
+       pkg_name version version
+   in
+   Bos.OS.File.write redirect_path html |> Util.get_ok);
   ()
 
 let run_all () =

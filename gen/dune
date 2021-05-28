@@ -17,8 +17,7 @@
   (:extra static/extra.css)
   (:logo static/colour-logo.svg)
   (:highlight static/highlight.pack.js)
-  (:voodoo_client static/voodoo_client.bc.js)
-  )
+  (:voodoo_client static/voodoo_client.bc.js))
  (action
   (with-stdout-to
    %{targets}
@@ -37,6 +36,4 @@
     (echo "|js}")
     (echo "let voodoo_client_js = {js|")
     (cat %{voodoo_client})
-    (echo "|js}")
-    ))))
-
+    (echo "|js}")))))

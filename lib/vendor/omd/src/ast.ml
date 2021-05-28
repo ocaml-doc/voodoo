@@ -1,44 +1,29 @@
-type attributes =
-  (string * string) list
+type attributes = (string * string) list
 
-type list_type =
-  | Ordered of int * char
-  | Bullet of char
+type list_type = Ordered of int * char | Bullet of char
 
-type list_spacing =
-  | Loose
-  | Tight
+type list_spacing = Loose | Tight
 
 let same_block_list_kind k1 k2 =
-  match k1, k2 with
-  | Ordered (_, c1), Ordered (_, c2)
-  | Bullet c1, Bullet c2 -> c1 = c2
+  match (k1, k2) with
+  | Ordered (_, c1), Ordered (_, c2) | Bullet c1, Bullet c2 -> c1 = c2
   | _ -> false
 
-type link_def =
-  {
-    label: string;
-    destination: string;
-    title: string option;
-    attributes: attributes;
-  }
+type link_def = {
+  label : string;
+  destination : string;
+  title : string option;
+  attributes : attributes;
+}
 
 module type T = sig
   type t
 end
 
 module MakeBlock (I : T) = struct
-  type def_elt =
-    {
-      term: I.t;
-      defs: I.t list;
-    }
+  type def_elt = { term : I.t; defs : I.t list }
 
-  and block =
-    {
-      bl_desc: block_desc;
-      bl_attributes: attributes;
-    }
+  and block = { bl_desc : block_desc; bl_attributes : attributes }
 
   and block_desc =
     | Paragraph of I.t
@@ -51,18 +36,9 @@ module MakeBlock (I : T) = struct
     | Definition_list of def_elt list
 end
 
-type link =
-  {
-    label: inline;
-    destination: string;
-    title: string option;
-  }
+type link = { label : inline; destination : string; title : string option }
 
-and inline =
-  {
-    il_desc: inline_desc;
-    il_attributes: attributes;
-  }
+and inline = { il_desc : inline_desc; il_attributes : attributes }
 
 and inline_desc =
   | Concat of inline list
@@ -78,36 +54,34 @@ and inline_desc =
 
 module Raw = MakeBlock (String)
 
-module Inline = struct type t = inline end
+module Inline = struct
+  type t = inline
+end
 
 include MakeBlock (Inline)
 
 module MakeMapper (Src : T) (Dst : T) = struct
-  module SrcBlock = MakeBlock(Src)
-  module DstBlock = MakeBlock(Dst)
+  module SrcBlock = MakeBlock (Src)
+  module DstBlock = MakeBlock (Dst)
 
   let rec map (f : Src.t -> Dst.t) : SrcBlock.block -> DstBlock.block =
-    fun {bl_desc; bl_attributes} ->
+   fun { bl_desc; bl_attributes } ->
     let bl_desc =
       match bl_desc with
       | SrcBlock.Paragraph x -> DstBlock.Paragraph (f x)
-      | List (ty, sp, bl) ->
-          List (ty, sp, List.map (List.map (map f)) bl)
-      | Blockquote xs ->
-          Blockquote (List.map (map f) xs)
-      | Thematic_break ->
-          Thematic_break
-      | Heading (level, text) ->
-          Heading (level, f text)
+      | List (ty, sp, bl) -> List (ty, sp, List.map (List.map (map f)) bl)
+      | Blockquote xs -> Blockquote (List.map (map f) xs)
+      | Thematic_break -> Thematic_break
+      | Heading (level, text) -> Heading (level, f text)
       | Definition_list l ->
-          let f {SrcBlock.term; defs} = {DstBlock.term = f term; defs = List.map f defs} in
+          let f { SrcBlock.term; defs } =
+            { DstBlock.term = f term; defs = List.map f defs }
+          in
           Definition_list (List.map f l)
-      | Code_block (label, code) ->
-          Code_block (label, code)
-      | Html_block x ->
-          Html_block x
+      | Code_block (label, code) -> Code_block (label, code)
+      | Html_block x -> Html_block x
     in
-    {bl_desc; bl_attributes}
+    { bl_desc; bl_attributes }
 end
 
 module Mapper = MakeMapper (String) (Inline)

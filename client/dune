@@ -1,6 +1,7 @@
 (env
-  (dev
-    (flags (:standard -w -39))))
+ (dev
+  (flags
+   (:standard -w -39))))
 
 (library
  (name tailwind)
@@ -16,5 +17,4 @@
 
 (alias
  (name default)
- (deps voodoo_client.bc.js index.html versions3.json)
- )
+ (deps voodoo_client.bc.js index.html versions3.json))

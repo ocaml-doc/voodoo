@@ -1,4 +1,3 @@
-
 (install
  (package voodoo-do)
  (section share)

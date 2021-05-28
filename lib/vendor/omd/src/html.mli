@@ -1,8 +1,6 @@
 open Ast
 
-type element_type =
-  | Inline
-  | Block
+type element_type = Inline | Block
 
 type t =
   | Element of element_type * string * attributes * t option

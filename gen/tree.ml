@@ -249,17 +249,22 @@ let page_creator ?(theme_uri = Relative "./") ~url name header
     (Html.body
        ~a:[ Html.a_class T.[ mx_auto; "max-w-screen-2xl" ] ]
        ([
-         Main_header.v;
-         Html.div
-           ~a:[ Html.a_class T.[ h_screen; flex; bg_white; font_sans ] ]
-           [ main_div ];
-       ] @ match version_js with | Some vjs -> [
-         Html.script
-           (Html.txt
-              (Printf.sprintf "Voodoo.update('%s')"
-                 (Link.href ~resolve:(Current url)
-                    { page = vjs; anchor = ""; kind = "page" })));
-       ] | None -> [])
+          Main_header.v;
+          Html.div
+            ~a:[ Html.a_class T.[ h_screen; flex; bg_white; font_sans ] ]
+            [ main_div ];
+        ]
+       @
+       match version_js with
+       | Some vjs ->
+           [
+             Html.script
+               (Html.txt
+                  (Printf.sprintf "Voodoo.update('%s')"
+                     (Link.href ~resolve:(Current url)
+                        { page = vjs; anchor = ""; kind = "page" })));
+           ]
+       | None -> []))
 
 let make ?theme_uri ~indent ~url ~header ~(toc : Html_types.flow5 Html.elt list)
     title content children =

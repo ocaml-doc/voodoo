@@ -156,7 +156,7 @@ let link path ~includes ~output =
       (fun i c -> Bos.Cmd.(c % "-I" % Fpath.to_string i))
       includes cmd
   in
-  Format.eprintf "link: cmd=%a\n%!" Bos.Cmd.pp cmd;
+  (* Format.eprintf "link: cmd=%a\n%!" Bos.Cmd.pp cmd; *)
   Util.lines_of_process cmd
 
 let html output path =

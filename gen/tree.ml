@@ -64,9 +64,7 @@ let page_creator ?(theme_uri = Relative "./") ~url name header
     (toc : Html_types.flow5 Html.elt list) content =
   let is_leaf_page = Link.Path.is_leaf_page url in
   let path = Link.Path.for_printing url in
-  let version_js = find_version_json_url url in
-  Format.eprintf "versions.json: %a\n%!" Fpath.pp
-    (Link.Path.as_filename version_js);
+  let version_js = try Some (find_version_json_url url) with _ -> None in
   let rec add_dotdot ~n acc =
     if n <= 0 then acc else add_dotdot ~n:(n - 1) ("../" ^ acc)
   in
@@ -250,17 +248,18 @@ let page_creator ?(theme_uri = Relative "./") ~url name header
   Html.html head
     (Html.body
        ~a:[ Html.a_class T.[ mx_auto; "max-w-screen-2xl" ] ]
-       [
+       ([
          Main_header.v;
          Html.div
            ~a:[ Html.a_class T.[ h_screen; flex; bg_white; font_sans ] ]
            [ main_div ];
+       ] @ match version_js with | Some vjs -> [
          Html.script
            (Html.txt
               (Printf.sprintf "Voodoo.update('%s')"
                  (Link.href ~resolve:(Current url)
-                    { page = version_js; anchor = ""; kind = "page" })));
-       ])
+                    { page = vjs; anchor = ""; kind = "page" })));
+       ] | None -> [])
 
 let make ?theme_uri ~indent ~url ~header ~(toc : Html_types.flow5 Html.elt list)
     title content children =

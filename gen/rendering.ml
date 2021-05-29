@@ -65,13 +65,14 @@ let otherversions parent vs =
           Ok result)
   | _ -> Error (`Msg "Parent is not a page!")
 
-let render ~opam ~output ~namever ~parent ~otherdocs ~vs file =
+let render ~opam ~pkg_name ~output ~namever ~parent ~otherdocs ~vs file =
   docs_ids parent otherdocs >>= fun docs ->
   otherversions parent vs >>= fun otherversions ->
   Tree.opam := opam;
   Tree.namever := namever;
   Tree.otherdocs := docs;
   Tree.othervers := otherversions;
+  Tree.pkgname := pkg_name;
   let f = Fs.File.of_string (Fpath.to_string file) in
   document_of_odocl ~syntax:Odoc_document.Renderer.OCaml f
   >>= render_document ~output

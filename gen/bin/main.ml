@@ -95,8 +95,8 @@ let generate output name_filter version_filter =
             Format.eprintf "Found %d files\n%!" (List.length files);
             ignore
             @@ List.map
-                 (Odoc_thtml.render ~opam ~namever ~parent ~otherdocs ~vs
-                    ~output)
+                 (Odoc_thtml.render ~opam ~pkg_name ~namever ~parent ~otherdocs
+                    ~vs ~output)
                  files;
             Odoc_thtml.render_other ~parent ~otherdocs ~output |> get_ok;
             let foutput = Fpath.v (Odoc_odoc.Fs.Directory.to_string output) in

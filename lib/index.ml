@@ -17,7 +17,7 @@ let write t parent_mld =
   (* Format.eprintf "Index.write: parent_mld=%a\n%!" Mld.pp parent_mld; *)
   let output_dir = Mld.compile_dir parent_mld in
   (* Format.eprintf "Output dir: %a\n%!" Fpath.pp output_dir; *)
-  Util.mkdir_p output_dir;
+  Util.mkdir_p Fpath.(output_dir / parent_mld.name);
   let oc =
     open_out Fpath.(to_string (output_dir / parent_mld.name / "index.m"))
   in

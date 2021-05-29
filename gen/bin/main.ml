@@ -53,14 +53,14 @@ let generate output name_filter version_filter =
         | [ "linked"; "packages"; pkg_name; pkg_version ]
           when optmatch name_filter pkg_name
                && optmatch version_filter pkg_version ->
-            ((p, pkg_name, pkg_version) :: pkgs, othervers)
+            ((p, true, pkg_name, pkg_version) :: pkgs, othervers)
         | [ "linked"; "packages"; pkg_name; pkg_version ]
           when optmatch name_filter pkg_name ->
             (pkgs, pkg_version :: othervers)
         | [ "linked"; "universes"; _; pkg_name; pkg_version ]
           when optmatch name_filter pkg_name
                && optmatch version_filter pkg_version ->
-            ((p, pkg_name, pkg_version) :: pkgs, othervers)
+            ((p, false, pkg_name, pkg_version) :: pkgs, othervers)
         | _ -> (pkgs, othervers))
       ([], []) linkedpath
   with
@@ -70,7 +70,7 @@ let generate output name_filter version_filter =
   | Ok (pkgs, vs) ->
       Format.eprintf "%d other versons, %d packages\n%!" (List.length vs)
         (List.length pkgs);
-      let handle_package (pkg_path, pkg_name, ver) =
+      let handle_package (pkg_path, blessed, pkg_name, ver) =
         match
           Bos.OS.Dir.fold_contents ~elements:`Files ~dotfiles:false
             (fun p files ->
@@ -119,7 +119,12 @@ let generate output name_filter version_filter =
             Bos.OS.File.write
               Fpath.(foutput / "voodoo_client.js")
               Odoc_thtml.Static.voodoo_client_js
-            |> get_ok
+            |> get_ok;
+            if blessed then
+              Bos.OS.File.write
+                Fpath.(foutput / "packages" / pkg_name / ver / "status.json")
+                {|"Built"|}
+              |> get_ok
       in
 
       List.map handle_package pkgs

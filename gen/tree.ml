@@ -25,46 +25,25 @@ let otherdocs : (Odoc_model.Paths.Identifier.t * Fpath.t) list ref = ref []
 
 let othervers : Odoc_model.Paths.Identifier.t list ref = ref []
 
+let pkgname = ref ""
+
 type uri = Absolute of string | Relative of string
 
-let find_version_json_url url =
-  let list = Link.Path.to_list url in
-  Format.eprintf "LIST: %a\n%!"
-    Fmt.(
-      list
-        ~sep:(fun fmt () -> Format.fprintf fmt ";")
-        (pair ~sep:(fun fmt () -> Format.fprintf fmt ",") string string))
-    list;
-  let rec drop_until_packages xs =
-    match xs with
-    | ((_, "packages") as x) :: next :: _ -> [ x; next ]
-    | x :: xs -> x :: drop_until_packages xs
-    | [] -> failwith "Bad URL"
+let find_version_json_url _ =
+  let open Odoc_document.Url.Path in
+  let packages =
+    { parent = None; kind = "container-page"; name = "packages" }
   in
-  Format.eprintf "LIST2: %a\n%!"
-    Fmt.(
-      list
-        ~sep:(fun fmt () -> Format.fprintf fmt ";")
-        (pair ~sep:(fun fmt () -> Format.fprintf fmt ",") string string))
-    (drop_until_packages list);
-
-  let rec reconstruct parent l =
-    match l with
-    | (kind, name) :: xs ->
-        reconstruct (Some { Odoc_document.Url.Path.parent; name; kind }) xs
-    | [] -> parent
+  let package =
+    { parent = Some packages; kind = "container-page"; name = !pkgname }
   in
-  {
-    Odoc_document.Url.Path.parent = reconstruct None (drop_until_packages list);
-    kind = "raw";
-    name = "state.json";
-  }
+  { parent = Some package; kind = "raw"; name = "package.json" }
 
 let page_creator ?(theme_uri = Relative "./") ~url name header
     (toc : Html_types.flow5 Html.elt list) content =
   let is_leaf_page = Link.Path.is_leaf_page url in
   let path = Link.Path.for_printing url in
-  let version_js = try Some (find_version_json_url url) with _ -> None in
+  let version_js = try Some (find_version_json_url ()) with _ -> None in
   let rec add_dotdot ~n acc =
     if n <= 0 then acc else add_dotdot ~n:(n - 1) ("../" ^ acc)
   in

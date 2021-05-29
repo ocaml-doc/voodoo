@@ -174,6 +174,8 @@ let bg_gray n = "bg-gray-" ^ string_of_int n
 
 let bg_yellow n = "bg-yellow-" ^ string_of_int n
 
+let bg_red n = "bg-red-" ^ string_of_int n
+
 let bg_white = "bg-white"
 
 let bg_green n = "bg-green-" ^ string_of_int n

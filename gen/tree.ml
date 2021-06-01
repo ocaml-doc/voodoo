@@ -29,56 +29,43 @@ let pkgname = ref ""
 
 type uri = Absolute of string | Relative of string
 
-let find_version_json_url _ =
-  let open Odoc_document.Url.Path in
-  let packages =
-    { parent = None; kind = "container-page"; name = "packages" }
-  in
-  let package =
-    { parent = Some packages; kind = "container-page"; name = !pkgname }
-  in
-  { parent = Some package; kind = "raw"; name = "package.json" }
+module Urls = struct
+  let of_simple_list ~url l =
+    let rec inner = function
+      | [] -> failwith "Bad path"
+      | [ x ] -> [ ("file", x) ]
+      | x :: xs -> ("container-page", x) :: inner xs
+    in
+    let get_some = function Some x -> x | None -> failwith "Bad path" in
+    let page = inner l |> Link.Path.of_list |> get_some in
+    Link.page_href ~resolve:(Link.Current url) page
 
-let page_creator ?(theme_uri = Relative "./") ~url name header
-    (toc : Html_types.flow5 Html.elt list) content =
-  let is_leaf_page = Link.Path.is_leaf_page url in
+  let version_json url =
+    of_simple_list ~url [ "packages"; !pkgname; "version.json" ]
+
+  let tailwind_css url = of_simple_list ~url [ "packages"; "tailwind.css" ]
+
+  let extra_css url = of_simple_list ~url [ "packages"; "extra.css" ]
+
+  let highlight_js url = of_simple_list ~url [ "packages"; "highlight.pack.js" ]
+
+  let voodoo_client_js url =
+    of_simple_list ~url [ "packages"; "voodoo_client.js" ]
+end
+
+let page_creator ~url name header (toc : Html_types.flow5 Html.elt list) content
+    =
   let path = Link.Path.for_printing url in
-  let version_js = try Some (find_version_json_url ()) with _ -> None in
-  let rec add_dotdot ~n acc =
-    if n <= 0 then acc else add_dotdot ~n:(n - 1) ("../" ^ acc)
-  in
-  let resolve_relative_uri uri =
-    (* Remove the first "dot segment". *)
-    let uri =
-      if String.length uri >= 2 && String.sub uri 0 2 = "./" then
-        String.sub uri 2 (String.length uri - 2)
-      else uri
-    in
-    (* How deep is this page? *)
-    let n =
-      List.length path
-      - if (* This is just horrible. *)
-           is_leaf_page then 1 else 0
-    in
-    add_dotdot uri ~n
-  in
+  let version_js = try Some (Urls.version_json url) with _ -> None in
 
   let head : Html_types.head Html.elt =
     let title_string = Printf.sprintf "%s (%s)" name (String.concat "." path) in
 
-    let theme_uri =
-      match theme_uri with
-      | Absolute uri -> uri
-      | Relative uri -> resolve_relative_uri uri
-    in
+    let odoc_css_uri = Urls.tailwind_css url in
+    let odoc_css_extra = Urls.extra_css url in
 
-    let support_files_uri = resolve_relative_uri "./" in
-
-    let odoc_css_uri = theme_uri ^ "tailwind.css" in
-    let odoc_css_extra = theme_uri ^ "extra.css" in
-
-    let highlight_js_uri = support_files_uri ^ "highlight.pack.js" in
-    let voodoo_client_uri = support_files_uri ^ "voodoo_client.js" in
+    let highlight_js_uri = Urls.highlight_js url in
+    let voodoo_client_uri = Urls.voodoo_client_js url in
 
     let alpine_js_uri =
       "https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js"
@@ -236,19 +223,13 @@ let page_creator ?(theme_uri = Relative "./") ~url name header
        @
        match version_js with
        | Some vjs ->
-           [
-             Html.script
-               (Html.txt
-                  (Printf.sprintf "Voodoo.update('%s')"
-                     (Link.href ~resolve:(Current url)
-                        { page = vjs; anchor = ""; kind = "page" })));
-           ]
+           [ Html.script (Html.txt (Printf.sprintf "Voodoo.update('%s')" vjs)) ]
        | None -> []))
 
-let make ?theme_uri ~indent ~url ~header ~(toc : Html_types.flow5 Html.elt list)
-    title content children =
+let make ~indent ~url ~header ~(toc : Html_types.flow5 Html.elt list) title
+    content children =
   let filename = Link.Path.as_filename url in
-  let html = page_creator ?theme_uri ~url title header toc content in
+  let html = page_creator ~url title header toc content in
   let content ppf = (Html.pp ~indent ()) ppf html in
   { Odoc_document.Renderer.filename; content; children }
 

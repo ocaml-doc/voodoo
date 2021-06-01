@@ -497,11 +497,11 @@ module Page = struct
         | `Closed | `Open | `Default -> None
         | `Inline -> Some 0)
 
-  let rec include_ ?theme_uri indent { Subpage.content; _ } =
-    [ page ?theme_uri indent content ]
+  let rec include_ indent { Subpage.content; _ } =
+    [ page indent content ]
 
-  and subpages ?theme_uri indent i =
-    Utils.list_concat_map ~f:(include_ ?theme_uri indent)
+  and subpages indent i =
+    Utils.list_concat_map ~f:(include_ indent)
     @@ Doctree.Subpages.compute i
 
   and mktitle page_type title =
@@ -614,11 +614,11 @@ module Page = struct
         Some ("", name, rest)
     | _ -> None
 
-  and page ?theme_uri indent ({ Page.title; header; items = i; url } as p) =
+  and page indent ({ Page.title; header; items = i; url } as p) =
     let resolve = Link.Current url in
     let i = Doctree.Shift.compute ~on_sub i in
     let toc = (Toc.from_items ~resolve ~path:url i :> any Html.elt list) in
-    let subpages = subpages ?theme_uri indent p in
+    let subpages = subpages indent p in
     let header =
       match unparse_header header with
       | Some (ty, name, rest) ->
@@ -628,12 +628,12 @@ module Page = struct
     in
     let content = (items ~resolve i :> any Html.elt list) in
     let page =
-      Tree.make ?theme_uri ~indent ~header ~toc ~url title content subpages
+      Tree.make ~indent ~header ~toc ~url title content subpages
     in
     page
 end
 
-let render ?theme_uri ~indent page = Page.page ?theme_uri indent page
+let render ~indent page = Page.page indent page
 
 let doc ~xref_base_uri b =
   let resolve = Link.Base xref_base_uri in

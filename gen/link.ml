@@ -10,6 +10,13 @@ module Path = struct
     in
     loop [] url
 
+  let of_list l =
+      let rec inner parent = function
+        | [] -> parent
+        | (kind, name) :: xs -> inner (Some { Url.Path.parent; name; kind }) xs
+      in
+      inner None l
+
   let for_printing url = List.map snd @@ to_list url
 
   let segment_to_string (kind, name) =
@@ -23,14 +30,14 @@ module Path = struct
     let ppath = match parent with Some p -> get_dir p | None -> [] in
     match kind with
     | "page" -> ppath
-    | "raw" -> ppath
+    | "file" -> ppath
     | _ -> ppath @ [ segment_to_string (kind, name) ]
 
   let get_file : Url.Path.t -> string =
    fun t ->
     match t.kind with
     | "page" -> t.name ^ ".html"
-    | "raw" -> t.name
+    | "file" -> t.name
     | _ -> "index.html"
 
   let for_linking : Url.Path.t -> string list =
@@ -94,3 +101,7 @@ let href ~resolve t =
       | [], "" -> "#"
       | page, "" -> String.concat "/" page
       | page, anchor -> String.concat "/" page ^ "#" ^ anchor)
+
+let page_href ~resolve page =
+  let url = { Url.Anchor.page; anchor=""; kind="" } in
+  href ~resolve url

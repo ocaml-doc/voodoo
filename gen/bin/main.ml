@@ -100,6 +100,11 @@ let generate output name_filter version_filter =
                  files;
             Odoc_thtml.render_other ~parent ~otherdocs ~output |> get_ok;
             let foutput = Fpath.v (Odoc_odoc.Fs.Directory.to_string output) in
+            let pkg_dir =
+              Odoc_odoc.Fs.Directory.of_string
+                Fpath.(to_string (foutput / "packages"))
+            in
+            Odoc_odoc.Fs.Directory.mkdir_p pkg_dir;
             Bos.OS.File.write
               Fpath.(foutput / "packages" / "tailwind.css")
               Odoc_thtml.Static.tailwind_css

@@ -39,7 +39,8 @@
    odoc
    tyxml
    astring
-   cmdliner))
+   cmdliner
+   yojson))
 
 (package
  (name voodoo-client)

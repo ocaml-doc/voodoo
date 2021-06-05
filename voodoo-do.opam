@@ -15,6 +15,7 @@ depends: [
   "tyxml"
   "astring"
   "cmdliner"
+  "yojson"
 ]
 build: [
   ["dune" "subst"] {dev}

@@ -2,6 +2,8 @@ module Url = Odoc_document.Url
 
 (* Translation from Url.Path *)
 module Path = struct
+  type l = (string * string) list
+
   let to_list url =
     let rec loop acc { Url.Path.parent; name; kind } =
       match parent with
@@ -11,11 +13,13 @@ module Path = struct
     loop [] url
 
   let of_list l =
-      let rec inner parent = function
-        | [] -> parent
-        | (kind, name) :: xs -> inner (Some { Url.Path.parent; name; kind }) xs
-      in
-      inner None l
+    let rec inner parent = function
+      | [] -> parent
+      | (kind, name) :: xs -> inner (Some { Url.Path.parent; name; kind }) xs
+    in
+    inner None l
+
+  let list_pp = Fmt.(list ~sep:semi (pair ~sep:comma string string))
 
   let for_printing url = List.map snd @@ to_list url
 
@@ -103,5 +107,5 @@ let href ~resolve t =
       | page, anchor -> String.concat "/" page ^ "#" ^ anchor)
 
 let page_href ~resolve page =
-  let url = { Url.Anchor.page; anchor=""; kind="" } in
+  let url = { Url.Anchor.page; anchor = ""; kind = "" } in
   href ~resolve url

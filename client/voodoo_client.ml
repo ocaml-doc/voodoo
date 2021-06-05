@@ -67,8 +67,11 @@ let update_versions json =
   match j.code with
   | 200 ->
       error "Got json: %s" j.content;
-      let stem = String.sub json 0 (String.rindex json '/') in
+      let stem =
+        try String.sub json 0 (String.rindex json '/' + 1) with _ -> ""
+      in
       let lex = Yojson.Safe.from_string j.content in
+      error "Got lex";
       let vs =
         match lex with
         | `List ls ->
@@ -76,15 +79,20 @@ let update_versions json =
               (fun v acc ->
                 match v with
                 | `String version ->
-                    let link = Printf.sprintf "%s/%s/index.html" stem version in
+                    error "version: %s" version;
+                    let link = Printf.sprintf "%s%s/index.html" stem version in
                     let status_url =
-                      Printf.sprintf "%s/%s/status.json" stem version
+                      Printf.sprintf "%s%s/status.json" stem version
                     in
                     let status = Unknown in
                     { version; link; status_url; status } :: acc
-                | _ -> acc)
+                | _ ->
+                    error "Not a string";
+                    acc)
               ls []
-        | _ -> []
+        | _ ->
+            error "Not a list";
+            []
       in
       versions := vs;
       List.iter
@@ -98,7 +106,9 @@ let update_versions json =
                   | `String "Built" -> Built
                   | `String "Failed" -> Failed
                   | _ -> Unknown)
-              | _ -> Unknown
+              | _ ->
+                  error "Bad code: %d" j.code;
+                  Unknown
             in
             let vs =
               List.map

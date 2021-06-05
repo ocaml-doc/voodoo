@@ -12,9 +12,13 @@ val href : resolve:resolve -> Url.t -> string
 val page_href : resolve:resolve -> Url.Path.t -> string
 
 module Path : sig
-  val to_list : Url.Path.t -> (string * string) list
+  type l = (string * string) list
 
-  val of_list : (string * string) list -> Url.Path.t option
+  val to_list : Url.Path.t -> l
+
+  val of_list : l -> Url.Path.t option
+
+  val list_pp : l Fmt.t
 
   val is_leaf_page : Url.Path.t -> bool
 

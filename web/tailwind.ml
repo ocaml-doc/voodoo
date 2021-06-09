@@ -135,6 +135,8 @@ let max_w_screen_xl = "max-w-screen-xl"
 
 let max_w_xs = "max-w-xs"
 
+let max_w_sm = "max-w-sm"
+
 (** {2 Typeography} *)
 
 let font_medium = "font-medium"

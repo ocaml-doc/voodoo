@@ -13,7 +13,7 @@ module Package = struct
     let script = Some "Voodoo.update('package.json')" in
     let content =
       Html.div
-        ~a:[ Html.a_class T.[ p 4; max_w_7xl; mx_auto ] ]
+        ~a:[ Html.a_class T.[ p 4; w_full ] ]
         [
           Html.h1
             ~a:
@@ -49,7 +49,7 @@ module Packages = struct
     in
     let content =
       Html.div
-        ~a:[ Html.a_class T.[ p 4; max_w_7xl; mx_auto ] ]
+        ~a:[ Html.a_class T.[ p 4; w_full ] ]
         [
           Html.h1
             ~a:

@@ -227,9 +227,13 @@ let border_r = border_fn "border-r"
 
 let border_yellow n = "border-yellow-" ^ string_of_int n
 
+let border_opacity n = "border-opacity-" ^ string_of_int n
+
 let border_gray n = "border-gray-" ^ string_of_int n
 
 let border_blue n = "border-blue-" ^ string_of_int n
+
+let border_orangedark = "border-orangedark"
 
 let ring n = "ring-" ^ string_of_int n
 

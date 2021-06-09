@@ -32,8 +32,8 @@ type uri = Absolute of string | Relative of string
 let page_creator ~url name header (toc : Html_types.flow5 Html.elt list) content
     =
   let path = Link.Path.for_printing url in
-  let version_js =
-    try Some (Components.Hrefs.version_json !pkgname url) with _ -> None
+  let package_json =
+    try Some (Components.Hrefs.package_json !pkgname url) with _ -> None
   in
   let title_string = Printf.sprintf "%s (%s)" name (String.concat "." path) in
   let head = Components.head ~url title_string in
@@ -154,7 +154,7 @@ let page_creator ~url name header (toc : Html_types.flow5 Html.elt list) content
       [ breadcrumbs; content_div ]
   in
   let footer_script =
-    match version_js with
+    match package_json with
     | Some vjs -> Some (Printf.sprintf "Voodoo.update('%s')" vjs)
     | _ -> None
   in

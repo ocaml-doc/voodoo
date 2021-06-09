@@ -27,8 +27,8 @@ module Urls = struct
 
   let packages_page = of_simple_list Container_page [ "packages" ]
 
-  let version_json pkgname =
-    of_simple_list File [ "packages"; pkgname; "version.json" ]
+  let package_json pkgname =
+    of_simple_list File [ "packages"; pkgname; "package.json" ]
 
   let tailwind_css = of_simple_list File [ "packages"; "tailwind.css" ]
 
@@ -46,7 +46,7 @@ module Hrefs = struct
     in
     Link.href ~resolve:(Current url) dest_url
 
-  let version_json pkgname url = to_href ~url (Urls.version_json pkgname)
+  let package_json pkgname url = to_href ~url (Urls.package_json pkgname)
 
   let tailwind_css url = to_href ~url Urls.tailwind_css
 

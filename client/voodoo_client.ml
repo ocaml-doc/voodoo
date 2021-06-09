@@ -136,7 +136,6 @@ let init () =
     let id = Voodoo_web.Menu.Section.menu_id_of which in
     let elt = by_id id in
     let classes = elt##.classList in
-    classes##remove (Js.string "hidden");
     fn elt classes
   in
   let close x =
@@ -150,8 +149,8 @@ let init () =
   in
   let open_ x =
     alter
-      (fun elt _classes ->
-        ();
+      (fun elt classes ->
+        classes##remove (Js.string "hidden");
         elt##setAttribute aria_expanded s_true)
       x;
     opened := Some x

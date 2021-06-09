@@ -35,17 +35,57 @@ module Packages = struct
    fun packages ->
     let url = Components.Urls.packages_page in
     let head = Components.head ~url "Packages" in
-    let packages =
-      List.map
-        (fun pkg_name ->
-          Html.li
-            ~a:[ Html.a_class T.[ mx_auto ] ]
+    let package_li pkg_name =
+      Html.li
+        ~a:[ Html.a_class T.[ mx_auto ] ]
+        [
+          Html.a
+            ~a:[ Html.a_href (Printf.sprintf "%s/index.html" pkg_name) ]
+            [ Html.txt pkg_name ];
+        ]
+    in
+    let interpose_alphabet packages =
+      let alpha_heading name =
+        Html.h2
+          ~a:
             [
-              Html.a
-                ~a:[ Html.a_href (Printf.sprintf "%s/index.html" pkg_name) ]
-                [ Html.txt pkg_name ];
-            ])
-        packages
+              Html.a_class
+                T.[ text_lg; font_semibold; py 6; pb 2; text_gray 600 ];
+            ]
+          [
+            Html.txt
+              (Printf.sprintf "%c" (Astring.Char.Ascii.uppercase name.[0]));
+          ]
+      in
+
+      let rec inner ps cur =
+        match ps with
+        | na :: nb :: rest ->
+            let li = package_li na in
+            if
+              Astring.Char.Ascii.uppercase na.[0]
+              <> Astring.Char.Ascii.uppercase nb.[0]
+            then
+              Html.ul (List.rev (li :: cur))
+              :: alpha_heading nb :: inner (nb :: rest) []
+            else inner (nb :: rest) (li :: cur)
+        | [ na ] ->
+            let li = package_li na in
+            [ Html.ul (List.rev (li :: cur)) ]
+        | [] -> []
+      in
+      let first = List.hd packages in
+      alpha_heading first :: inner packages []
+    in
+
+    let list_content =
+      interpose_alphabet
+        (List.sort
+           (fun c1 c2 ->
+             String.compare
+               (Astring.String.Ascii.uppercase c1)
+               (Astring.String.Ascii.uppercase c2))
+           packages)
     in
     let content =
       Html.div
@@ -58,7 +98,7 @@ module Packages = struct
                   T.[ text_xl; pb 4; mb 4; border_b `b1; border_gray 900 ];
               ]
             [ Html.txt "Packages" ];
-          Html.ul ~a:[ Html.a_id "packages_container" ] packages;
+          Html.div ~a:[ Html.a_id "packages_container" ] list_content;
         ]
     in
     Components.page head content None

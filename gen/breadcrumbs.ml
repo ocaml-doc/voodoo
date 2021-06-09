@@ -1,5 +1,5 @@
 (* Breadcrumbs *)
-module T = Tailwind
+module T = Voodoo_web.Tailwind
 module Html = Tyxml.Html
 
 let breadcrumbs home_url items =

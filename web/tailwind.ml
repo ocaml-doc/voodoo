@@ -4,6 +4,11 @@ let numeric base n =
   if n < 0 then "-" ^ base ^ "-" ^ string_of_int (-n)
   else base ^ "-" ^ string_of_int n
 
+(* {2 Core Concepts} *)
+let group = "group"
+
+let group_hover x = "group-hover:" ^ x
+
 (* {2 Layout} *)
 
 let container = "container"
@@ -23,6 +28,8 @@ let inline_flex = "inline-flex"
 let hidden = "hidden"
 
 let float_right = "float-right"
+
+let float_left = "float-left"
 
 let overflow_auto = "overflow-auto"
 
@@ -146,6 +153,8 @@ let font_sans = "font-sans"
 
 let font_mono = "font-mono"
 
+let font_roboto = "font-roboto"
+
 let text_black = "text-black"
 
 let text_white = "text-white"
@@ -153,6 +162,8 @@ let text_white = "text-white"
 let text_gray n = "text-gray-" ^ string_of_int n
 
 let text_blue n = "text-blue-" ^ string_of_int n
+
+let text_orangedark = "text-orangedark"
 
 let opacity n = "opacity-" ^ string_of_int n
 
@@ -229,6 +240,8 @@ let ring_offset n = "ring-offset-" ^ string_of_int n
 (** {2 Effects} *)
 let ring_yellow n = "ring-yellow-" ^ string_of_int n
 
+let ring_orangedark = "ring-orangedark"
+
 let shadow = "shadow"
 
 let shadow_lg = "shadow-lg"
@@ -260,3 +273,7 @@ let transition = "transition"
 let ease_in_out = "ease-in-out"
 
 let duration = numeric "duration-"
+
+let fill_current = "fill-current"
+
+let stroke_current = "stroke-current"

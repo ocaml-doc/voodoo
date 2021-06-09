@@ -9,7 +9,8 @@
   tyxml
   opam-format
   bos
-  yojson))
+  yojson
+  voodoo-web))
 
 (rule
  (targets static.ml)

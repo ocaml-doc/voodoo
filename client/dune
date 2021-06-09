@@ -3,17 +3,13 @@
   (flags
    (:standard -w -39))))
 
-(library
- (name tailwind)
- (modules tailwind))
-
 (executable
  (name voodoo_client)
  (preprocess
   (pps js_of_ocaml-ppx ppx_deriving_yojson))
  (modes js)
  (modules voodoo_client)
- (libraries js_of_ocaml js_of_ocaml-lwt js_of_ocaml-tyxml tailwind astring))
+ (libraries js_of_ocaml js_of_ocaml-lwt js_of_ocaml-tyxml astring voodoo-web))
 
 (alias
  (name default)

@@ -1,6 +1,6 @@
 (* Components *)
 module Html = Tyxml.Html
-module T = Tailwind
+module T = Voodoo_web.Tailwind
 
 module Urls = struct
   type leaf = File | Container_page
@@ -100,7 +100,8 @@ let page head contents footer_script =
             ~a:[ Html.a_class T.[ h_screen; flex; bg_white; font_sans ] ]
             [ contents ];
         ]
-       @
-       match footer_script with
-       | Some s -> [ Html.script (Html.txt s) ]
-       | None -> []))
+       @ Html.script (Html.txt "Voodoo.init()")
+         ::
+         (match footer_script with
+         | Some s -> [ Html.script (Html.txt s) ]
+         | None -> [])))

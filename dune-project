@@ -53,3 +53,9 @@
   yojson
   ppx_deriving_yojson))
 
+(package
+ (name voodoo-web)
+ (synopsis "Voodoo web library shared between client and server")
+ (description "Contains everything that we'd like to reference in both the client and server contexts")
+)
+

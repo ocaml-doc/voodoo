@@ -15,7 +15,7 @@
  *)
 
 module Html = Tyxml.Html
-module T = Tailwind
+module T = Voodoo_web.Tailwind
 
 let opam : OpamFile.OPAM.t option ref = ref None
 

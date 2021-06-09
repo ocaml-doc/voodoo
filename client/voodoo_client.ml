@@ -1,8 +1,8 @@
 open Lwt
 open Js_of_ocaml
 open Js_of_ocaml_tyxml
-module Html = Tyxml_js.Html5
-module T = Tailwind
+module H = Tyxml_js.Html5
+module T = Voodoo_web.Tailwind
 
 type versions_state = Built | Failed | Unknown
 
@@ -24,16 +24,16 @@ let replace_child p n =
   Dom.appendChild p n
 
 let versions_html vs =
-  Html.ul
-    ~a:[ Html.a_class T.[ ml 4; "test-orange" ] ]
+  H.ul
+    ~a:[ H.a_class T.[ ml 4; "test-orange" ] ]
     (List.map
        (fun { version; link; status_url = _; status } ->
-         Html.li
+         H.li
            [
-             Html.span
+             H.span
                ~a:
                  [
-                   Html.a_class
+                   H.a_class
                      T.
                        [
                          (match status with
@@ -48,9 +48,7 @@ let versions_html vs =
                        ];
                  ]
                [];
-             Html.a
-               ~a:[ Html.a_href link; Html.a_class T.[ ml 2 ] ]
-               [ Html.txt version ];
+             H.a ~a:[ H.a_href link; H.a_class T.[ ml 2 ] ] [ H.txt version ];
            ])
        vs)
   |> Tyxml_js.To_dom.of_element
@@ -82,7 +80,7 @@ let update_versions json =
                     error "version: %s" version;
                     let link = Printf.sprintf "%s%s/index.html" stem version in
                     let status_url =
-                      Printf.sprintf "%s%s/status.json" stem version
+                      Printf.sprintf "%sπ%s/status.json" stem version
                     in
                     let status = Unknown in
                     { version; link; status_url; status } :: acc
@@ -128,8 +126,60 @@ let update_versions json =
         (Printf.sprintf "Failed to get versions json");
       Lwt.return ()
 
+(* Menu functions *)
+let init () =
+  let opened = ref None in
+  let aria_expanded = Js.string "aria-expanded" in
+  let s_true = Js.string "true" in
+  let s_false = Js.string "false" in
+  let alter fn which =
+    let id = Voodoo_web.Menu.Section.menu_id_of which in
+    let elt = by_id id in
+    let classes = elt##.classList in
+    classes##remove (Js.string "hidden");
+    fn elt classes
+  in
+  let close x =
+    alter
+      (fun elt classes ->
+        classes##add (Js.string "hidden");
+        elt##setAttribute aria_expanded s_false)
+      x;
+
+    opened := None
+  in
+  let open_ x =
+    alter
+      (fun elt _classes ->
+        ();
+        elt##setAttribute aria_expanded s_true)
+      x;
+    opened := Some x
+  in
+  let toggle which =
+    match !opened with
+    | Some x when x = which -> close which
+    | Some y ->
+        close y;
+        open_ which
+    | None -> open_ which
+  in
+  List.iter
+    (fun (x, _) ->
+      let button_id = Voodoo_web.Menu.Section.button_id_of x in
+      error "Setting handler on id: %s" button_id;
+      let elt = by_id button_id in
+      elt##.onclick :=
+        Dom_html.handler (fun _ ->
+            error "handler fired!";
+            toggle x;
+            Js._true))
+    Voodoo_web.Menu.menu
+
 let _ =
   Js.export "Voodoo"
     (object%js
+       method init = init ()
+
        method update_versions url = update_versions (Js.to_string url)
     end)

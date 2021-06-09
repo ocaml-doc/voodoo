@@ -1,7 +1,7 @@
 (* Pages - specific pages to render *)
 
 module Html = Tyxml.Html
-module T = Tailwind
+module T = Voodoo_web.Tailwind
 
 module Package = struct
   type t = Html_types.html Html.elt

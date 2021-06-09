@@ -17,7 +17,7 @@
 open Odoc_document.Types
 module Html = Tyxml.Html
 module Doctree = Odoc_document.Doctree
-module T = Tailwind
+module T = Voodoo_web.Tailwind
 
 type any = Html_types.flow5
 
@@ -497,12 +497,10 @@ module Page = struct
         | `Closed | `Open | `Default -> None
         | `Inline -> Some 0)
 
-  let rec include_ indent { Subpage.content; _ } =
-    [ page indent content ]
+  let rec include_ indent { Subpage.content; _ } = [ page indent content ]
 
   and subpages indent i =
-    Utils.list_concat_map ~f:(include_ indent)
-    @@ Doctree.Subpages.compute i
+    Utils.list_concat_map ~f:(include_ indent) @@ Doctree.Subpages.compute i
 
   and mktitle page_type title =
     let h1 =
@@ -627,9 +625,7 @@ module Page = struct
       | None -> (items ~resolve header :> any Html.elt list)
     in
     let content = (items ~resolve i :> any Html.elt list) in
-    let page =
-      Tree.make ~indent ~header ~toc ~url title content subpages
-    in
+    let page = Tree.make ~indent ~header ~toc ~url title content subpages in
     page
 end
 

@@ -36,6 +36,7 @@
  (description "Voodoo compilation step")
  (depends
    voodoo-lib
+   voodoo-web
    odoc
    tyxml
    astring
@@ -51,6 +52,7 @@
   js_of_ocaml-ppx
   js_of_ocaml-tyxml
   yojson
+  voodoo-web
   ppx_deriving_yojson))
 
 (package

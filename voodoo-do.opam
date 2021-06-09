@@ -11,6 +11,7 @@ bug-reports: "https://github.com/jonludlam/voodoo/issues"
 depends: [
   "dune" {>= "2.8"}
   "voodoo-lib"
+  "voodoo-web"
   "odoc"
   "tyxml"
   "astring"

@@ -5,13 +5,11 @@ let ( >>= ) r f = match r with Ok v -> f v | Error _ as e -> e
 
 let document_of_odocl ~syntax input =
   let open Odoc_document in
-  Root.read input >>= fun root ->
-  match root.file with
-  | Page _ ->
-      Page.load input >>= fun odoctree ->
+  Odoc_file.load input >>= fun unit ->
+  match unit.content with
+  | Odoc_file.Page_content odoctree ->
       Ok (Renderer.document_of_page ~syntax odoctree)
-  | Compilation_unit _ ->
-      Compilation_unit.load input >>= fun odoctree ->
+  | Unit_content odoctree ->
       Ok (Renderer.document_of_compilation_unit ~syntax odoctree)
 
 let render_document ~output:root_dir odoctree =
@@ -27,10 +25,9 @@ let render_document ~output:root_dir odoctree =
   Ok ()
 
 let docs_ids parent docs =
-  Root.read parent >>= fun root ->
-  match root.file with
-  | Page _ -> (
-      Page.load parent >>= fun odoctree ->
+  Odoc_file.load parent >>= fun root ->
+  match root.content with
+  | Page_content odoctree -> (
       match odoctree.Odoc_model.Lang.Page.name with
       | `LeafPage _ -> Error (`Msg "Parent is a leaf!")
       | (`RootPage _ | `Page _) as parent_id ->
@@ -49,10 +46,9 @@ let docs_ids parent docs =
   | _ -> Error (`Msg "Parent is not a page!")
 
 let otherversions parent vs =
-  Root.read parent >>= fun root ->
-  match root.file with
-  | Page _ -> (
-      Page.load parent >>= fun odoctree ->
+  Odoc_file.load parent >>= fun root ->
+  match root.content with
+  | Page_content odoctree -> (
       match odoctree.Odoc_model.Lang.Page.name with
       | `LeafPage _ -> Error (`Msg "Parent is a leaf!")
       | `RootPage _ -> Error (`Msg "Parent is a root!")

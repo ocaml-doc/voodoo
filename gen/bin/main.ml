@@ -236,11 +236,9 @@ let generate_json output =
       (fun p map ->
         match Fpath.segs p with
         | [ "linked"; "packages"; pkg_name; pkg_version ] ->
-            SMap.update pkg_name
-              (function
-                | Some l -> Some (pkg_version :: l)
-                | None -> Some [ pkg_version ])
-              map
+            let l = try SMap.find pkg_name map with _ -> [] in
+            let m = SMap.remove pkg_name map in
+            SMap.add pkg_name (pkg_version :: l) m
         | _ -> map)
       SMap.empty linkedpath
   with

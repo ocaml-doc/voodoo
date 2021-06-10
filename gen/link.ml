@@ -21,7 +21,7 @@ module Path = struct
 
   let list_pp =
     let semi fmt () = Format.fprintf fmt ";" in
-    Fmt.(list ~sep:semi (pair ~sep:comma string string))
+    Fmt.list ~sep:semi Fmt.(pair ~sep:comma string string)
 
   let for_printing url = List.map snd @@ to_list url
 

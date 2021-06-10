@@ -1,11 +1,11 @@
 (library
  (name odoc_thtml)
- (public_name voodoo-do.odoc_thtml)
+ (public_name voodoo-gen.odoc_thtml)
  (libraries
   odoc.model
   odoc.document
   odoc.odoc
-  voodoo-do.omd
+  voodoo-gen.omd
   tyxml
   opam-format
   bos

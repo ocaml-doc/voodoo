@@ -241,7 +241,7 @@ let run pkg_name is_blessed gen_redirect =
   let odocls = odocls @ List.map Mld.output_odocl (parent :: mldvs) in
   let _otherdocs, _opam_file = Otherdocs.copy parent otherdocs opam_file in
   List.iter (Odoc.html output) odocls;
-  Odoc.voodoo_gen Fpath.(output / "tailwind") pkg_name version;
+  (* Odoc.voodoo_gen Fpath.(output / "tailwind") pkg_name version; *)
   let () =
     Bos.OS.File.delete (Fpath.v "compile/page-packages.odoc") |> Util.get_ok
   in

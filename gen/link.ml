@@ -19,7 +19,9 @@ module Path = struct
     in
     inner None l
 
-  let list_pp = Fmt.(list ~sep:semi (pair ~sep:comma string string))
+  let list_pp =
+    let semi fmt () = Format.fprintf fmt ";" in
+    Fmt.(list ~sep:semi (pair ~sep:comma string string))
 
   let for_printing url = List.map snd @@ to_list url
 

@@ -56,6 +56,20 @@
   ppx_deriving_yojson))
 
 (package
+ (name voodoo-gen)
+ (synopsis "Voodoo tool to generate tailwind-style output")
+ (description "Voodoo tool to generate tailwind-style output")
+ (depends
+   voodoo-lib
+   voodoo-web
+   odoc
+   tyxml
+   astring
+   cmdliner
+   yojson
+   bos))
+
+(package
  (name voodoo-web)
  (synopsis "Voodoo web library shared between client and server")
  (description "Contains everything that we'd like to reference in both the client and server contexts")

@@ -1,7 +1,7 @@
 (* Opam metadata sidebar *)
 open Result
 module Html = Tyxml.Html
-module T = Tailwind
+module T = Voodoo_web.Tailwind
 
 let link_icon =
   Html.Unsafe.data

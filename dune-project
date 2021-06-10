@@ -36,10 +36,12 @@
  (description "Voodoo compilation step")
  (depends
    voodoo-lib
+   voodoo-web
    odoc
    tyxml
    astring
-   cmdliner))
+   cmdliner
+   yojson))
 
 (package
  (name voodoo-client)
@@ -50,5 +52,12 @@
   js_of_ocaml-ppx
   js_of_ocaml-tyxml
   yojson
+  voodoo-web
   ppx_deriving_yojson))
+
+(package
+ (name voodoo-web)
+ (synopsis "Voodoo web library shared between client and server")
+ (description "Contains everything that we'd like to reference in both the client and server contexts")
+)
 

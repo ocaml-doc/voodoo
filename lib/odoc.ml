@@ -170,7 +170,7 @@ let html output path =
 let voodoo_gen output name version =
   let cmd =
     Bos.Cmd.(
-      v "voodoo-gen" % "-o" % Fpath.to_string output % "-n" % name
+      v "voodoo-gen" % "pkgver" % "-o" % Fpath.to_string output % "-n" % name
       % "--pkg-version" % version)
   in
   Format.eprintf "Odoc.gen: %a\n%!" Bos.Cmd.pp cmd;

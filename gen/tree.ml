@@ -15,7 +15,7 @@
  *)
 
 module Html = Tyxml.Html
-module T = Tailwind
+module T = Voodoo_web.Tailwind
 
 let opam : OpamFile.OPAM.t option ref = ref None
 
@@ -29,72 +29,14 @@ let pkgname = ref ""
 
 type uri = Absolute of string | Relative of string
 
-module Urls = struct
-  let of_simple_list ~url l =
-    let rec inner = function
-      | [] -> failwith "Bad path"
-      | [ x ] -> [ ("file", x) ]
-      | x :: xs -> ("container-page", x) :: inner xs
-    in
-    let get_some = function Some x -> x | None -> failwith "Bad path" in
-    let page = inner l |> Link.Path.of_list |> get_some in
-    Link.page_href ~resolve:(Link.Current url) page
-
-  let version_json url =
-    of_simple_list ~url [ "packages"; !pkgname; "version.json" ]
-
-  let tailwind_css url = of_simple_list ~url [ "packages"; "tailwind.css" ]
-
-  let extra_css url = of_simple_list ~url [ "packages"; "extra.css" ]
-
-  let highlight_js url = of_simple_list ~url [ "packages"; "highlight.pack.js" ]
-
-  let voodoo_client_js url =
-    of_simple_list ~url [ "packages"; "voodoo_client.js" ]
-end
-
 let page_creator ~url name header (toc : Html_types.flow5 Html.elt list) content
     =
   let path = Link.Path.for_printing url in
-  let version_js = try Some (Urls.version_json url) with _ -> None in
-
-  let head : Html_types.head Html.elt =
-    let title_string = Printf.sprintf "%s (%s)" name (String.concat "." path) in
-
-    let odoc_css_uri = Urls.tailwind_css url in
-    let odoc_css_extra = Urls.extra_css url in
-
-    let highlight_js_uri = Urls.highlight_js url in
-    let voodoo_client_uri = Urls.voodoo_client_js url in
-
-    let alpine_js_uri =
-      "https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js"
-    in
-
-    Html.head
-      (Html.title (Html.txt title_string))
-      [
-        Html.link ~rel:[ `Stylesheet ] ~href:odoc_css_uri ();
-        Html.link ~rel:[ `Stylesheet ] ~href:odoc_css_extra ();
-        Html.meta ~a:[ Html.a_charset "utf-8" ] ();
-        Html.meta
-          ~a:[ Html.a_name "generator"; Html.a_content "odoc %%VERSION%%" ]
-          ();
-        Html.meta
-          ~a:
-            [
-              Html.a_name "viewport";
-              Html.a_content "width=device-width,initial-scale=1.0";
-            ]
-          ();
-        Html.script ~a:[ Html.a_src highlight_js_uri ] (Html.txt "");
-        Html.script (Html.txt "hljs.initHighlightingOnLoad();");
-        Html.script ~a:[ Html.a_src voodoo_client_uri ] (Html.txt "");
-        Html.script
-          ~a:[ Html.a_src alpine_js_uri; Html.a_defer () ]
-          (Html.txt "");
-      ]
+  let package_json =
+    try Some (Components.Hrefs.package_json !pkgname url) with _ -> None
   in
+  let title_string = Printf.sprintf "%s (%s)" name (String.concat "." path) in
+  let head = Components.head ~url title_string in
 
   let breadcrumbs_data =
     let rec loop url' =
@@ -211,20 +153,12 @@ let page_creator ~url name header (toc : Html_types.flow5 Html.elt list) content
       ~a:[ Html.a_class T.[ flex; flex_col; w_full; h_full ] ]
       [ breadcrumbs; content_div ]
   in
-  Html.html head
-    (Html.body
-       ~a:[ Html.a_class T.[ mx_auto; "max-w-screen-2xl" ] ]
-       ([
-          Main_header.v;
-          Html.div
-            ~a:[ Html.a_class T.[ h_screen; flex; bg_white; font_sans ] ]
-            [ main_div ];
-        ]
-       @
-       match version_js with
-       | Some vjs ->
-           [ Html.script (Html.txt (Printf.sprintf "Voodoo.update('%s')" vjs)) ]
-       | None -> []))
+  let footer_script =
+    match package_json with
+    | Some vjs -> Some (Printf.sprintf "Voodoo.update('%s')" vjs)
+    | _ -> None
+  in
+  Components.page head main_div footer_script
 
 let make ~indent ~url ~header ~(toc : Html_types.flow5 Html.elt list) title
     content children =

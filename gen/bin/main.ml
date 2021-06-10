@@ -41,9 +41,13 @@ type files = {
 
 let empty = { opam = None; otherdocs = []; odocls = [] }
 
-let get_ok = function Result.Ok x -> x | Error _ -> failwith "get_ok: Not OK"
+let get_ok = function
+  | Result.Ok x -> x
+  | Error (`Msg m) ->
+      Format.eprintf "get_ok: Failure! msg=%s\n%!" m;
+      failwith "get_ok: Not OK"
 
-let generate output name_filter version_filter =
+let generate_pkgver output name_filter version_filter =
   let linkedpath = Fpath.(v "linked") in
   match
     Bos.OS.Dir.fold_contents ~elements:`Dirs
@@ -132,9 +136,128 @@ let generate output name_filter version_filter =
               |> get_ok
       in
 
-      List.map handle_package pkgs
+      List.iter handle_package pkgs
 
-let package_name =
+let generate_named_package output package_name =
+  (* Fs.Directory.t is actually an fpath, so this should never fail *)
+  let output_path =
+    Fpath.(of_string (Odoc_odoc.Fs.Directory.to_string output)) |> get_ok
+  in
+  let dir = Fpath.(output_path / "packages" / package_name) in
+  let file = Fpath.(dir / "index.html") in
+  (* stoopid *)
+  Odoc_odoc.Fs.Directory.(mkdir_p (of_string Fpath.(to_string dir)));
+  let v = Odoc_thtml.Pages.Package.v package_name in
+  Bos.OS.File.write file (Fmt.to_to_string (Tyxml.Html.pp ~indent:true ()) v)
+  |> get_ok
+
+let read_packages output_path =
+  let rec sub l1 l2 =
+    match (l1, l2) with
+    | l1 :: l1s, l2 :: l2s when l1 = l2 -> sub l1s l2s
+    | [], _ | _, [] -> Some l2
+    | _ -> None
+  in
+  let output_segs = Fpath.segs output_path |> List.filter (fun x -> x <> "") in
+  match
+    Bos.OS.Dir.fold_contents ~elements:`Dirs
+      (fun p packages ->
+        match sub output_segs (Fpath.segs p) with
+        | Some [ "packages"; pkg_name ] -> pkg_name :: packages
+        | Some _ -> packages
+        | None -> packages)
+      [] output_path
+  with
+  | Error (`Msg m) ->
+      Format.eprintf "Failed to find list of packages: %s\n%!" m;
+      exit 1
+  | Ok pkgs -> pkgs
+
+let generate_package output package_name_opt =
+  let output_path =
+    Fpath.(of_string (Odoc_odoc.Fs.Directory.to_string output)) |> get_ok
+  in
+  match package_name_opt with
+  | Some p -> generate_named_package output p
+  | None ->
+      let pkgs = read_packages output_path in
+      List.iter (generate_named_package output) pkgs
+
+let generate_packages output packages_json_opt =
+  let output_path =
+    Fpath.(of_string (Odoc_odoc.Fs.Directory.to_string output)) |> get_ok
+  in
+  let dir = Fpath.(output_path / "packages") in
+  let file = Fpath.(dir / "index.html") in
+  let packages =
+    match packages_json_opt with
+    | None -> read_packages output_path
+    | Some packages_json -> (
+        let packages_json =
+          match Fpath.of_string packages_json with
+          | Ok x -> x
+          | Error (`Msg m) ->
+              Format.eprintf "Failed to parse packages.json filename: %s\n%!" m;
+              exit 1
+        in
+        match Bos.OS.File.read packages_json with
+        | Error (`Msg m) ->
+            Format.eprintf "Failed to read packages_json: %s\n%!" m;
+            exit 1
+        | Ok json -> (
+            match Yojson.Safe.from_string json with
+            | `List l ->
+                let packages =
+                  List.fold_right
+                    (fun a acc ->
+                      match a with `String s -> s :: acc | _ -> acc)
+                    l []
+                in
+                packages
+            | _ ->
+                Format.eprintf "Unexpected contents in packages.json\n%!";
+                exit 1))
+  in
+  let v = Odoc_thtml.Pages.Packages.v packages in
+  Odoc_odoc.Fs.Directory.(mkdir_p (of_string Fpath.(to_string dir)));
+  Bos.OS.File.write file (Fmt.to_to_string (Tyxml.Html.pp ~indent:true ()) v)
+  |> get_ok;
+  List.iter (fun pkg -> generate_named_package output pkg) packages
+
+module SMap = Map.Make (String)
+
+let generate_json output =
+  let linkedpath = Fpath.(v "linked") in
+  let output_path =
+    Fpath.(of_string (Odoc_odoc.Fs.Directory.to_string output)) |> get_ok
+  in
+  match
+    Bos.OS.Dir.fold_contents ~elements:`Dirs
+      (fun p map ->
+        match Fpath.segs p with
+        | [ "linked"; "packages"; pkg_name; pkg_version ] ->
+            SMap.update pkg_name
+              (function
+                | Some l -> Some (pkg_version :: l)
+                | None -> Some [ pkg_version ])
+              map
+        | _ -> map)
+      SMap.empty linkedpath
+  with
+  | Error (`Msg m) ->
+      Format.eprintf "Failed to find any packages: %s\n%!" m;
+      exit 1
+  | Ok map ->
+      SMap.iter
+        (fun pkg versions ->
+          let file = Fpath.(output_path / "packages" / pkg / "package.json") in
+          let json = `A (List.map (fun x -> `String x) versions) in
+          Bos.OS.File.write file (OpamJson.to_string json) |> get_ok)
+        map
+
+let version = "v0.0.1"
+
+let package_name_opt =
   let doc =
     "Package name (e.g. voodoo) - will only handle the named package if set"
   in
@@ -143,7 +266,7 @@ let package_name =
     & opt (some string) None
     & info ~docs ~docv:"NAME" ~doc [ "n"; "name" ])
 
-let package_version =
+let package_version_opt =
   let doc =
     "Package version (e.g. 0.0.1) - will only handle the specified version \
      package if set"
@@ -153,9 +276,46 @@ let package_version =
     & opt (some string) None
     & info ~docs ~docv:"VERSION" ~doc [ "pkg-version" ])
 
-let cmd =
-  let doc = "Generate HTML pages from odocl files" in
-  ( Term.(const generate $ output $ package_name $ package_version),
-    Term.info "generate" ~version:"v0.0.1" ~doc ~exits:Term.default_exits )
+let package_name =
+  let doc = "Package name (e.g. voodoo)" in
+  Arg.(
+    required
+    & opt (some string) None
+    & info ~docs ~docv:"NAME" ~doc [ "n"; "name" ])
 
-let () = Term.(exit @@ eval cmd)
+let packages_json_opt =
+  let doc = "Packages json file" in
+  Arg.(
+    value
+    & opt (some string) None
+    & info ~docs ~docv:"FILE" ~doc [ "j"; "json" ])
+
+let pkgver_cmd =
+  let doc = "Generate HTML pages from odocl files" in
+  ( Term.(
+      const generate_pkgver $ output $ package_name_opt $ package_version_opt),
+    Term.info "pkgver" ~version ~doc ~exits:Term.default_exits )
+
+let package_cmd =
+  let doc = "Generate a package page" in
+  ( Term.(const generate_package $ output $ package_name_opt),
+    Term.info "package" ~version ~doc ~exits:Term.default_exits )
+
+let packages_cmd =
+  let doc = "Generate a packages page" in
+  ( Term.(const generate_packages $ output $ packages_json_opt),
+    Term.info "packages" ~version ~doc ~exits:Term.default_exits )
+
+let default_cmd =
+  let doc = "Documentation generator" in
+  ( Term.(ret (const (fun _ -> `Help (`Pager, None)) $ package_name)),
+    Term.info "voodoo-gen" ~version ~doc ~exits:Term.default_exits )
+
+let generate_json_cmd =
+  let doc = "Generate opam JSON" in
+  ( Term.(const generate_json $ output),
+    Term.info "generate-json" ~version ~doc ~exits:Term.default_exits )
+
+let cmds = [ pkgver_cmd; package_cmd; packages_cmd; generate_json_cmd ]
+
+let () = Term.(exit @@ eval_choice default_cmd cmds)

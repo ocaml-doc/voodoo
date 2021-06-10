@@ -5,7 +5,7 @@
   odoc.model
   odoc.document
   odoc.odoc
-  voodoo-do.omd
+  voodoo-gen.omd
   tyxml
   opam-format
   bos

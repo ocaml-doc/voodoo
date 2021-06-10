@@ -80,7 +80,7 @@ let update_versions json =
                     error "version: %s" version;
                     let link = Printf.sprintf "%s%s/index.html" stem version in
                     let status_url =
-                      Printf.sprintf "%s/%s/status.json" stem version
+                      Printf.sprintf "%s%s/status.json" stem version
                     in
                     let status = Unknown in
                     { version; link; status_url; status } :: acc

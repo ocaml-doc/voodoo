@@ -104,31 +104,6 @@ let generate_pkgver output name_filter version_filter =
                  files;
             Odoc_thtml.render_other ~parent ~otherdocs ~output |> get_ok;
             let foutput = Fpath.v (Odoc_odoc.Fs.Directory.to_string output) in
-            let pkg_dir =
-              Odoc_odoc.Fs.Directory.of_string
-                Fpath.(to_string (foutput / "packages"))
-            in
-            Odoc_odoc.Fs.Directory.mkdir_p pkg_dir;
-            Bos.OS.File.write
-              Fpath.(foutput / "packages" / "tailwind.css")
-              Odoc_thtml.Static.tailwind_css
-            |> get_ok;
-            Bos.OS.File.write
-              Fpath.(foutput / "packages" / "extra.css")
-              Odoc_thtml.Static.extra_css
-            |> get_ok;
-            Bos.OS.File.write
-              Fpath.(foutput / "packages" / "highlight.pack.js")
-              Odoc_thtml.Static.highlight_pack_js
-            |> get_ok;
-            Bos.OS.File.write
-              Fpath.(foutput / "packages" / "colour-logo.svg")
-              Odoc_thtml.Static.colour_logo_svg
-            |> get_ok;
-            Bos.OS.File.write
-              Fpath.(foutput / "packages" / "voodoo_client.js")
-              Odoc_thtml.Static.voodoo_client_js
-            |> get_ok;
             if blessed then
               Bos.OS.File.write
                 Fpath.(foutput / "packages" / pkg_name / ver / "status.json")
@@ -222,7 +197,34 @@ let generate_packages output packages_json_opt =
   Odoc_odoc.Fs.Directory.(mkdir_p (of_string Fpath.(to_string dir)));
   Bos.OS.File.write file (Fmt.to_to_string (Tyxml.Html.pp ~indent:true ()) v)
   |> get_ok;
-  List.iter (fun pkg -> generate_named_package output pkg) packages
+  List.iter (fun pkg -> generate_named_package output pkg) packages;
+  let foutput = Fpath.v (Odoc_odoc.Fs.Directory.to_string output) in
+  let pkg_dir =
+    Odoc_odoc.Fs.Directory.of_string
+      Fpath.(to_string (foutput / "packages"))
+  in
+  Odoc_odoc.Fs.Directory.mkdir_p pkg_dir;
+  Bos.OS.File.write
+    Fpath.(foutput / "packages" / "tailwind.css")
+    Odoc_thtml.Static.tailwind_css
+  |> get_ok;
+  Bos.OS.File.write
+    Fpath.(foutput / "packages" / "extra.css")
+    Odoc_thtml.Static.extra_css
+  |> get_ok;
+  Bos.OS.File.write
+    Fpath.(foutput / "packages" / "highlight.pack.js")
+    Odoc_thtml.Static.highlight_pack_js
+  |> get_ok;
+  Bos.OS.File.write
+    Fpath.(foutput / "packages" / "colour-logo.svg")
+    Odoc_thtml.Static.colour_logo_svg
+  |> get_ok;
+  Bos.OS.File.write
+    Fpath.(foutput / "packages" / "voodoo_client.js")
+    Odoc_thtml.Static.voodoo_client_js
+  |> get_ok
+
 
 module SMap = Map.Make (String)
 

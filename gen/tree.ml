@@ -33,7 +33,7 @@ let page_creator ~url name header (toc : Html_types.flow5 Html.elt list) content
     =
   let path = Link.Path.for_printing url in
   let package_json =
-    try Some (Components.Hrefs.package_json !pkgname url) with _ -> None
+    try Some (Hrefs.package_json !pkgname url) with _ -> None
   in
   let title_string = Printf.sprintf "%s (%s)" name (String.concat "." path) in
   let head = Components.head ~url title_string in
@@ -64,7 +64,7 @@ let page_creator ~url name header (toc : Html_types.flow5 Html.elt list) content
                 w 72;
                 flex_none;
                 bg_gray 100;
-                h_screen;
+                min_h_screen;
                 border_r `b1;
                 border_gray 200;
                 sticky;
@@ -158,7 +158,7 @@ let page_creator ~url name header (toc : Html_types.flow5 Html.elt list) content
     | Some vjs -> Some (Printf.sprintf "Voodoo.update('%s')" vjs)
     | _ -> None
   in
-  Components.page head main_div footer_script
+  Components.page url head main_div footer_script
 
 let make ~indent ~url ~header ~(toc : Html_types.flow5 Html.elt list) title
     content children =

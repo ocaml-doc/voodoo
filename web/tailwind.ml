@@ -127,6 +127,8 @@ let w_screen = "w-screen"
 
 let h_screen = "h-screen"
 
+let min_h_screen = "min-h-screen"
+
 let h_full = "h-full"
 
 let h = numeric "h"
@@ -150,6 +152,8 @@ let list_disc = "list-disc"
 let list_decimal = "list-decimal"
 
 let font_semibold = "font-semibold"
+
+let font_extrabold = "font-extrabold"
 
 let font_sans = "font-sans"
 

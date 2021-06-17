@@ -221,6 +221,10 @@ let generate_packages output packages_json_opt =
     Odoc_thtml.Static.colour_logo_svg
   |> get_ok;
   Bos.OS.File.write
+    Fpath.(foutput / "packages" / "colour-transparent-icon.svg")
+    Odoc_thtml.Static.colour_transparent_icon_svg
+  |> get_ok;
+  Bos.OS.File.write
     Fpath.(foutput / "packages" / "voodoo_client.js")
     Odoc_thtml.Static.voodoo_client_js
   |> get_ok

@@ -345,7 +345,8 @@ let item_of_menu_item : Voodoo_web.Menu.Item.t -> menu_item =
         icon;
       }
 
-let v =
+let v url =
+  ignore url;
   let submenu_item : menu_item -> Html_types.flow5 Html.elt =
    fun item ->
     Html.a
@@ -508,13 +509,14 @@ let v =
       (List.map menu menu_items)
   in
   let caml_image =
+    let src = Hrefs.caml_image_svg url in
     Html.div
       ~a:[ Html.a_class T.[ flex; justify_start ] ]
       [
         Html.a
           ~a:[ Html.a_href "https://v3.ocaml.org/" ]
           [
-            Html.img ~src:"/colour-logo.svg" ~alt:""
+            Html.img ~src ~alt:""
               ~a:[ Html.a_class T.[ h 8; w_auto; sm @@ h 10 ] ]
               ();
           ];

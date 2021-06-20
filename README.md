@@ -6,7 +6,9 @@ This package likely requires the very latest odoc to be installed:
 $ opam pin add -y odoc https://github.com/ocaml/odoc.git 
 ```
 
-This package is intended to be used as part of an ocurrent pipeline. As such,
+This package is intended to be used as part of an
+[ocurrent](https://github.com/ocurrent/ocurrent) pipeline, for example
+via [ocaml-docs-ci](https://github.com/ocurrent/ocaml-docs-ci). As such,
 it's tricky to use in isolation. Having said that, there is some rudimentary
 support for using it this way:
 

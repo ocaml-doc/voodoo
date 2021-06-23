@@ -2,7 +2,6 @@
 module Html = Tyxml.Html
 module T = Voodoo_web.Tailwind
 
-
 let head ~url title : Html_types.head Html.elt =
   let odoc_css_uri = Hrefs.tailwind_css url in
   let odoc_css_extra = Hrefs.extra_css url in

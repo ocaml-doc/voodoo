@@ -503,25 +503,30 @@ module Page = struct
     Utils.list_concat_map ~f:(include_ indent) @@ Doctree.Subpages.compute i
 
   and mktitle page_type path =
-    let sep = Html.code ~a:[Html.a_class T.[font_mono]] [Html.txt "."] in
+    let sep = Html.code ~a:[ Html.a_class T.[ font_mono ] ] [ Html.txt "." ] in
     let rec links =
-      let link (name,link) = Html.a 
-              ~a:[Html.a_href link] [Html.code
-                ~a:[ Html.a_class T.[ font_mono; text_orangedark; cursor_pointer ]; ]
-
-                [ Html.txt name ]] in
+      let link (name, link) =
+        Html.a ~a:[ Html.a_href link ]
+          [
+            Html.code
+              ~a:
+                [
+                  Html.a_class T.[ font_mono; text_orangedark; cursor_pointer ];
+                ]
+              [ Html.txt name ];
+          ]
+      in
       function
-      | elt::(_::_ as xs) ->
-        link elt :: sep :: links xs
-      | [elt] ->
-        [link elt]
+      | elt :: (_ :: _ as xs) -> link elt :: sep :: links xs
+      | [ elt ] -> [ link elt ]
       | [] -> []
     in
-          
+
     let h1 =
       Html.div
         ~a:[ Html.a_class T.[ relative; flex_1; h 20 ] ]
-         [ Html.h1
+        [
+          Html.h1
             ~a:
               [
                 Html.a_class
@@ -539,9 +544,8 @@ module Page = struct
                       truncate;
                     ];
               ]
-            (links
-             path)]
-
+            (links path);
+        ]
       ::
       (match page_type with
       | None -> []
@@ -588,11 +592,11 @@ module Page = struct
   and title_of_url url =
     let rec inner u =
       match u.Link.Url.Path.kind with
-      | "module" | "module-type" | "class" | "class-type" | "argument" -> begin
-        match u.parent with
-        | Some p -> (u.name, Link.(page_href ~resolve:(Current url) u)) :: inner p
-        | None -> assert false
-      end
+      | "module" | "module-type" | "class" | "class-type" | "argument" -> (
+          match u.parent with
+          | Some p ->
+              (u.name, Link.(page_href ~resolve:(Current url) u)) :: inner p
+          | None -> assert false)
       | _ -> []
     in
     match List.rev (inner url) with

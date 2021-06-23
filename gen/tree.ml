@@ -58,8 +58,10 @@ let page_creator ~url name header (toc : Html_types.flow5 Html.elt list) content
               ];
         ]
       (Html.div
-         ~a:[ Html.a_class T.[ flex; h 20; border_b `b1; relative; border_t `b1;
-         ] ]
+         ~a:
+           [
+             Html.a_class T.[ flex; h 20; border_b `b1; relative; border_t `b1 ];
+           ]
          [
            Html.h2
              ~a:

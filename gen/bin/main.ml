@@ -200,8 +200,7 @@ let generate_packages output packages_json_opt =
   List.iter (fun pkg -> generate_named_package output pkg) packages;
   let foutput = Fpath.v (Odoc_odoc.Fs.Directory.to_string output) in
   let pkg_dir =
-    Odoc_odoc.Fs.Directory.of_string
-      Fpath.(to_string (foutput / "packages"))
+    Odoc_odoc.Fs.Directory.of_string Fpath.(to_string (foutput / "packages"))
   in
   Odoc_odoc.Fs.Directory.mkdir_p pkg_dir;
   Bos.OS.File.write
@@ -228,7 +227,6 @@ let generate_packages output packages_json_opt =
     Fpath.(foutput / "packages" / "voodoo_client.js")
     Odoc_thtml.Static.voodoo_client_js
   |> get_ok
-
 
 module SMap = Map.Make (String)
 

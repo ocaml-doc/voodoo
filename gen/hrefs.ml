@@ -34,7 +34,8 @@ module Urls = struct
 
   let voodoo_client_js = of_simple_list File [ "packages"; "voodoo_client.js" ]
 
-  let caml_image_svg = of_simple_list File [ "packages"; "colour-transparent-icon.svg" ]
+  let caml_image_svg =
+    of_simple_list File [ "packages"; "colour-transparent-icon.svg" ]
 end
 
 module Hrefs = struct

@@ -502,12 +502,26 @@ module Page = struct
   and subpages indent i =
     Utils.list_concat_map ~f:(include_ indent) @@ Doctree.Subpages.compute i
 
-  and mktitle page_type title =
+  and mktitle page_type path =
+    let sep = Html.code ~a:[Html.a_class T.[font_mono]] [Html.txt "."] in
+    let rec links =
+      let link (name,link) = Html.a 
+              ~a:[Html.a_href link] [Html.code
+                ~a:[ Html.a_class T.[ font_mono; text_orangedark; cursor_pointer ]; ]
+
+                [ Html.txt name ]] in
+      function
+      | elt::(_::_ as xs) ->
+        link elt :: sep :: links xs
+      | [elt] ->
+        [link elt]
+      | [] -> []
+    in
+          
     let h1 =
       Html.div
         ~a:[ Html.a_class T.[ relative; flex_1; h 20 ] ]
-        [
-          Html.h1
+         [ Html.h1
             ~a:
               [
                 Html.a_class
@@ -525,12 +539,9 @@ module Page = struct
                       truncate;
                     ];
               ]
-            [
-              Html.code
-                ~a:[ Html.a_class T.[ font_mono; text_gray 800 ] ]
-                [ Html.txt title ];
-            ];
-        ]
+            (links
+             path)]
+
       ::
       (match page_type with
       | None -> []
@@ -574,55 +585,32 @@ module Page = struct
         ]
       h1
 
-  and unparse_header h =
-    let open Odoc_document.Types in
-    match h with
-    | Item.Heading
-        {
-          level = _;
-          label = _;
-          title =
-            { Inline.attr = []; desc = Inline.Text ty }
-            :: {
-                 Inline.attr = [];
-                 desc =
-                   Inline.Source
-                     [
-                       Source.Tag
-                         ( None,
-                           [
-                             Source.Elt [ _ ];
-                             Source.Elt
-                               [ { Inline.attr = []; desc = Inline.Text name } ];
-                           ] );
-                       _;
-                     ];
-               }
-               :: _;
-        }
-      :: rest ->
-        Some (Astring.String.trim ty, name, rest)
-    | Item.Heading
-        {
-          level = _;
-          label = _;
-          title = { Inline.attr = _; desc = Inline.Text name } :: _;
-        }
-      :: rest ->
-        Some ("", name, rest)
-    | _ -> None
+  and title_of_url url =
+    let rec inner u =
+      match u.Link.Url.Path.kind with
+      | "module" | "module-type" | "class" | "class-type" | "argument" -> begin
+        match u.parent with
+        | Some p -> (u.name, Link.(page_href ~resolve:(Current url) u)) :: inner p
+        | None -> assert false
+      end
+      | _ -> []
+    in
+    match List.rev (inner url) with
+    | [] -> None
+    | xs -> Some (xs, String.capitalize_ascii url.kind)
 
   and page indent ({ Page.title; header; items = i; url } as p) =
     let resolve = Link.Current url in
     let i = Doctree.Shift.compute ~on_sub i in
     let toc = (Toc.from_items ~resolve ~path:url i :> any Html.elt list) in
     let subpages = subpages indent p in
+    let t = title_of_url url in
     let header =
-      match unparse_header header with
-      | Some (ty, name, rest) ->
-          let t = mktitle (Some ty) name in
-          (t :: items ~resolve rest :> any Html.elt list)
-      | None -> (items ~resolve header :> any Html.elt list)
+      match t with
+      | Some (ts, ty) ->
+          let t = mktitle (Some ty) ts in
+          (t :: items ~resolve (List.tl header) :> any Html.elt list)
+      | _ -> (items ~resolve header :> any Html.elt list)
     in
     let content = (items ~resolve i :> any Html.elt list) in
     let page = Tree.make ~indent ~header ~toc ~url title content subpages in

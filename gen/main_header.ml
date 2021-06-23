@@ -232,8 +232,8 @@ let section_label : Voodoo_web.Menu.Section.t -> string = function
   | Resources -> "Resources"
   | Communities -> "Communities"
 
-let item_of_menu_item : Voodoo_web.Menu.Item.t -> menu_item =
- fun item ->
+let item_of_menu_item : Link.Url.Path.t -> Voodoo_web.Menu.Item.t -> menu_item =
+ fun url item ->
   let icon = Svgs.get item in
   match item with
   | WhyOCaml ->
@@ -287,7 +287,7 @@ let item_of_menu_item : Voodoo_web.Menu.Item.t -> menu_item =
         item;
         label = "Packages";
         subheading = {|Browse the many packages available in OCaml.|};
-        link = "/packages/";
+        link = Link.page_href ~resolve:(Current url) Hrefs.Urls.packages_page;
         icon;
       }
   | Applications ->
@@ -500,7 +500,7 @@ let v url =
       [ Html.span [ Html.txt txt ]; button_svg ]
   in
   let menu (x, items) =
-    let items = List.map item_of_menu_item items in
+    let items = List.map (item_of_menu_item url) items in
     Html.div ~a:[ Html.a_class T.[ relative ] ] [ button x; submenu x items ]
   in
   let nav menu_items =

@@ -38,22 +38,6 @@ let page_creator ~url name header (toc : Html_types.flow5 Html.elt list) content
   let title_string = Printf.sprintf "%s (%s)" name (String.concat "." path) in
   let head = Components.head ~url title_string in
 
-  let breadcrumbs_data =
-    let rec loop url' =
-      let link =
-        Link.href ~resolve:(Current url)
-          { Link.Url.Anchor.page = url'; anchor = ""; kind = "" }
-      in
-      let text = url'.Link.Url.Path.name in
-      match url'.Link.Url.Path.parent with
-      | Some p -> (text, link) :: loop p
-      | None -> [ (text, link) ]
-    in
-    loop url |> List.rev
-  in
-
-  let breadcrumbs = Breadcrumbs.breadcrumbs "#" breadcrumbs_data in
-
   let toc_div =
     Html.div
       ~a:
@@ -74,7 +58,8 @@ let page_creator ~url name header (toc : Html_types.flow5 Html.elt list) content
               ];
         ]
       (Html.div
-         ~a:[ Html.a_class T.[ flex; h 20; border_b `b1; relative ] ]
+         ~a:[ Html.a_class T.[ flex; h 20; border_b `b1; relative; border_t `b1;
+         ] ]
          [
            Html.h2
              ~a:
@@ -151,7 +136,7 @@ let page_creator ~url name header (toc : Html_types.flow5 Html.elt list) content
   let main_div =
     Html.div
       ~a:[ Html.a_class T.[ flex; flex_col; w_full; h_full ] ]
-      [ breadcrumbs; content_div ]
+      [ content_div ]
   in
   let footer_script =
     match package_json with

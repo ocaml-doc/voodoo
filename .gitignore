@@ -13,8 +13,8 @@ _opam/
 
 # Generated files
 *.mld
-compile/
-html/
-linked/
-prep/
-output/
+/compile/
+/html/
+/linked/
+/prep/
+/output/

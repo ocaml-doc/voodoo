@@ -12,9 +12,10 @@ _opam/
 .vscode
 
 # Generated files
+_generated/
 *.mld
-/compile/
-/html/
-/linked/
-/prep/
-/output/
+compile/
+html/
+linked/
+prep/
+output/

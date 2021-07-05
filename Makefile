@@ -60,3 +60,12 @@ utop: ## Run a REPL and link with the project's libraries
 promote: ## Promote files to the source directory
 	dune build client/voodoo_client.bc.js --profile release
 	cp _build/default/client/voodoo_client.bc.js src/voodoo-gen/static/voodoo_client.bc.js
+
+.PHONY: example
+example: all ## Build an sample output
+	mkdir _generated; cd _generated
+	opam exec -- dune exec -- voodoo-prep
+	opam exec -- dune exec -- voodoo-do -p ocaml-base-compiler -b
+	opam exec -- dune exec -- voodoo-gen pkgver -o output/
+	opam exec -- dune exec -- voodoo-gen generate-json -o output/
+	opam exec -- dune exec -- voodoo-gen packages -o output/

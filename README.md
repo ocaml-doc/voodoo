@@ -1,16 +1,62 @@
-# Voodoo: Generate OCaml docs
+# Voodoo
 
-This package likely requires the very latest odoc to be installed:
+Voodoo is the OCaml documentation generator.
 
-```bash
-$ opam pin add -y odoc https://github.com/ocaml/odoc.git 
-```
+## Getting started
 
 This package is intended to be used as part of an
 [ocurrent](https://github.com/ocurrent/ocurrent) pipeline, for example
 via [ocaml-docs-ci](https://github.com/ocurrent/ocaml-docs-ci). As such,
-it's tricky to use in isolation. Having said that, there is some rudimentary
-support for using it this way:
+it's tricky to use in isolation.
+
+Having said that, there is some rudimentary support for using it this way. The steps below will guide you to build to build a small documentation website locally.
+
+### Setup your development environment
+
+You need Opam, you can install it by following [Opam's documentation](https://opam.ocaml.org/doc/Install.html).
+
+With Opam installed, you can install the dependencies with:
+
+With Opam installed, you can install the dependencies in a new local switch with:
+
+```bash
+make switch
+```
+
+Or globally, with:
+
+```bash
+make deps
+```
+
+Then, build the project with:
+
+```bash
+make build
+```
+
+### Generating an example
+
+To create an example, run:
+
+```bash
+make example
+```
+
+This will create a sample website with the documentation of `ocaml-base-compiler` in `_generated/output/packages/`.
+
+Here are some command that will be executed when runnning the above:
+
+```bash
+$ mkdir _generated; cd _generated
+$ opam exec -- dune exec -- voodoo-prep
+$ opam exec -- dune exec -- voodoo-do -p ocaml-base-compiler -b
+$ opam exec -- dune exec -- voodoo-gen pkgver -o output/
+$ opam exec -- dune exec -- voodoo-gen generate-json -o output/
+$ opam exec -- dune exec -- voodoo-gen packages -o output/
+```
+
+Read further for the detailed version of the above commands.
 
 ```bash
 $ voodoo-prep

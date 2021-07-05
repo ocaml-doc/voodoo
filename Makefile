@@ -34,7 +34,7 @@ install: all ## Install the packages on the system
 
 .PHONY: test
 test: ## Run the unit tests
-	opam exec -- dune build --root . @test/runtest -f
+	opam exec -- dune test --root .
 
 .PHONY: clean
 clean: ## Clean build artifacts and other generated files

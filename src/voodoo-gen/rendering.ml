@@ -30,14 +30,14 @@ let docs_ids parent docs =
   | Page_content odoctree -> (
       match odoctree.Odoc_model.Lang.Page.name with
       | `LeafPage _ -> Error (`Msg "Parent is a leaf!")
-      | (`RootPage _ | `Page _) as parent_id ->
+      | `Page _ as parent_id ->
           let result =
             List.map
               (fun doc ->
                 let id =
                   let basename = Fpath.basename doc in
                   `LeafPage
-                    (parent_id, Odoc_model.Names.PageName.make_std basename)
+                    (Some parent_id, Odoc_model.Names.PageName.make_std basename)
                 in
                 (id, doc))
               docs
@@ -51,7 +51,6 @@ let otherversions parent vs =
   | Page_content odoctree -> (
       match odoctree.Odoc_model.Lang.Page.name with
       | `LeafPage _ -> Error (`Msg "Parent is a leaf!")
-      | `RootPage _ -> Error (`Msg "Parent is a root!")
       | `Page (parent_id, _) ->
           let result =
             List.map

@@ -12,14 +12,6 @@ val href : resolve:resolve -> Url.t -> string
 val page_href : resolve:resolve -> Url.Path.t -> string
 
 module Path : sig
-  type l = (string * string) list
-
-  val to_list : Url.Path.t -> l
-
-  val of_list : l -> Url.Path.t option
-
-  val list_pp : l Fmt.t
-
   val is_leaf_page : Url.Path.t -> bool
 
   val for_printing : Url.Path.t -> string list

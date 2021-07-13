@@ -592,7 +592,7 @@ module Page = struct
   and title_of_url url =
     let rec inner u =
       match u.Link.Url.Path.kind with
-      | "module" | "module-type" | "class" | "class-type" | "argument" -> (
+      | `Module | `ModuleType | `Class | `ClassType | `Argument -> (
           match u.parent with
           | Some p ->
               (u.name, Link.(page_href ~resolve:(Current url) u)) :: inner p
@@ -601,7 +601,7 @@ module Page = struct
     in
     match List.rev (inner url) with
     | [] -> None
-    | xs -> Some (xs, String.capitalize_ascii url.kind)
+    | xs -> Some (xs, String.capitalize_ascii (Format.asprintf "%a" Odoc_document.Url.Path.pp_kind url.kind))
 
   and page indent ({ Page.title; header; items = i; url } as p) =
     let resolve = Link.Current url in

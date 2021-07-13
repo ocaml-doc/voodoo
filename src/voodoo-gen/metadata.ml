@@ -39,13 +39,13 @@ let package_url name : Link.Url.t =
   {
     page =
       {
-        kind = "container-page";
+        kind = `Page;
         name;
         parent =
-          Some { kind = "container-page"; name = "packages"; parent = None };
+          Some { kind = `Page; name = "packages"; parent = None };
       };
     anchor = "";
-    kind = "";
+    kind = `Page;
   }
 
 let v cur o (otherversions : Odoc_model.Paths.Identifier.t list)

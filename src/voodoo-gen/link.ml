@@ -2,56 +2,44 @@ module Url = Odoc_document.Url
 
 (* Translation from Url.Path *)
 module Path = struct
-  type l = (string * string) list
+    let flat = ref false
+    let for_printing url = List.map snd @@ Url.Path.to_list url
+  
+    let segment_to_string (kind, name) =
+      match kind with
+      | `Module | `Page -> name
+      | _ -> Format.asprintf "%a-%s" Url.Path.pp_kind kind name
+  
+    let is_leaf_page url = url.Url.Path.kind = `LeafPage
+  
+    let get_dir_and_file url =
+      let l = Url.Path.to_list url in
+      let is_dir =
+        if !flat then function `Page -> true | _ -> false
+        else function `LeafPage -> false | `File -> false | _ -> true
+      in
+      let dir, file = Url.Path.split ~is_dir l in
+      let dir = List.map segment_to_string dir in
+      let file =
+        match file with
+        | [] -> "index.html"
+        | [ (`LeafPage, name) ] -> name ^ ".html"
+        | [ (`File, name) ] -> name
+        | xs ->
+            assert !flat;
+            String.concat "-" (List.map segment_to_string xs) ^ ".html"
+      in
+      (dir, file)
+  
+    let for_linking url =
+      let dir, file = get_dir_and_file url in
+      dir @ [ file ]
+  
+    let as_filename (url : Url.Path.t) =
+      Fpath.(v @@ String.concat Fpath.dir_sep @@ for_linking url)
+  end
+  
 
-  let to_list url =
-    let rec loop acc { Url.Path.parent; name; kind } =
-      match parent with
-      | None -> (kind, name) :: acc
-      | Some p -> loop ((kind, name) :: acc) p
-    in
-    loop [] url
-
-  let of_list l =
-    let rec inner parent = function
-      | [] -> parent
-      | (kind, name) :: xs -> inner (Some { Url.Path.parent; name; kind }) xs
-    in
-    inner None l
-
-  let list_pp =
-    let semi fmt () = Format.fprintf fmt ";" in
-    Fmt.list ~sep:semi Fmt.(pair ~sep:comma string string)
-
-  let for_printing url = List.map snd @@ to_list url
-
-  let segment_to_string (kind, name) =
-    match kind with
-    | "module" | "container-page" -> name
-    | _ -> Printf.sprintf "%s-%s" kind name
-
-  let is_leaf_page url = url.Url.Path.kind = "page"
-
-  let rec get_dir { Url.Path.parent; name; kind } =
-    let ppath = match parent with Some p -> get_dir p | None -> [] in
-    match kind with
-    | "page" -> ppath
-    | "file" -> ppath
-    | _ -> ppath @ [ segment_to_string (kind, name) ]
-
-  let get_file : Url.Path.t -> string =
-   fun t ->
-    match t.kind with
-    | "page" -> t.name ^ ".html"
-    | "file" -> t.name
-    | _ -> "index.html"
-
-  let for_linking : Url.Path.t -> string list =
-   fun url -> get_dir url @ [ get_file url ]
-
-  let as_filename (url : Url.Path.t) =
-    Fpath.(v @@ String.concat Fpath.dir_sep @@ for_linking url)
-end
 
 let semantic_uris = ref false
 
@@ -109,5 +97,5 @@ let href ~resolve t =
       | page, anchor -> String.concat "/" page ^ "#" ^ anchor)
 
 let page_href ~resolve page =
-  let url = { Url.Anchor.page; anchor = ""; kind = "" } in
+  let url = Url.from_path page in
   href ~resolve url

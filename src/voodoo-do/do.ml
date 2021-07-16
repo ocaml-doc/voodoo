@@ -3,11 +3,11 @@
 open Voodoo_lib
 open Cmdliner
 
-let run package blessed switch redirect =
+let run package blessed switch redirect failed =
   Opam.switch := switch;
   match package with
   | None -> Do.run_all ()
-  | Some p -> Do.run p blessed redirect
+  | Some p -> Do.run p blessed redirect failed
 
 let package =
   let doc = "Select the package to process" in
@@ -30,9 +30,13 @@ let gen_redirect =
   in
   Arg.(value & flag & info [ "r"; "redirect" ] ~doc)
 
+let failed =
+  let doc = "Indicate that the build was a failed" in
+  Arg.(value & flag & info [ "failed" ] ~doc)
+
 let cmd =
   let doc = "Process a prepped package" in
-  ( Term.(const run $ package $ blessed $ switch $ gen_redirect),
+  ( Term.(const run $ package $ blessed $ switch $ gen_redirect $ failed),
     Term.info "voodoo-do" ~doc ~exits:Term.default_exits )
 
 let () = Term.(exit @@ eval cmd)

@@ -105,7 +105,7 @@ let find_universe_and_version pkg_name =
   | _ :: _ :: u :: _, [ version ] -> Some (u, Fpath.to_string version)
   | _ -> None
 
-let run pkg_name is_blessed gen_redirect =
+let run pkg_name is_blessed gen_redirect failed =
   let is_interesting p =
     List.mem (Fpath.get_ext p) [ ".cmti"; ".cmt"; ".cmi" ]
   in
@@ -177,9 +177,11 @@ let run pkg_name is_blessed gen_redirect =
 
   let package_mlds, otherdocs = Package_mlds.find package in
 
+  let error_log = Error_log.find package in
+
   let parent =
     Version.gen_parent package ~blessed:is_blessed ~modules ~dune ~libraries
-      ~package_mlds
+      ~package_mlds ~error_log ~failed
   in
 
   let sis = prep >>= get_source_info parent in
@@ -252,6 +254,13 @@ let run pkg_name is_blessed gen_redirect =
     Bos.OS.File.delete (Fpath.v ("compile/packages/page-" ^ pkg_name ^ ".odoc"))
     |> Util.get_ok
   in
+  if failed then (
+    let output_path =
+      if is_blessed then Fpath.(Paths.link / "packages" / pkg_name / version)
+      else Fpath.(Paths.link / "universe" / universe / pkg_name / version)
+    in
+    Util.mkdir_p output_path;
+    Bos.OS.File.write Fpath.(output_path / "failed") "failed" |> Util.get_ok);
   (if gen_redirect then
    let redirect_path =
      Fpath.(output / "tailwind" / "packages" / pkg_name / "index.html")
@@ -289,7 +298,7 @@ let run_all () =
       | Some deps ->
           List.iter doit deps;
           Format.eprintf "Building docs for package %s\n%!" pkg.Opam.name;
-          (try run pkg.Opam.name true true
+          (try run pkg.Opam.name true true false
            with e ->
              Format.eprintf "Ignoring failure %s!\n%!" (Printexc.to_string e));
           done_pkgs := pkg :: !done_pkgs

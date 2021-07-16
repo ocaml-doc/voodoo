@@ -2,9 +2,7 @@ module Urls = struct
   type leaf = File | Container_page
 
   let of_simple_list leaf l =
-    let leaf_ty =
-      match leaf with File -> `File | Container_page -> `Page
-    in
+    let leaf_ty = match leaf with File -> `File | Container_page -> `Page in
     let rec inner = function
       | [] -> failwith "Bad path"
       | [ x ] -> [ (leaf_ty, x) ]
@@ -13,8 +11,7 @@ module Urls = struct
     let l = inner l in
     match Odoc_document.Url.Path.of_list l with
     | Some l -> l
-    | None ->
-        failwith "Fatal error"
+    | None -> failwith "Fatal error"
 
   let package_page pkgname =
     of_simple_list Container_page [ "packages"; pkgname ]
@@ -38,9 +35,7 @@ end
 
 module Hrefs = struct
   let to_href ~url dest_page =
-    let dest_url =
-      Odoc_document.Url.from_path dest_page
-    in
+    let dest_url = Odoc_document.Url.from_path dest_page in
     Link.href ~resolve:(Current url) dest_url
 
   let package_json pkgname url = to_href ~url (Urls.package_json pkgname)

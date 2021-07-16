@@ -601,7 +601,11 @@ module Page = struct
     in
     match List.rev (inner url) with
     | [] -> None
-    | xs -> Some (xs, String.capitalize_ascii (Format.asprintf "%a" Odoc_document.Url.Path.pp_kind url.kind))
+    | xs ->
+        Some
+          ( xs,
+            String.capitalize_ascii
+              (Format.asprintf "%a" Odoc_document.Url.Path.pp_kind url.kind) )
 
   and page indent ({ Page.title; header; items = i; url } as p) =
     let resolve = Link.Current url in

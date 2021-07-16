@@ -75,6 +75,11 @@ let generate_pkgver output name_filter version_filter =
       Format.eprintf "%d other versons, %d packages\n%!" (List.length vs)
         (List.length pkgs);
       let handle_package (pkg_path, blessed, pkg_name, ver) =
+        let failed =
+          Bos.OS.File.exists Fpath.(pkg_path / "failed") |> function
+          | Ok x -> x
+          | _ -> false
+        in
         match
           Bos.OS.Dir.fold_contents ~elements:`Files ~dotfiles:false
             (fun p files ->
@@ -107,7 +112,7 @@ let generate_pkgver output name_filter version_filter =
             if blessed then
               Bos.OS.File.write
                 Fpath.(foutput / "packages" / pkg_name / ver / "status.json")
-                {|"Built"|}
+                (if failed then {|"Failed"|} else {|"Built"|})
               |> get_ok
       in
 

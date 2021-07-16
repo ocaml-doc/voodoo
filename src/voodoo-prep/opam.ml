@@ -51,13 +51,15 @@ let pkg_contents pkg =
     OpamStd.String.Map.fold
       (fun file x acc ->
         match x with
-        | OpamDirTrack.Added _ -> begin
+        | OpamDirTrack.Added _ -> (
             try
-              if not @@ Sys.is_directory Fpath.(to_string (prefix // v file)) then
-                file :: acc
+              if not @@ Sys.is_directory Fpath.(to_string (prefix // v file))
+              then file :: acc
               else acc
-            with _ -> acc (* dose (and maybe others) sometimes creates a symlink to something that doesn't exist *)
-          end
+            with _ ->
+              acc
+              (* dose (and maybe others) sometimes creates a symlink to something that doesn't exist *)
+            )
         | _ -> acc)
       changed []
   in

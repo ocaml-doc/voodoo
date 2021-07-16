@@ -78,14 +78,42 @@ let gen_with_libraries (libraries : (string * string list) list) =
   in
   libraries
 
-let gen : dune:Dune.t option -> libraries:(string * string list) list -> string
-    =
- fun ~dune ~libraries ->
+let gen_with_error l =
+  let escape line =
+    let ls = Astring.String.cuts ~sep:"v}" line in
+    String.concat "v }" ls
+  in
+  match l with
+  | Some lines ->
+      [
+        "{1 Error log}";
+        "The package failed to build. The error log from opam follows.";
+        "{v";
+      ]
+      @ List.map escape lines @ [ "v}" ]
+  | None ->
+      [
+        "{1 Failure}";
+        "The package failed to build. There are no error logs to display";
+      ]
+
+let gen :
+    dune:Dune.t option ->
+    libraries:(string * string list) list ->
+    error_log:Error_log.t ->
+    failed:bool ->
+    string =
+ fun ~dune ~libraries ~error_log ~failed ->
   Format.eprintf "libraries: [%s]\n%!"
     (String.concat "," (List.map fst libraries));
-  match dune with
-  | Some d -> String.concat "\n" (gen_with_dune d)
-  | _ -> String.concat "\n" (gen_with_libraries libraries)
+  let result =
+    if failed then gen_with_error error_log
+    else
+      match dune with
+      | Some d -> gen_with_dune d
+      | _ -> gen_with_libraries libraries
+  in
+  String.concat "\n" result
 
 let gen_parent :
     Package.t ->
@@ -94,8 +122,10 @@ let gen_parent :
     dune:Dune.t option ->
     libraries:(string * string list) list ->
     package_mlds:Fpath.t list ->
+    error_log:Error_log.t ->
+    failed:bool ->
     Mld.t =
- fun package ~blessed ~modules ~dune ~libraries ~package_mlds ->
+ fun package ~blessed ~modules ~dune ~libraries ~package_mlds ~error_log ~failed ->
   let cwd = Fpath.v "." in
   let mld_index, mld_children =
     List.partition (fun mld -> Fpath.basename mld = "index.mld") package_mlds
@@ -109,6 +139,9 @@ let gen_parent :
       mld_children
   in
   let children = m_children @ p_children in
+  let children =
+    match children with [] -> [ Odoc.CPage "dummy" ] | _ -> children
+  in
   let universe, package_name, package_version = package in
   let top_parents =
     if blessed then
@@ -137,13 +170,14 @@ let gen_parent :
   in
   let content =
     match mld_index with
-    | [] -> gen ~dune ~libraries
+    | [] -> gen ~dune ~libraries ~error_log ~failed
     | x :: _ ->
         let ic = open_in (Fpath.to_string x) in
         let result = really_input_string ic (in_channel_length ic) in
         close_in ic;
         result
   in
+
   let version =
     Mld.v cwd package_version (Some package) children
       (Printf.sprintf "{0 %s %s}\n%s\n" package_name package_version content)

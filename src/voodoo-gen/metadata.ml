@@ -41,8 +41,7 @@ let package_url name : Link.Url.t =
       {
         kind = `Page;
         name;
-        parent =
-          Some { kind = `Page; name = "packages"; parent = None };
+        parent = Some { kind = `Page; name = "packages"; parent = None };
       };
     anchor = "";
     kind = `Page;

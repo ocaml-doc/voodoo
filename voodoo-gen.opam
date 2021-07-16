@@ -35,5 +35,5 @@ build: [
 ]
 dev-repo: "git+https://github.com/jonludlam/voodoo.git"
 pin-depends: [
-  ["odoc.2.0.0-beta4" "git+https://github.com/ocaml/odoc#master"]
+  ["odoc.2.0.0-beta4" "git+https://github.com/ocaml/odoc#da5986d73a66388adae1cc0f77336885d12d4ee8"]
 ]

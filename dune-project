@@ -38,6 +38,7 @@
  (synopsis "Voodoo client javascript")
  (description "Voodoo client javascript")
  (depends
+  (ocaml (>= 4.05))
   js_of_ocaml
   js_of_ocaml-ppx
   js_of_ocaml-tyxml

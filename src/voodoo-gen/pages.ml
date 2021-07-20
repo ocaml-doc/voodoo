@@ -86,7 +86,8 @@ module Packages = struct
               <> Astring.Char.Ascii.uppercase nb.[0]
             then
               Html.ul (List.rev (li :: cur))
-              :: alpha_heading nb :: inner (nb :: rest) []
+              :: alpha_heading nb
+              :: inner (nb :: rest) []
             else inner (nb :: rest) (li :: cur)
         | [ na ] ->
             let li = package_li na in

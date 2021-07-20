@@ -38,7 +38,7 @@ let gen_with_dune (dune : Dune.t) =
                 [ "Dependencies:"; String.concat ", " l.dependencies ]
               else []
             in
-            [ "{2 " ^ l.name ^ "}" ] @ a @ "" :: deps)
+            [ "{2 " ^ l.name ^ "}" ] @ a @ ("" :: deps))
           dune.libraries
         |> List.flatten
       in

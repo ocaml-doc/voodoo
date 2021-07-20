@@ -27,8 +27,8 @@ let rec block { bl_desc; bl_attributes = _ } =
   | List (_, _, bls) ->
       List
         (Atom "list"
-         ::
-         List.map (fun xs -> List (Atom "list-item" :: List.map block xs)) bls)
+        :: List.map (fun xs -> List (Atom "list-item" :: List.map block xs)) bls
+        )
   | Blockquote xs -> List (Atom "blockquote" :: List.map block xs)
   | Thematic_break -> Atom "thematic-break"
   | Heading (level, text) ->

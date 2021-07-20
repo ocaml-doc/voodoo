@@ -1,3 +1,5 @@
+(* Generate tailwind-style output *)
+
 open Cmdliner
 
 let docs = "ARGUMENTS"

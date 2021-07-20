@@ -10,6 +10,7 @@ homepage: "https://github.com/jonludlam/voodoo"
 bug-reports: "https://github.com/jonludlam/voodoo/issues"
 depends: [
   "dune" {>= "2.8"}
+  "ocaml" {>= "4.05"}
   "js_of_ocaml"
   "js_of_ocaml-ppx"
   "js_of_ocaml-tyxml"

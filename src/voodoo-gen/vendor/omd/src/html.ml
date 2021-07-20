@@ -99,7 +99,8 @@ and img label destination title attrs =
   in
   let attrs =
     ("src", escape_uri destination)
-    :: ("alt", to_plain_text (inline label)) :: attrs
+    :: ("alt", to_plain_text (inline label))
+    :: attrs
   in
   elt Inline "img" attrs None
 

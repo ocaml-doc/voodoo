@@ -84,7 +84,7 @@ let page_creator ~url name header (toc : Html_types.flow5 Html.elt list) content
                ]
              [ Html.txt "On this page" ];
          ]
-       :: toc)
+      :: toc)
   in
 
   let metadata =

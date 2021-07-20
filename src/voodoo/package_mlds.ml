@@ -16,7 +16,9 @@ let find package =
       Format.eprintf "Found %d mld pages and %d other pages\n%!"
         (List.length mlds) (List.length other);
       (mlds, other)
-  | Error _ -> ([], [])
+  | Error _ ->
+      Format.eprintf "Found no other pages\n%!";
+      ([], [])
 
 let compile _package version package_mlds =
   if List.length package_mlds = 0 then (

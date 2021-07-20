@@ -55,6 +55,7 @@
   voodoo-web
   (odoc
    (>= 2.0.0))
+  (opam-format (>= 2.1.0~rc2))
   tyxml
   astring
   cmdliner

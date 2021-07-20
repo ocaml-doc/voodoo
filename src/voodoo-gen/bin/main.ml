@@ -88,6 +88,7 @@ let generate_pkgver output name_filter version_filter =
               | _ -> (
                   match Fpath.basename p with
                   | "opam" -> { files with opam = Some p }
+                  | "content.tar" -> files
                   | _ -> { files with otherdocs = p :: files.otherdocs }))
             empty pkg_path
         with

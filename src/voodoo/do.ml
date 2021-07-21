@@ -1,4 +1,4 @@
-(* do! *)
+(* do! - perform the odoc compile and link stages *)
 
 open Listm
 

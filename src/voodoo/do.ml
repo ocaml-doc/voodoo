@@ -147,6 +147,12 @@ let run pkg_name is_blessed gen_redirect failed =
       [] prep
   in
   let package = (universe, pkg_name, version) in
+  let output_path =
+    if is_blessed then Fpath.(Paths.link / "packages" / pkg_name / version)
+    else Fpath.(Paths.link / "universe" / universe / pkg_name / version)
+  in
+  Util.mkdir_p output_path;
+
   let index_res =
     Bos.OS.Dir.fold_contents ~dotfiles:true
       (fun p acc ->
@@ -178,7 +184,7 @@ let run pkg_name is_blessed gen_redirect failed =
   let package_mlds, otherdocs = Package_mlds.find package in
 
   let error_log = Error_log.find package in
-
+  
   let parent =
     Version.gen_parent package ~blessed:is_blessed ~modules ~dune ~libraries
       ~package_mlds ~error_log ~failed
@@ -255,11 +261,7 @@ let run pkg_name is_blessed gen_redirect failed =
     |> Util.get_ok
   in
   if failed then (
-    let output_path =
-      if is_blessed then Fpath.(Paths.link / "packages" / pkg_name / version)
-      else Fpath.(Paths.link / "universe" / universe / pkg_name / version)
-    in
-    Util.mkdir_p output_path;
+    
     Bos.OS.File.write Fpath.(output_path / "failed") "failed" |> Util.get_ok);
   (if gen_redirect then
    let redirect_path =

@@ -143,7 +143,7 @@ let compile ?parent ?output path ~includes ~children =
         Bos.Cmd.(cmd % "--child" % arg))
       cmd children
   in
-  (* Format.eprintf "compile command: %a\n%!" Bos.Cmd.pp cmd; *)
+  Format.eprintf "compile command: %a\n%!" Bos.Cmd.pp cmd;
   Util.lines_of_process cmd
 
 let link path ~includes ~output =

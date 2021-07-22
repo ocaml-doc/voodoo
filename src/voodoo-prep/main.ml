@@ -30,8 +30,9 @@ let process_package : Fpath.t -> Package.t -> Fpath.t list -> unit =
     let _, filename = Fpath.split_base fpath in
     let ext = Fpath.get_ext filename in
     let no_ext = Fpath.rem_ext filename in
+    let has_hyphen = String.contains (Fpath.to_string filename) '-' in
     let is_module =
-      process_ocaml_artefacts && List.mem ext [ ".cmt"; ".cmti"; ".cmi" ]
+      process_ocaml_artefacts && List.mem ext [ ".cmt"; ".cmti"; ".cmi" ] && not has_hyphen
     in
     let do_copy =
       (not in_build_dir)

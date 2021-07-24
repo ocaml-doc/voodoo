@@ -8,52 +8,49 @@ type intermediate =
   | Bl of Odoc_document.Types.Block.t
   | It of Odoc_document.Types.Item.t
 
-let rec inline : inline -> Odoc_document.Types.Inline.t = function
-  | { il_desc = Concat is; _ } -> inlines is
-  | { il_desc = Text s; _ } -> [ { desc = Text s; attr = [] } ]
-  | { il_desc = Emph s; _ } ->
-      [ { desc = Styled (`Emphasis, inline s); attr = [] } ]
-  | { il_desc = Strong s; _ } ->
-      [ { desc = Styled (`Bold, inline s); attr = [] } ]
-  | { il_desc = Code c; _ } ->
+let rec inline : 'attr inline -> Odoc_document.Types.Inline.t = function
+  | Concat (_, is) -> inlines is
+  | Text (_, s) -> [ { desc = Text s; attr = [] } ]
+  | Emph (_, s) -> [ { desc = Styled (`Emphasis, inline s); attr = [] } ]
+  | Strong (_, s) -> [ { desc = Styled (`Bold, inline s); attr = [] } ]
+  | Code (_, c) ->
       [ { desc = Source [ Elt [ { desc = Text c; attr = [] } ] ]; attr = [] } ]
-  | { il_desc = Hard_break; _ } -> [ { desc = Linebreak; attr = [] } ]
-  | { il_desc = Soft_break; _ } -> [ { desc = Linebreak; attr = [] } ]
-  | { il_desc = Link l; _ } ->
+  | Hard_break _ -> [ { desc = Linebreak; attr = [] } ]
+  | Soft_break _ -> [ { desc = Linebreak; attr = [] } ]
+  | Link (_, l) ->
       [ { desc = Link (l.destination, inline l.label); attr = [] } ]
-  | { il_desc = Image _; _ } -> []
-  | { il_desc = Html h; _ } -> [ { desc = Raw_markup ("html", h); attr = [] } ]
+  | Image _ -> []
+  | Html (_, h) -> [ { desc = Raw_markup ("html", h); attr = [] } ]
 
 and inlines xs = List.concat (List.map inline xs)
 
-let rec block : block -> intermediate = function
-  | { bl_desc = Paragraph p; _ } ->
-      Bl [ { desc = Paragraph (inline p); attr = [] } ]
-  | { bl_desc = List (Bullet _, _sp, items); _ } ->
+let rec block : 'attr block -> intermediate = function
+  | Paragraph (_, p) -> Bl [ { desc = Paragraph (inline p); attr = [] } ]
+  | List (_, Bullet _, _sp, items) ->
       let i =
         List.map
           (fun items -> match blocks items with [ Bl x ] -> x | _ -> [])
           items
       in
       Bl [ { desc = List (Unordered, i); attr = [] } ]
-  | { bl_desc = List (Ordered _, _sp, items); _ } ->
+  | List (_, Ordered _, _sp, items) ->
       let i =
         List.map
           (fun items -> match blocks items with [ Bl x ] -> x | _ -> [])
           items
       in
       Bl [ { desc = List (Ordered, i); attr = [] } ]
-  | { bl_desc = Blockquote _bs; _ } -> Bl []
-  | { bl_desc = Thematic_break; _ } -> Bl []
-  | { bl_desc = Heading (n, i); _ } ->
+  | Blockquote (_, _bs) -> Bl []
+  | Thematic_break _ -> Bl []
+  | Heading (_, n, i) ->
       It (Heading { label = None; level = n; title = inline i })
-  | { bl_desc = Code_block (_a, b); _ } ->
+  | Code_block (_, _a, b) ->
       Bl
         [
           { desc = Source [ Elt [ { desc = Text b; attr = [] } ] ]; attr = [] };
         ]
-  | { bl_desc = Html_block _; _ } -> Bl []
-  | { bl_desc = Definition_list _; _ } -> Bl []
+  | Html_block _ -> Bl []
+  | Definition_list _ -> Bl []
 
 and merge xs =
   List.fold_right

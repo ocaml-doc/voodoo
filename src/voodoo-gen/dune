@@ -5,41 +5,8 @@
   odoc.model
   odoc.document
   odoc.odoc
-  voodoo-gen.omd
+  omd
   tyxml
   opam-format
   bos
-  yojson
-  voodoo-web))
-
-(rule
- (targets static.ml)
- (deps
-  (:tailwind static/tailwind.css)
-  (:extra static/extra.css)
-  (:logo static/colour-logo.svg)
-  (:logo2 static/colour-transparent-icon.svg)
-  (:highlight static/highlight.pack.js)
-  (:voodoo_client static/voodoo_client.bc.js))
- (action
-  (with-stdout-to
-   %{targets}
-   (progn
-    (echo "let tailwind_css = {css|")
-    (cat %{tailwind})
-    (echo "|css}")
-    (echo "let extra_css = {css|")
-    (cat %{extra})
-    (echo "|css}")
-    (echo "let colour_logo_svg = {svg|")
-    (cat %{logo})
-    (echo "|svg}")
-    (echo "let colour_transparent_icon_svg = {svg|")
-    (cat %{logo2})
-    (echo "|svg}")
-    (echo "let highlight_pack_js = {js|")
-    (cat %{highlight})
-    (echo "|js}")
-    (echo "let voodoo_client_js = {js|")
-    (cat %{voodoo_client})
-    (echo "|js}")))))
+  yojson))

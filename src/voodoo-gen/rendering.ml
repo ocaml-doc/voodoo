@@ -13,15 +13,18 @@ let document_of_odocl ~syntax input =
       Ok (Renderer.document_of_compilation_unit ~syntax odoctree)
 
 let render_document ~output:root_dir odoctree =
-  let pages = Generator.render ~indent:false odoctree in
-  Odoc_document.Renderer.traverse pages ~f:(fun filename content ->
-      let filename = Fpath.normalize @@ Fs.File.append root_dir filename in
-      let directory = Fs.File.dirname filename in
-      Fs.Directory.mkdir_p directory;
-      let oc = open_out (Fs.File.to_string filename) in
-      let fmt = Format.formatter_of_out_channel oc in
-      Format.fprintf fmt "%t@?" content;
-      close_out oc);
+  let aux pages =
+    Odoc_document.Renderer.traverse pages ~f:(fun filename content ->
+        let filename = Fpath.normalize @@ Fs.File.append root_dir filename in
+        let directory = Fs.File.dirname filename in
+        Fs.Directory.mkdir_p directory;
+        let oc = open_out (Fs.File.to_string filename) in
+        let fmt = Format.formatter_of_out_channel oc in
+        Format.fprintf fmt "%t@?" content;
+        close_out oc)
+  in
+  aux @@ Generator.render_content ~indent:false odoctree;
+  aux @@ Generator.render_toc ~indent:false odoctree;
   Ok ()
 
 let docs_ids parent docs =
@@ -60,14 +63,7 @@ let otherversions parent vs =
           Ok result)
   | _ -> Error (`Msg "Parent is not a page!")
 
-let render ~opam ~pkg_name ~output ~namever ~parent ~otherdocs ~vs file =
-  docs_ids parent otherdocs >>= fun docs ->
-  otherversions parent vs >>= fun otherversions ->
-  Tree.opam := opam;
-  Tree.namever := namever;
-  Tree.otherdocs := docs;
-  Tree.othervers := otherversions;
-  Tree.pkgname := pkg_name;
+let render ~output file =
   let f = Fs.File.of_string (Fpath.to_string file) in
   document_of_odocl ~syntax:Odoc_document.Renderer.OCaml f
   >>= render_document ~output

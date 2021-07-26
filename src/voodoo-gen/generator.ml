@@ -17,7 +17,6 @@
 open Odoc_document.Types
 module Html = Tyxml.Html
 module Doctree = Odoc_document.Doctree
-module T = Voodoo_web.Tailwind
 
 type any = Html_types.flow5
 
@@ -29,42 +28,16 @@ type phrasing = Html_types.phrasing
 
 type non_link_phrasing = Html_types.phrasing_without_interactive
 
-let mk_anchor_link id prn =
-  [
-    Html.a
-      ~a:
-        [
-          Html.a_href ("#" ^ id);
-          Html.a_class T.[ "hover-link"; inline_block; ml (-7); pr prn ];
-        ]
-      [
-        Html.span
-          ~a:
-            [
-              Html.a_class
-                T.
-                  [
-                    align_middle;
-                    text_gray 200;
-                    transition;
-                    text_sm;
-                    font_sans;
-                    opacity 0;
-                    hover @@ text_gray 700;
-                  ];
-            ]
-          [ Html.txt "#" ];
-      ];
-  ]
+let mk_anchor_link id =
+  [ Html.a ~a:[ Html.a_href ("#" ^ id); Html.a_class [ "anchor" ] ] [] ]
 
 let mk_anchor anchor =
   match anchor with
-  | None -> ([], [], [])
+  | None -> ([], [])
   | Some { Odoc_document.Url.Anchor.anchor; _ } ->
-      let link = mk_anchor_link anchor 7 in
-      let attrib = [ Html.a_id anchor ] in
-      let classes = [ "anchored" ] in
-      (attrib, classes, link)
+      let link = mk_anchor_link anchor in
+      let attrib = [ Html.a_id anchor; Html.a_class [ "anchored" ] ] in
+      (attrib, link)
 
 let class_ (l : Class.t) = if l = [] then [] else [ Html.a_class l ]
 
@@ -80,27 +53,15 @@ and raw_markup (t : Raw_markup.t) =
   | _ -> []
 
 and source k ?a (t : Source.t) =
-  let class_of_keyword = function
-    | "keyword" -> [ "font-semibold" ]
-    | "type-var" -> []
-    | "arrow" -> []
-    | "constructor" -> []
-    | "exception" -> []
-    | "extension" -> []
-    | x -> failwith ("Missing keyword " ^ x)
-  in
   let rec token (x : Source.token) =
     match x with
     | Elt i -> k i
     | Tag (None, l) ->
         let content = tokens l in
         if content = [] then [] else [ Html.span content ]
-    | Tag (Some cls, l) ->
-        [ Html.span ~a:[ Html.a_class (class_of_keyword cls) ] (tokens l) ]
+    | Tag (Some s, l) -> [ Html.span ~a:[ Html.a_class [ s ] ] (tokens l) ]
   and tokens t = Utils.list_concat_map t ~f:token in
-  let a' = match a with Some xs -> xs | None -> [] in
-  let a = Html.a_class T.[ font_normal; text_sm ] :: a' in
-  Utils.optional_elt Html.code ~a (tokens t)
+  Utils.optional_elt Html.code ?a (tokens t)
 
 and styled style ~emph_level =
   match style with
@@ -112,11 +73,11 @@ and styled style ~emph_level =
   | `Superscript -> (emph_level, Html.sup ~a:[])
   | `Subscript -> (emph_level, Html.sub ~a:[])
 
-let rec internallink ~emph_level ~resolve (t : InternalLink.t) =
+let rec internallink ~emph_level ~resolve ?(a = []) (t : InternalLink.t) =
   match t with
   | Resolved (uri, content) ->
       let href = Link.href ~resolve uri in
-      let a = [ Html.a_class T.[ cursor_pointer; "text-orange" ] ] in
+      let a = (a :> Html_types.a_attrib Html.attrib list) in
       let elt =
         Html.a ~a:(Html.a_href href :: a) (inline_nolink ~emph_level content)
       in
@@ -127,7 +88,7 @@ let rec internallink ~emph_level ~resolve (t : InternalLink.t) =
        *   Html.a_title (Printf.sprintf "unresolved reference to %S"
        *       (ref_to_string ref)
        * in *)
-      let a = [ Html.a_class [ "xref-unresolved" ] ] in
+      let a = Html.a_class [ "xref-unresolved" ] :: a in
       let elt = Html.span ~a (inline ~emph_level ~resolve content) in
       let elt = (elt :> phrasing Html.elt) in
       [ elt ]
@@ -140,27 +101,23 @@ and internallink_nolink ~emph_level
 
 and inline ?(emph_level = 0) ~resolve (l : Inline.t) : phrasing Html.elt list =
   let one (t : Inline.one) =
+    let a = class_ t.attr in
     match t.desc with
     | Text "" -> []
-    | Text s -> [ Html.txt s ]
-    | Entity s -> [ Html.entity s ]
-    | Linebreak -> [ Html.br ~a:[] () ]
+    | Text s ->
+        if a = [] then [ Html.txt s ] else [ Html.span ~a [ Html.txt s ] ]
+    | Entity s ->
+        if a = [] then [ Html.entity s ] else [ Html.span ~a [ Html.entity s ] ]
+    | Linebreak -> [ Html.br ~a () ]
     | Styled (style, c) ->
         let emph_level, app_style = styled style ~emph_level in
         [ app_style @@ inline ~emph_level ~resolve c ]
     | Link (href, c) ->
+        let a = (a :> Html_types.a_attrib Html.attrib list) in
         let content = inline_nolink ~emph_level c in
-        [
-          Html.a
-            ~a:
-              [
-                Html.a_href href;
-                Html.a_class T.[ cursor_pointer; "text-orange" ];
-              ]
-            content;
-        ]
-    | InternalLink c -> internallink ~emph_level ~resolve c
-    | Source c -> source (inline ~emph_level ~resolve) c
+        [ Html.a ~a:(Html.a_href href :: a) content ]
+    | InternalLink c -> internallink ~emph_level ~resolve ~a c
+    | Source c -> source (inline ~emph_level ~resolve) ~a c
     | Raw_markup r -> raw_markup r
   in
   Utils.list_concat_map ~f:one l
@@ -187,25 +144,22 @@ and inline_nolink ?(emph_level = 0) (l : Inline.t) :
   Utils.list_concat_map ~f:one l
 
 let heading ~resolve (h : Heading.t) =
-  let a, anchor, extracls =
+  let a, anchor =
     match h.label with
-    | Some id -> ([ Html.a_id id ], mk_anchor_link id 4, [ "anchored" ])
-    | None -> ([], [], [])
+    | Some id -> ([ Html.a_id id ], mk_anchor_link id)
+    | None -> ([], [])
   in
   let content = inline ~resolve h.title in
-  let common = T.[ text_gray 800; font_sans ] @ extracls in
-  let mk, classes =
+  let mk =
     match h.level with
-    | 0 ->
-        ( Html.h1,
-          T.[ text_3xl; mt 7; border_b `b2; border_gray 200; font_semibold ] )
-    | 1 -> (Html.h2, T.[ text_2xl; my 4 ])
-    | 2 -> (Html.h3, T.[ text_xl; my 4; text_gray 900 ])
-    | 3 -> (Html.h4, T.[ text_lg; text_gray 900 ])
-    | 4 -> (Html.h5, [])
-    | _ -> (Html.h6, [])
+    | 0 -> Html.h1
+    | 1 -> Html.h2
+    | 2 -> Html.h3
+    | 3 -> Html.h4
+    | 4 -> Html.h5
+    | _ -> Html.h6
   in
-  mk ~a:(Html.a_class (classes @ common) :: a) (anchor @ content)
+  mk ~a (anchor @ content)
 
 let rec block ~resolve (l : Block.t) : flow Html.elt list =
   let as_flow x = (x : phrasing Html.elt list :> flow Html.elt list) in
@@ -215,48 +169,27 @@ let rec block ~resolve (l : Block.t) : flow Html.elt list =
     | Inline i ->
         if a = [] then as_flow @@ inline ~resolve i
         else [ Html.span ~a (inline ~resolve i) ]
-    | Paragraph i ->
-        [ Html.p ~a:[ Html.a_class T.[ mt 4 ] ] (inline ~resolve i) ]
+    | Paragraph i -> [ Html.p ~a (inline ~resolve i) ]
     | List (typ, l) ->
-        let mk, cls =
-          match typ with
-          | Ordered -> (Html.ol, T.[ list_decimal; mt 2; mb 4 ])
-          | Unordered -> (Html.ul, T.[ list_disc; mt 2; mb 4 ])
-        in
-        [
-          mk ~a:[ Html.a_class cls ]
-            (List.map
-               (fun x ->
-                 Html.li ~a:[ Html.a_class T.[ ml 4 ] ] (block ~resolve x))
-               l);
-        ]
+        let mk = match typ with Ordered -> Html.ol | Unordered -> Html.ul in
+        [ mk ~a (List.map (fun x -> Html.li (block ~resolve x)) l) ]
     | Description l ->
         [
-          (let item (i : Odoc_document.Types.Description.one) =
-             let a = class_ i.attr in
+          (let item i =
+             let a = class_ i.Description.attr in
              let term =
-               (inline ~resolve i.key
+               (inline ~resolve i.Description.key
                  : phrasing Html.elt list
                  :> flow Html.elt list)
              in
-             let def = block ~resolve i.definition in
+             let def = block ~resolve i.Description.definition in
              Html.li ~a (term @ (Html.txt " " :: def))
            in
            Html.ul ~a (List.map item l));
         ]
     | Raw_markup r -> raw_markup r
-    | Verbatim s ->
-        [
-          Html.pre
-            ~a:[ Html.a_class T.[ bg_gray 100; p 3; my 2; overflow_auto ] ]
-            [ Html.txt s ];
-        ]
-    | Source c ->
-        [
-          Html.pre
-            ~a:[ Html.a_class T.[ bg_gray 100; p 3; my 2; overflow_auto ] ]
-            (source (inline ~resolve) c);
-        ]
+    | Verbatim s -> [ Html.pre ~a [ Html.txt s ] ]
+    | Source c -> [ Html.pre ~a (source (inline ~resolve) c) ]
   in
   Utils.list_concat_map l ~f:one
 
@@ -315,27 +248,26 @@ let rec documentedSrc ~resolve (t : DocumentedSrc.t) : item Html.elt list =
           let doc =
             match doc with
             | [] -> []
-            | [ { desc = Block.Paragraph doc; _ } ] ->
+            | doc ->
                 let opening, closing = markers in
                 [
                   Html.td
-                    ~a:(class_ T.[ "def-doc"; pl 4 ])
-                    (Html.span ~a:(class_ T.[ sr_only ]) [ Html.txt opening ]
-                     :: (inline ~resolve doc :> flow Html.elt list)
+                    ~a:(class_ [ "def-doc" ])
+                    (Html.span
+                       ~a:(class_ [ "comment-delim" ])
+                       [ Html.txt opening ]
+                     :: block ~resolve doc
                     @ [
-                        Html.span ~a:(class_ T.[ sr_only ]) [ Html.txt closing ];
+                        Html.span
+                          ~a:(class_ [ "comment-delim" ])
+                          [ Html.txt closing ];
                       ]);
                 ]
-            | _ -> []
-            (* failwith "erk"*)
           in
-          let a, classes, link = mk_anchor anchor in
-          ignore attrs;
+          let a, link = mk_anchor anchor in
           let content =
             let c = link @ content in
-            Html.td
-              ~a:(class_ ((*attrs @*) classes @ T.[ pl 4 ]))
-              (c :> any Html.elt list)
+            Html.td ~a:(class_ attrs) (c :> any Html.elt list)
           in
           Html.tr ~a (content :: doc)
         in
@@ -360,90 +292,40 @@ and items ~resolve l : item Html.elt list =
             | _ -> Stop_and_keep)
         in
         let content = flow_to_item @@ block ~resolve text in
-        content |> continue_with rest
-    | Heading h :: rest -> [ heading ~resolve h ] |> continue_with rest
+        (continue_with [@tailcall]) rest content
+    | Heading h :: rest ->
+        (continue_with [@tailcall]) rest [ heading ~resolve h ]
     | Include { attr; anchor; doc; content = { summary; status; content } }
       :: rest ->
         let doc = spec_doc_div ~resolve doc in
         let included_html = (items content :> any Html.elt list) in
-        let suffix =
-          [
-            Html.div
-              ~a:
-                [
-                  Html.a_class
-                    T.
-                      [
-                        absolute;
-                        bg_gray 500;
-                        opacity 10;
-                        border_gray 500;
-                        rounded_lg;
-                        border_r `b8;
-                        rounded_l_none;
-                        top 0;
-                        right (-6);
-                        bottom 0;
-                        w 5;
-                      ];
-                ]
-              [];
-          ]
-        in
         let content =
           let details ~open' =
             let open' = if open' then [ Html.a_open () ] else [] in
-            let cls = [ Html.a_class T.[ relative ] ] in
             let summary =
-              let anchor_attrib, classes, anchor_link = mk_anchor anchor in
-              let a =
-                spec_class
-                  (attr @ classes
-                  @ T.
-                      [
-                        p 2;
-                        text_sm;
-                        rounded;
-                        border_l `b4;
-                        "border-orange";
-                        my 3;
-                        bg_gray 100;
-                      ])
-                @ anchor_attrib
-              in
+              let anchor_attrib, anchor_link = mk_anchor anchor in
+              let a = spec_class attr @ anchor_attrib in
               Html.summary ~a @@ anchor_link @ source (inline ~resolve) summary
             in
-            [ Html.details ~a:(open' @ cls) summary (included_html @ suffix) ]
+            [ Html.details ~a:open' summary included_html ]
           in
           match status with
           | `Inline -> included_html
           | `Closed -> details ~open':false
           | `Open -> details ~open':true
-          | `Default -> details ~open':!Tree.open_details
+          | `Default -> details ~open':true
         in
-        let inc = [ Html.div ~a:[ Html.a_class T.[ mt 8 ] ] (doc @ content) ] in
+        let inc =
+          [ Html.div ~a:[ Html.a_class [ "odoc-include" ] ] (doc @ content) ]
+        in
         (continue_with [@tailcall]) rest inc
     | Declaration { Item.attr; anchor; content; doc } :: rest ->
-        let anchor_attrib, classes, anchor_link = mk_anchor anchor in
-        let a =
-          spec_class
-            (attr @ classes
-            @ T.
-                [
-                  p 2;
-                  text_sm;
-                  rounded;
-                  border_l `b4;
-                  "border-orange";
-                  my 3;
-                  bg_gray 100;
-                ])
-          @ anchor_attrib
-        in
+        let anchor_attrib, anchor_link = mk_anchor anchor in
+        let a = spec_class attr @ anchor_attrib in
         let content = anchor_link @ documentedSrc ~resolve content in
         let spec =
           let doc = spec_doc_div ~resolve doc in
-          [ div ~a:[ Html.a_class T.[ mt 8 ] ] (div ~a content :: doc) ]
+          [ div ~a:[ Html.a_class [ "odoc-spec" ] ] (div ~a content :: doc) ]
         in
         (continue_with [@tailcall]) rest spec
   and items l = walk_items [] l in
@@ -452,7 +334,7 @@ and items ~resolve l : item Html.elt list =
 module Toc = struct
   open Odoc_document.Doctree
 
-  let render_toc ~resolve (toc : Toc.t) =
+  let render_toc ~resolve (toc : Toc.t) : string =
     let rec section { Toc.url; text; children } =
       let text = inline_nolink text in
       let text =
@@ -460,32 +342,39 @@ module Toc = struct
           : non_link_phrasing Html.elt list
           :> Html_types.flow5_without_interactive Html.elt list)
       in
-      let href = Link.href ~resolve url in
-      let link =
-        Html.a
-          ~a:
-            [
-              Html.a_href href; Html.a_class T.[ cursor_pointer; "text-orange" ];
-            ]
-          text
+      let text =
+        List.map (Format.asprintf "%a" (Tyxml.Html.pp_elt ())) text
+        |> String.concat " "
       in
-      match children with [] -> [ link ] | _ -> [ link; sections children ]
+      let href = Link.href ~resolve url in
+      match children with
+      | [] ->
+          `Assoc
+            [
+              ("title", `String text);
+              ("href", `String href);
+              ("children", `List []);
+            ]
+      | _ ->
+          `Assoc
+            [
+              ("title", `String text);
+              ("href", `String href);
+              ("children", sections children);
+            ]
     and sections the_sections =
-      the_sections
-      |> List.map (fun the_section -> Html.li (section the_section))
-      |> Html.ul
+      `List (List.map (fun the_section -> section the_section) the_sections)
     in
     match toc with
-    | [] -> []
-    | _ ->
-        [ Html.nav ~a:[ Html.a_class T.[ bg_gray 100; p 5 ] ] [ sections toc ] ]
+    | [] -> `List [] |> Yojson.Safe.to_string
+    | _ -> sections toc |> Yojson.Safe.to_string
 
   let on_sub : Subpage.status -> bool = function
     | `Closed | `Open | `Default -> false
     | `Inline -> true
 
   let from_items ~resolve ~path i =
-    (render_toc ~resolve @@ Toc.compute path ~on_sub i :> any Html.elt list)
+    render_toc ~resolve @@ Toc.compute path ~on_sub i
 end
 
 module Page = struct
@@ -501,130 +390,34 @@ module Page = struct
   and subpages indent i =
     Utils.list_concat_map ~f:(include_ indent) @@ Doctree.Subpages.compute i
 
-  and mktitle page_type path =
-    let sep = Html.code ~a:[ Html.a_class T.[ font_mono ] ] [ Html.txt "." ] in
-    let rec links =
-      let link (name, link) =
-        Html.a ~a:[ Html.a_href link ]
-          [
-            Html.code
-              ~a:
-                [
-                  Html.a_class T.[ font_mono; text_orangedark; cursor_pointer ];
-                ]
-              [ Html.txt name ];
-          ]
-      in
-      function
-      | elt :: (_ :: _ as xs) -> link elt :: sep :: links xs
-      | [ elt ] -> [ link elt ]
-      | [] -> []
-    in
-
-    let h1 =
-      Html.div
-        ~a:[ Html.a_class T.[ relative; flex_1; h 20 ] ]
-        [
-          Html.h1
-            ~a:
-              [
-                Html.a_class
-                  T.
-                    [
-                      text_3xl;
-                      absolute;
-                      inset_x 0;
-                      py 3;
-                      bottom 0;
-                      font_semibold;
-                      text_gray 500;
-                      font_sans;
-                      w_full;
-                      truncate;
-                    ];
-              ]
-            (links path);
-        ]
-      ::
-      (match page_type with
-      | None -> []
-      | Some t ->
-          let width =
-            match String.length t / 4 with
-            | 0 -> 20
-            | 1 -> 28
-            | 2 -> 48
-            | 3 -> 60
-            | _ -> 72
-          in
-          [
-            Html.div
-              ~a:[ Html.a_class T.[ relative; flex_none; w width ] ]
-              [
-                Html.h1
-                  ~a:
-                    [
-                      Html.a_class
-                        T.
-                          [
-                            text_3xl;
-                            absolute;
-                            py 3;
-                            bottom 0;
-                            right 0;
-                            font_semibold;
-                            text_gray 500;
-                            font_sans;
-                          ];
-                    ]
-                  [ Html.txt t ];
-              ];
-          ])
-    in
-    Html.div
-      ~a:
-        [
-          Html.a_class T.[ flex; h 20; relative; border_b `b1; border_gray 200 ];
-        ]
-      h1
-
-  and title_of_url url =
-    let rec inner u =
-      match u.Link.Url.Path.kind with
-      | `Module | `ModuleType | `Class | `ClassType | `Argument -> (
-          match u.parent with
-          | Some p ->
-              (u.name, Link.(page_href ~resolve:(Current url) u)) :: inner p
-          | None -> assert false)
-      | _ -> []
-    in
-    match List.rev (inner url) with
-    | [] -> None
-    | xs ->
-        Some
-          ( xs,
-            String.capitalize_ascii
-              (Format.asprintf "%a" Odoc_document.Url.Path.pp_kind url.kind) )
-
-  and page indent ({ Page.title; header; items = i; url } as p) =
+  and page indent ({ items = i; url; _ } as p) =
     let resolve = Link.Current url in
     let i = Doctree.Shift.compute ~on_sub i in
-    let toc = (Toc.from_items ~resolve ~path:url i :> any Html.elt list) in
     let subpages = subpages indent p in
-    let t = title_of_url url in
-    let header =
-      match t with
-      | Some (ts, ty) ->
-          let t = mktitle (Some ty) ts in
-          (t :: items ~resolve (List.tl header) :> any Html.elt list)
-      | _ -> (items ~resolve header :> any Html.elt list)
-    in
     let content = (items ~resolve i :> any Html.elt list) in
-    let page = Tree.make ~indent ~header ~toc ~url title content subpages in
+    let page =
+      let filename = Link.Path.as_filename url in
+      let content ppf = (Html.pp_elt ~indent ()) ppf (Html.div content) in
+      { Odoc_document.Renderer.filename; content; children = subpages }
+    in
     page
 end
 
-let render ~indent page = Page.page indent page
+let render_content ~indent page = Page.page indent page
+
+let render_toc ~indent:_ page =
+  let { Odoc_document.Types.Page.items = i; url; _ } = page in
+  let resolve = Link.Current url in
+  let i = Doctree.Shift.compute ~on_sub:Page.on_sub i in
+  let toc = Toc.from_items ~resolve ~path:url i in
+  let page =
+    let filename =
+      Link.Path.as_filename url |> Fpath.rem_ext |> Fpath.add_ext ".toc.json"
+    in
+    let content ppf = Format.pp_print_string ppf toc in
+    { Odoc_document.Renderer.filename; content; children = [] }
+  in
+  page
 
 let doc ~xref_base_uri b =
   let resolve = Link.Base xref_base_uri in

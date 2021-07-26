@@ -52,11 +52,13 @@
  (synopsis "Voodoo tool to generate tailwind-style output")
  (description "Voodoo tool to generate tailwind-style output")
  (depends
+  (omd
+   (>= 2.0.0~alpha2))
   voodoo-lib
-  voodoo-web
   (odoc
    (>= 2.0.0))
-  (opam-format (>= 2.1.0~beta2))
+  (opam-format
+   (>= 2.1.0~beta2))
   tyxml
   astring
   cmdliner

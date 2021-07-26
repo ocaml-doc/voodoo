@@ -63,9 +63,12 @@ promote: ## Promote files to the source directory
 
 .PHONY: example
 example: all ## Build an sample output
-	mkdir _generated; cd _generated
-	opam exec -- dune exec -- voodoo-prep
-	opam exec -- dune exec -- voodoo-do -p ocaml-base-compiler -b
-	opam exec -- dune exec -- voodoo-gen pkgver -o output/
-	opam exec -- dune exec -- voodoo-gen generate-json -o output/
-	opam exec -- dune exec -- voodoo-gen packages -o output/
+	rm -rf _generated; mkdir _generated
+	cd _generated; opam exec -- dune exec -- voodoo-prep
+	cd _generated; opam exec -- dune exec -- voodoo-do -p ocaml-base-compiler -b
+	cd _generated; opam exec -- dune exec -- voodoo-gen -o output/
+
+.PHONY: gen
+gen:
+	cd _generated; rm -rf output/
+	cd _generated; opam exec -- dune exec -- voodoo-gen -o output/

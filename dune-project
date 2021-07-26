@@ -52,6 +52,8 @@
  (synopsis "Voodoo tool to generate tailwind-style output")
  (description "Voodoo tool to generate tailwind-style output")
  (depends
+  (omd
+   (>= 2.0.0~alpha2))
   voodoo-lib
   (odoc
    (>= 2.0.0))

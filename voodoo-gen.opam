@@ -10,6 +10,7 @@ homepage: "https://github.com/jonludlam/voodoo"
 bug-reports: "https://github.com/jonludlam/voodoo/issues"
 depends: [
   "dune" {>= "2.8"}
+  "omd" {>= "2.0.0~alpha2"}
   "voodoo-lib"
   "odoc" {>= "2.0.0"}
   "opam-format" {>= "2.1.0~beta2"}

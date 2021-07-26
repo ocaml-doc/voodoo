@@ -1,0 +1,3 @@
+(library
+ (name voodoo_web)
+ (public_name voodoo-web))

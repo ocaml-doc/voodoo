@@ -31,7 +31,21 @@
  (name voodoo-do)
  (synopsis "Voodoo compilation step")
  (description "Voodoo compilation step")
- (depends voodoo-lib odoc tyxml astring cmdliner yojson))
+ (depends voodoo-lib voodoo-web odoc tyxml astring cmdliner yojson))
+
+(package
+ (name voodoo-client)
+ (synopsis "Voodoo client javascript")
+ (description "Voodoo client javascript")
+ (depends
+  (ocaml (>= 4.05))
+  js_of_ocaml
+  js_of_ocaml-ppx
+  js_of_ocaml-tyxml
+  js_of_ocaml-lwt
+  yojson
+  voodoo-web
+  ppx_deriving_yojson))
 
 (package
  (name voodoo-gen)
@@ -48,3 +62,9 @@
   cmdliner
   yojson
   bos))
+
+(package
+ (name voodoo-web)
+ (synopsis "Voodoo web library shared between client and server")
+ (description
+  "Contains everything that we'd like to reference in both the client and server contexts"))

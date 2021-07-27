@@ -34,8 +34,7 @@ let output_odocl mld =
   Fpath.(output_dir ~base:Paths.link mld / ("page-" ^ mld.name ^ ".odocl"))
 
 let rec compile mld =
-  if Bos.OS.File.exists (output_file mld) |> Util.get_ok then ()
-  else
+  let () = Bos.OS.File.delete (output_file mld) |> Util.get_ok in
     let extra_include, parent =
       match mld.parent with
       | None -> ([], None)

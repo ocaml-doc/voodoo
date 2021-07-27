@@ -46,14 +46,14 @@ let generate_pkgver output name_filter version_filter =
       (fun p (pkgs, othervers) ->
         let optmatch opt v = match opt with Some x -> x = v | None -> true in
         match Fpath.segs p with
-        | [ "linked"; "packages"; pkg_name; pkg_version ]
+        | [ "linked"; "p"; pkg_name; pkg_version ]
           when optmatch name_filter pkg_name
                && optmatch version_filter pkg_version ->
             ((p, true, pkg_name, pkg_version) :: pkgs, othervers)
-        | [ "linked"; "packages"; pkg_name; pkg_version ]
+        | [ "linked"; "p"; pkg_name; pkg_version ]
           when optmatch name_filter pkg_name ->
             (pkgs, pkg_version :: othervers)
-        | [ "linked"; "universes"; _; pkg_name; pkg_version ]
+        | [ "linked"; "u"; _; pkg_name; pkg_version ]
           when optmatch name_filter pkg_name
                && optmatch version_filter pkg_version ->
             ((p, false, pkg_name, pkg_version) :: pkgs, othervers)
@@ -98,7 +98,7 @@ let generate_pkgver output name_filter version_filter =
             let foutput = Fpath.v (Odoc_odoc.Fs.Directory.to_string output) in
             if blessed then
               Bos.OS.File.write
-                Fpath.(foutput / "packages" / pkg_name / ver / "status.json")
+                Fpath.(foutput / "p" / pkg_name / ver / "status.json")
                 (if failed then {|"Failed"|} else {|"Built"|})
               |> get_ok
       in

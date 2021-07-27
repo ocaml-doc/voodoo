@@ -148,8 +148,8 @@ let run pkg_name is_blessed gen_redirect failed =
   in
   let package = (universe, pkg_name, version) in
   let output_path =
-    if is_blessed then Fpath.(Paths.link / "packages" / pkg_name / version)
-    else Fpath.(Paths.link / "universe" / universe / pkg_name / version)
+    if is_blessed then Fpath.(Paths.link / "p" / pkg_name / version)
+    else Fpath.(Paths.link / "u" / universe / pkg_name / version)
   in
   Util.mkdir_p output_path;
 

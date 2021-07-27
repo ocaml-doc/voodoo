@@ -146,14 +146,14 @@ let gen_parent :
   let top_parents =
     if blessed then
       let packages =
-        Mld.v cwd "packages" None
+        Mld.v cwd "p" None
           [ Odoc.CPage package_name ]
           (Printf.sprintf "{0 Packages}\n{!childpage:%s}\n" package_name)
       in
       packages
     else
       let universes =
-        Mld.v cwd "universes" None [ Odoc.CPage universe ]
+        Mld.v cwd "u" None [ Odoc.CPage universe ]
           (Printf.sprintf "{0 Universes}\n{!childpage:%s}\n" universe)
       in
       let universe =
@@ -168,6 +168,13 @@ let gen_parent :
       [ Odoc.CPage package_version ]
       (Printf.sprintf "{0 %s}\n{!childpage:%s}\n" package_name package_version)
   in
+
+  let version =
+    Mld.v cwd package_version (Some package)
+    [ Odoc.CPage "doc" ]
+    (Printf.sprintf "{0 %s}\n{!childpage:doc}\n" package_version)
+  in
+
   let content =
     match mld_index with
     | [] -> gen ~dune ~libraries ~error_log ~failed
@@ -177,10 +184,11 @@ let gen_parent :
         close_in ic;
         result
   in
-
-  let version =
-    Mld.v cwd package_version (Some package) children
+  let () = match Bos.OS.File.delete Fpath.(v "doc.mld") with Ok x -> x | Error (`Msg m) ->
+    Format.eprintf "Failed to remove file: doc.mld - %s\n%!" m; () in
+  let doc =
+    Mld.v cwd "doc" (Some version) children
       (Printf.sprintf "{0 %s %s}\n%s\n" package_name package_version content)
   in
-  Mld.compile version;
-  version
+  Mld.compile doc;
+  doc

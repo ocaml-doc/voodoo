@@ -63,7 +63,7 @@ let link_deps dir =
     match Astring.String.cuts ~sep:" " line with
     | [ parent_path; l_name; l_digest ] -> (
         match Astring.String.cuts ~sep:"/" parent_path with
-        | "universes" :: universe :: l_package :: l_version :: _ ->
+        | "u" :: universe :: l_package :: l_version :: _ ->
             [
               {
                 l_package;
@@ -73,7 +73,7 @@ let link_deps dir =
                 l_universe = Some universe;
               };
             ]
-        | "packages" :: l_package :: l_version :: _ ->
+        | "p" :: l_package :: l_version :: _ ->
             [ { l_package; l_name; l_digest; l_version; l_universe = None } ]
         | _ -> [])
     | _ -> []

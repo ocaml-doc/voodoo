@@ -105,7 +105,7 @@ let find_universe_and_version pkg_name =
   | _ :: _ :: u :: _, [ version ] -> Some (u, Fpath.to_string version)
   | _ -> None
 
-let run pkg_name is_blessed gen_redirect failed =
+let run pkg_name is_blessed failed =
   let is_interesting p =
     List.mem (Fpath.get_ext p) [ ".cmti"; ".cmt"; ".cmi" ]
   in
@@ -247,41 +247,25 @@ let run pkg_name is_blessed gen_redirect failed =
            ~output:(Mld.output_odocl mldv)))
     mldvs;
   let odocls = odocls @ List.map Mld.output_odocl (parent :: mldvs) in
-  let _otherdocs, _opam_file = Otherdocs.copy parent otherdocs opam_file in
+  Format.eprintf "%d other files to copy\n%!" (List.length otherdocs);
+  let otherdocs, _opam_file = Otherdocs.copy parent otherdocs opam_file in
+  List.iter (fun p ->
+    Format.eprintf "dest: %a\n%!" Fpath.pp p) otherdocs;
   List.iter (Odoc.html output) odocls;
   (* Odoc.voodoo_gen Fpath.(output / "tailwind") pkg_name version; *)
   let () =
-    Bos.OS.File.delete (Fpath.v "compile/page-packages.odoc") |> Util.get_ok
+    Bos.OS.File.delete (Fpath.v "compile/page-p.odoc") |> Util.get_ok
   in
   let () =
-    Bos.OS.File.delete (Fpath.v "compile/page-universes.odoc") |> Util.get_ok
+    Bos.OS.File.delete (Fpath.v "compile/page-u.odoc") |> Util.get_ok
   in
   let () =
-    Bos.OS.File.delete (Fpath.v ("compile/packages/page-" ^ pkg_name ^ ".odoc"))
+    Bos.OS.File.delete (Fpath.v ("compile/p/page-" ^ pkg_name ^ ".odoc"))
     |> Util.get_ok
   in
   if failed then (
     
     Bos.OS.File.write Fpath.(output_path / "failed") "failed" |> Util.get_ok);
-  (if gen_redirect then
-   let redirect_path =
-     Fpath.(output / "tailwind" / "packages" / pkg_name / "index.html")
-   in
-   let html =
-     Printf.sprintf
-       {|
-    <html>
-     <head>
-      <title>%s</title>
-      <meta http-equiv="refresh" content="0;URL='%s/index.html'" />
-     </head>
-     <body>
-      <p>The latest version is <a href="%s/index.html">here</a></p>
-     </body>
-    </html>|}
-       pkg_name version version
-   in
-   Bos.OS.File.write redirect_path html |> Util.get_ok);
   ()
 
 let run_all () =
@@ -300,7 +284,7 @@ let run_all () =
       | Some deps ->
           List.iter doit deps;
           Format.eprintf "Building docs for package %s\n%!" pkg.Opam.name;
-          (try run pkg.Opam.name true true false
+          (try run pkg.Opam.name true false
            with e ->
              Format.eprintf "Ignoring failure %s!\n%!" (Printexc.to_string e));
           done_pkgs := pkg :: !done_pkgs

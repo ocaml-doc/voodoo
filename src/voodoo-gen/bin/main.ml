@@ -89,9 +89,11 @@ let generate_pkgver output name_filter version_filter =
               m;
             exit 1
         | Ok files ->
-            let parent = Fpath.(pkg_path / ".." / ("page-" ^ ver ^ ".odocl")) in
+            let parent = List.find (fun p ->
+              let (_, f) = Fpath.split_base p in
+              f = Fpath.v "page-doc.odocl") files.odocls in
             let otherdocs = files.otherdocs in
-            let files = parent :: files.odocls in
+            let files = files.odocls in
             Format.eprintf "Found %d files\n%!" (List.length files);
             ignore @@ List.map (Odoc_thtml.render ~output) files;
             Odoc_thtml.render_other ~parent ~otherdocs ~output |> get_ok;

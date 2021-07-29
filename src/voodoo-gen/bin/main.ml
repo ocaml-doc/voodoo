@@ -89,18 +89,27 @@ let generate_pkgver output name_filter version_filter =
               m;
             exit 1
         | Ok files ->
-            let parent = List.find (fun p ->
-              let (_, f) = Fpath.split_base p in
-              f = Fpath.v "page-doc.odocl") files.odocls in
+            let parent =
+              List.find
+                (fun p ->
+                  let _, f = Fpath.split_base p in
+                  f = Fpath.v "page-doc.odocl")
+                files.odocls
+            in
             let otherdocs = files.otherdocs in
             let files = files.odocls in
             Format.eprintf "Found %d files\n%!" (List.length files);
-            ignore @@ List.map (Odoc_thtml.render ~output) files;
-            Odoc_thtml.render_other ~parent ~otherdocs ~output |> get_ok;
+            let paths =
+              List.rev_map (Odoc_thtml.render ~output) files
+              |> List.rev_map get_ok |> List.flatten
+            in
             let foutput = Fpath.v (Odoc_odoc.Fs.Directory.to_string output) in
+            let output_prefix = Fpath.(foutput / "p" / pkg_name / ver) in
+            Odoc_thtml.gen_package_info ~input:parent ~output:output_prefix paths;
+            Odoc_thtml.render_other ~parent ~otherdocs ~output |> get_ok;
             if blessed then
               Bos.OS.File.write
-                Fpath.(foutput / "p" / pkg_name / ver / "status.json")
+                Fpath.(output_prefix / "status.json")
                 (if failed then {|"Failed"|} else {|"Built"|})
               |> get_ok
       in

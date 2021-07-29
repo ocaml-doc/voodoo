@@ -15,6 +15,7 @@ depends: [
   "fpath"
   "opam-format"
   "sexplib"
+  "yojson"
   "odoc" {with-doc}
 ]
 build: [

@@ -1,4 +1,4 @@
 (library
  (name voodoo_lib)
  (public_name voodoo-lib)
- (libraries astring fpath bos opam-format sexplib))
+ (libraries astring fpath bos opam-format sexplib yojson))

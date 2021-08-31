@@ -69,6 +69,9 @@ module StringMap = Map.Make (String)
 let info_of_paths ~(info : Input.info) paths =
   let children = ref StringMap.empty in
   let kind = ref StringMap.empty in
+  let path_to_string v =
+    v |> Odoc_document.Url.Path.to_list |> List.map snd |> String.concat "."
+  in
   List.iter
     (fun (page : Odoc_document.Types.Page.t) ->
       let path = page.url in
@@ -76,7 +79,7 @@ let info_of_paths ~(info : Input.info) paths =
       Option.iter
         (fun (parent : Odoc_document.Url.Path.t) ->
           children :=
-            StringMap.update parent.name
+            StringMap.update (path_to_string parent)
               (function
                 | None -> Some [ path.name ] | Some v -> Some (path.name :: v))
               !children)
@@ -87,7 +90,7 @@ let info_of_paths ~(info : Input.info) paths =
       StringMap.find_opt root !children |> Option.value ~default:[]
     in
     let kind = StringMap.find root !kind in
-    let submodules = List.map get_tree children in
+    let submodules = List.map (fun c -> get_tree (root ^ "." ^ c)) children in
     { name = root; kind; submodules }
   in
   List.map

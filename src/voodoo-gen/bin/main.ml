@@ -49,14 +49,14 @@ let generate_pkgver output name_filter version_filter =
         | [ "linked"; "p"; pkg_name; pkg_version ]
           when optmatch name_filter pkg_name
                && optmatch version_filter pkg_version ->
-            ((p, true, pkg_name, pkg_version) :: pkgs, othervers)
+            ((p, None, pkg_name, pkg_version) :: pkgs, othervers)
         | [ "linked"; "p"; pkg_name; pkg_version ]
           when optmatch name_filter pkg_name ->
             (pkgs, pkg_version :: othervers)
-        | [ "linked"; "u"; _; pkg_name; pkg_version ]
+        | [ "linked"; "u"; universe; pkg_name; pkg_version ]
           when optmatch name_filter pkg_name
                && optmatch version_filter pkg_version ->
-            ((p, false, pkg_name, pkg_version) :: pkgs, othervers)
+            ((p, Some universe, pkg_name, pkg_version) :: pkgs, othervers)
         | _ -> (pkgs, othervers))
       ([], []) linkedpath
   with
@@ -66,7 +66,7 @@ let generate_pkgver output name_filter version_filter =
   | Ok (pkgs, vs) ->
       Format.eprintf "%d other versons, %d packages\n%!" (List.length vs)
         (List.length pkgs);
-      let handle_package (pkg_path, blessed, pkg_name, ver) =
+      let handle_package (pkg_path, universe, pkg_name, ver) =
         let failed =
           Bos.OS.File.exists Fpath.(pkg_path / "failed") |> function
           | Ok x -> x
@@ -104,10 +104,16 @@ let generate_pkgver output name_filter version_filter =
               |> List.rev_map get_ok |> List.flatten
             in
             let foutput = Fpath.v (Odoc_odoc.Fs.Directory.to_string output) in
-            let output_prefix = Fpath.(foutput / "p" / pkg_name / ver) in
+            let output_prefix = 
+              match universe with 
+              | None ->
+                Fpath.(foutput / "p" / pkg_name / ver)
+              | Some universe ->
+                Fpath.(foutput / "u" / universe / pkg_name / ver)
+            in
             Odoc_thtml.gen_package_info ~input:parent ~output:output_prefix paths;
             Odoc_thtml.render_other ~parent ~otherdocs ~output |> get_ok;
-            if blessed then
+            if Option.is_none universe then
               Bos.OS.File.write
                 Fpath.(output_prefix / "status.json")
                 (if failed then {|"Failed"|} else {|"Built"|})

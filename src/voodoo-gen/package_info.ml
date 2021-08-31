@@ -67,7 +67,6 @@ let info_to_yojson { libraries } =
 module StringMap = Map.Make (String)
 
 let info_of_paths ~(info : Input.info) paths =
-  let open Odoc_document in
   let children = ref StringMap.empty in
   let kind = ref StringMap.empty in
   List.iter

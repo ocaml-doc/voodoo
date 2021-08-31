@@ -184,11 +184,13 @@ let run pkg_name is_blessed failed =
   let package_mlds, otherdocs = Package_mlds.find package in
 
   let error_log = Error_log.find package in
-  
+
   let parent =
     Version.gen_parent package ~blessed:is_blessed ~modules ~dune ~libraries
       ~package_mlds ~error_log ~failed
   in
+
+  let () = Package_info.gen ~output:output_path ~dune ~libraries () in
 
   let sis = prep >>= get_source_info parent in
   let this_index = InputSelect.select sis in
@@ -249,23 +251,17 @@ let run pkg_name is_blessed failed =
   let odocls = odocls @ List.map Mld.output_odocl (parent :: mldvs) in
   Format.eprintf "%d other files to copy\n%!" (List.length otherdocs);
   let otherdocs, _opam_file = Otherdocs.copy parent otherdocs opam_file in
-  List.iter (fun p ->
-    Format.eprintf "dest: %a\n%!" Fpath.pp p) otherdocs;
+  List.iter (fun p -> Format.eprintf "dest: %a\n%!" Fpath.pp p) otherdocs;
   List.iter (Odoc.html output) odocls;
   (* Odoc.voodoo_gen Fpath.(output / "tailwind") pkg_name version; *)
-  let () =
-    Bos.OS.File.delete (Fpath.v "compile/page-p.odoc") |> Util.get_ok
-  in
-  let () =
-    Bos.OS.File.delete (Fpath.v "compile/page-u.odoc") |> Util.get_ok
-  in
+  let () = Bos.OS.File.delete (Fpath.v "compile/page-p.odoc") |> Util.get_ok in
+  let () = Bos.OS.File.delete (Fpath.v "compile/page-u.odoc") |> Util.get_ok in
   let () =
     Bos.OS.File.delete (Fpath.v ("compile/p/page-" ^ pkg_name ^ ".odoc"))
     |> Util.get_ok
   in
-  if failed then (
-    
-    Bos.OS.File.write Fpath.(output_path / "failed") "failed" |> Util.get_ok);
+  if failed then
+    Bos.OS.File.write Fpath.(output_path / "failed") "failed" |> Util.get_ok;
   ()
 
 let run_all () =

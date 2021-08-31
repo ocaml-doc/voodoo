@@ -64,9 +64,17 @@ let otherversions parent vs =
   | _ -> Error (`Msg "Parent is not a page!")
 
 let render ~output file =
+  let open Odoc_document in
+  let ( let* ) = Result.bind in
   let f = Fs.File.of_string (Fpath.to_string file) in
-  document_of_odocl ~syntax:Odoc_document.Renderer.OCaml f
-  >>= render_document ~output
+  let* document = document_of_odocl ~syntax:Renderer.OCaml f in
+  let* () = render_document ~output document in
+  let urls =
+    document
+    :: (Doctree.Subpages.compute document
+       |> List.map (fun (subpage : Types.Subpage.t) -> subpage.content))
+  in
+  Ok urls
 
 let render_text ~id ~output doc =
   let url = Odoc_document.Url.Path.from_identifier id in

@@ -19,7 +19,7 @@
  (name voodoo-lib)
  (synopsis "Voodoo library")
  (description "Voodoo library")
- (depends bos astring fpath opam-format sexplib))
+ (depends bos astring fpath opam-format sexplib yojson))
 
 (package
  (name voodoo-prep)

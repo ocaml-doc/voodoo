@@ -104,5 +104,6 @@ let gen ~input ~output paths =
   let input = Fpath.(parent input / "package.json" |> to_string) in
   let info = Input.info_of_yojson (Yojson.Basic.from_file input) in
   let libraries = info_of_paths ~info paths in
+  let _ = Bos.OS.Dir.create output |> Result.get_ok in
   let output = Fpath.(to_string (output / "package.json")) in
   Yojson.Basic.to_file output (info_to_yojson { libraries })

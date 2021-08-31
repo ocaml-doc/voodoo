@@ -105,8 +105,8 @@ let generate_pkgver output name_filter version_filter =
             in
             let foutput = Fpath.v (Odoc_odoc.Fs.Directory.to_string output) in
             let output_prefix = Fpath.(foutput / "p" / pkg_name / ver) in
-            Odoc_thtml.render_other ~parent ~otherdocs ~output |> get_ok;
             Odoc_thtml.gen_package_info ~input:parent ~output:output_prefix paths;
+            Odoc_thtml.render_other ~parent ~otherdocs ~output |> get_ok;
             if blessed then
               Bos.OS.File.write
                 Fpath.(output_prefix / "status.json")

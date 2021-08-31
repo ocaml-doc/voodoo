@@ -70,9 +70,13 @@ let render ~output file =
   let* document = document_of_odocl ~syntax:Renderer.OCaml f in
   let* () = render_document ~output document in
   let urls =
-    document
-    :: (Doctree.Subpages.compute document
-       |> List.map (fun (subpage : Types.Subpage.t) -> subpage.content))
+    let rec get_subpages document =
+      document ::
+      (Doctree.Subpages.compute document
+       |> List.map (fun (subpage : Types.Subpage.t) -> get_subpages subpage.content)
+       |> List.flatten)
+    in
+    get_subpages document
   in
   Ok urls
 

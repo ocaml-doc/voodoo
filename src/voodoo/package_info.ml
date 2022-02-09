@@ -26,9 +26,7 @@ let gen ~output ~(dune : Dune.t option) ~libraries () =
   let dune_modules = function
     | Dune.Library.Singleton m -> [ m ]
     | Unwrapped { modules; _ } -> modules
-    | Wrapped { alias_module; main_module_name; modules } ->
-        if Util.is_hidden alias_module then [ main_module_name ]
-        else List.map (fun s -> main_module_name ^ "." ^ s) modules
+    | Wrapped { main_module_name; _ } -> [ main_module_name ]
   in
   let libraries =
     match dune with

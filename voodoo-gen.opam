@@ -9,6 +9,7 @@ license: "ISC"
 homepage: "https://github.com/jonludlam/voodoo"
 bug-reports: "https://github.com/jonludlam/voodoo/issues"
 depends: [
+ "ocaml" {>= "4.08.0"}
   "dune" {>= "2.8"}
   "omd" {>= "2.0.0~alpha2"}
   "voodoo-lib"

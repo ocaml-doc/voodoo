@@ -1,4 +1,6 @@
-(* Odoc documentation generator *)
+(* Odoc documentation generator
+
+*)
 open Cmdliner
 
 (** Example: [conv_compose Fpath.of_string Fpath.to_string Arg.dir] *)

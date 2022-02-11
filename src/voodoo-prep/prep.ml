@@ -2,6 +2,7 @@
 
 *)
 open Cmdliner
+[@@@ocaml.warning "-3"]
 
 (** Example: [conv_compose Fpath.of_string Fpath.to_string Arg.dir] *)
 let conv_compose ?docv parse to_string c =

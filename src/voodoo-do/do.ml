@@ -3,6 +3,9 @@
  *)
 
 open Voodoo_lib
+
+[@@@ocaml.warning "-3"]
+
 open Cmdliner
 
 let run package blessed switch failed =

@@ -3,6 +3,7 @@
  *)
 
 open Cmdliner
+[@@@ocaml.warning "-3"]
 
 let docs = "ARGUMENTS"
 

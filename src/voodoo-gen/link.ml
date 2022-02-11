@@ -1,9 +1,9 @@
 module Url = Odoc_document.Url
 
+let flat = ref false
+
 (* Translation from Url.Path *)
 module Path = struct
-  let flat = ref false
-
   let for_printing url = List.map snd @@ Url.Path.to_list url
 
   let segment_to_string (kind, name) =
@@ -16,8 +16,8 @@ module Path = struct
   let get_dir_and_file url =
     let l = Url.Path.to_list url in
     let is_dir =
-      if !flat then function `Page -> true | _ -> false
-      else function `LeafPage -> false | `File -> false | _ -> true
+      if !flat then function `Page -> `Always | _ -> `Never
+      else function `LeafPage -> `Never | `File -> `Never | _ -> `Always
     in
     let dir, file = Url.Path.split ~is_dir l in
     let dir = List.map segment_to_string dir in
@@ -94,7 +94,3 @@ let href ~resolve t =
       | [], "" -> "#"
       | page, "" -> String.concat "/" page
       | page, anchor -> String.concat "/" page ^ "#" ^ anchor)
-
-let page_href ~resolve page =
-  let url = Url.from_path page in
-  href ~resolve url

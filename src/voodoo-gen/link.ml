@@ -1,9 +1,9 @@
 module Url = Odoc_document.Url
 
+let flat = ref false
+
 (* Translation from Url.Path *)
 module Path = struct
-  let flat = ref false
-
   let for_printing url = List.map snd @@ Url.Path.to_list url
 
   let segment_to_string (kind, name) =
@@ -94,7 +94,3 @@ let href ~resolve t =
       | [], "" -> "#"
       | page, "" -> String.concat "/" page
       | page, anchor -> String.concat "/" page ^ "#" ^ anchor)
-
-let page_href ~resolve page =
-  let url = Url.from_path page in
-  href ~resolve url

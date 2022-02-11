@@ -56,7 +56,7 @@
    (>= 2.0.0~alpha2))
   voodoo-lib
   (odoc
-   (>= 2.0.0))
+   (>= 2.1.0))
   (opam-format
    (>= 2.1.0~beta2))
   tyxml

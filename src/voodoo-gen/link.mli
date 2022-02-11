@@ -9,8 +9,6 @@ type resolve = Current of Url.Path.t | Base of string
 
 val href : resolve:resolve -> Url.t -> string
 
-val page_href : resolve:resolve -> Url.Path.t -> string
-
 module Path : sig
   val is_leaf_page : Url.Path.t -> bool
 

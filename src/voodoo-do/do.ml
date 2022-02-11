@@ -1,4 +1,6 @@
-(* do! *)
+(* do!
+ *
+ *)
 
 open Voodoo_lib
 open Cmdliner

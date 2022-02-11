@@ -2,7 +2,6 @@
 open Bos
 
 let opam = Cmd.v "opam"
-
 let switch = ref None
 
 type package = { name : string; version : string }
@@ -59,9 +58,7 @@ let all_opam_packages () =
 open Result
 
 let bind r f = match r with Ok v -> f v | Error _ as e -> e
-
 let join = function Ok r -> r | Error _ as e -> e
-
 let ( >>= ) = bind
 
 let process_file f =

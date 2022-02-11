@@ -9,7 +9,6 @@ module Library = struct
   }
 
   type unwrapped_t = { modules : string list }
-
   type singleton_t = string
 
   type wrapping =
@@ -23,7 +22,6 @@ end
 type t = { name : string; version : string option; libraries : Library.t list }
 
 let ( >>= ) m f = match m with Ok v -> f v | Error e -> Error e
-
 let join = function Ok r -> r | Error _ as e -> e
 
 let assoc_list = function

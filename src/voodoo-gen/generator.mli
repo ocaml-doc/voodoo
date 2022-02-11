@@ -1,7 +1,6 @@
 open Odoc_document
 
 val render_content : indent:bool -> Types.Page.t -> Renderer.page
-
 val render_toc : indent:bool -> Types.Page.t -> Renderer.page
 
 val doc :

@@ -9,8 +9,8 @@ let copy version docs opam_file =
       match Bos.OS.Dir.create dir with
       | Ok _ -> ()
       | Error (`Msg m) ->
-        Format.eprintf "Failed to create destination dir: %s\n%!" m;
-        ()
+          Format.eprintf "Failed to create destination dir: %s\n%!" m;
+          ()
     in
     let dst = Fpath.(dir // n) in
     Format.eprintf "dst: %a\n%!" Fpath.pp dst;

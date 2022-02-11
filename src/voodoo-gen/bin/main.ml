@@ -3,6 +3,7 @@
  *)
 
 open Cmdliner
+
 [@@@ocaml.warning "-3"]
 
 let docs = "ARGUMENTS"
@@ -107,14 +108,14 @@ let generate_pkgver output name_filter version_filter =
               |> List.rev_map get_ok |> List.flatten
             in
             let foutput = Fpath.v (Odoc_odoc.Fs.Directory.to_string output) in
-            let output_prefix = 
-              match universe with 
-              | None ->
-                Fpath.(foutput / "p" / pkg_name / ver)
+            let output_prefix =
+              match universe with
+              | None -> Fpath.(foutput / "p" / pkg_name / ver)
               | Some universe ->
-                Fpath.(foutput / "u" / universe / pkg_name / ver)
+                  Fpath.(foutput / "u" / universe / pkg_name / ver)
             in
-            Odoc_thtml.gen_package_info ~input:parent ~output:output_prefix paths;
+            Odoc_thtml.gen_package_info ~input:parent ~output:output_prefix
+              paths;
             Odoc_thtml.render_other ~parent ~otherdocs ~output |> get_ok;
             if Option.is_none universe then
               Bos.OS.File.write

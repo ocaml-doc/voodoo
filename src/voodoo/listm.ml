@@ -5,5 +5,4 @@ let rec setify = function
   | [] -> []
 
 let ( >>= ) l f = List.flatten (List.map f l)
-
 let filter pred item = if pred item then [ item ] else []

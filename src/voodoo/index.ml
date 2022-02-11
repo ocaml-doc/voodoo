@@ -8,7 +8,6 @@ let empty = { intern = M.empty; extern = M.empty }
 type serialisable = (string * Fpath.t) list
 
 let find_opt name t = try Some (M.find name t.intern) with _ -> None
-
 let find_extern_opt name t = try Some (M.find name t.extern) with _ -> None
 
 (* Write the index file into 'packages/<pkg_name>/<version>/index.m or

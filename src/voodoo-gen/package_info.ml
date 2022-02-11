@@ -70,12 +70,13 @@ let info_of_paths ~(info : Input.info) paths =
   let children = ref StringMap.empty in
   let kind = ref StringMap.empty in
   let path_to_string v =
-    let remove_prefix = function 
-      | "p"::_p::_v::"doc"::v -> v 
-      | "u"::_u::_p::_v::"doc"::v -> v
+    let remove_prefix = function
+      | "p" :: _p :: _v :: "doc" :: v -> v
+      | "u" :: _u :: _p :: _v :: "doc" :: v -> v
       | v -> v
     in
-    v |> Odoc_document.Url.Path.to_list |> List.map snd |> remove_prefix |> String.concat "."
+    v |> Odoc_document.Url.Path.to_list |> List.map snd |> remove_prefix
+    |> String.concat "."
   in
   List.iter
     (fun (page : Odoc_document.Types.Page.t) ->
@@ -96,7 +97,9 @@ let info_of_paths ~(info : Input.info) paths =
     in
     let kind = StringMap.find root !kind in
     let submodules = List.map (fun c -> get_tree (root ^ "." ^ c)) children in
-    let name = List.fold_left (fun _ -> Fun.id) root (String.split_on_char '.' root) in
+    let name =
+      List.fold_left (fun _ -> Fun.id) root (String.split_on_char '.' root)
+    in
     { name; kind; submodules }
   in
   List.map

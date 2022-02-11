@@ -71,10 +71,11 @@ let render ~output file =
   let* () = render_document ~output document in
   let urls =
     let rec get_subpages document =
-      document ::
-      (Doctree.Subpages.compute document
-       |> List.map (fun (subpage : Types.Subpage.t) -> get_subpages subpage.content)
-       |> List.flatten)
+      document
+      :: (Doctree.Subpages.compute document
+         |> List.map (fun (subpage : Types.Subpage.t) ->
+                get_subpages subpage.content)
+         |> List.flatten)
     in
     get_subpages document
   in

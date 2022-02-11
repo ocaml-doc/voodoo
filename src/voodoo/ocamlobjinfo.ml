@@ -3,9 +3,7 @@
 open Result
 
 let bind r f = match r with Ok v -> f v | Error _ as e -> e
-
 let ( >>= ) = bind
-
 let get_ok = function Ok x -> x | _ -> failwith "not ok"
 
 let process_one file =

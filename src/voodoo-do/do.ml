@@ -10,9 +10,7 @@ open Cmdliner
 
 let run package blessed switch failed =
   Opam.switch := switch;
-  match package with
-  | None -> Do.run_all ()
-  | Some p -> Do.run p blessed failed
+  match package with None -> Do.run_all () | Some p -> Do.run p blessed failed
 
 let package =
   let doc = "Select the package to process" in

@@ -2,6 +2,7 @@
 
 *)
 open Cmdliner
+
 [@@@ocaml.warning "-3"]
 
 (** Example: [conv_compose Fpath.of_string Fpath.to_string Arg.dir] *)
@@ -46,7 +47,6 @@ module Prep = struct
       & info [ "u"; "universes" ] ~doc)
 
   let cmd = Term.(const prep $ lib_dir $ switch $ universes)
-
   let info = Term.info "prep" ~doc:"Prep a directory tree for compiling"
 end
 

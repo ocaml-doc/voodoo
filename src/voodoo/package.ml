@@ -1,9 +1,6 @@
 type universe_id = string
-
 and package_name = string
-
 and package_version = string
-
 and t = universe_id * package_name * package_version
 
 let prep_path package =

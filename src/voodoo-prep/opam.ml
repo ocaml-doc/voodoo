@@ -2,7 +2,6 @@
 open Bos
 
 let opam = Cmd.v "opam"
-
 let switch = ref None
 
 type package = { name : string; version : string }

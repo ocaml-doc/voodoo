@@ -8,6 +8,7 @@ let find package =
     let ic = open_in (Fpath.to_string path) in
     let result = Util.lines_of_channel ic in
     close_in ic;
-    Format.printf "Found error log (%d bytes)\n%!" (List.fold_left (fun sum l -> sum + String.length l + 1) 0 result);
+    Format.printf "Found error log (%d bytes)\n%!"
+      (List.fold_left (fun sum l -> sum + String.length l + 1) 0 result);
     Some result
   with _ -> None

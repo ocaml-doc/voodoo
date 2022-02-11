@@ -41,9 +41,7 @@ module Section = struct
     | Communities -> "communities"
 
   let button_id_of x = "button_section_" ^ string_of x
-
   let menu_id_of x = "menu_section_" ^ string_of x
-
   let div_id_of x = "div_section_" ^ string_of x
 end
 

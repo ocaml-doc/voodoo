@@ -170,9 +170,8 @@ let gen_parent :
   in
 
   let version =
-    Mld.v cwd package_version (Some package)
-    [ Odoc.CPage "doc" ]
-    (Printf.sprintf "{0 %s}\n{!childpage:doc}\n" package_version)
+    Mld.v cwd package_version (Some package) [ Odoc.CPage "doc" ]
+      (Printf.sprintf "{0 %s}\n{!childpage:doc}\n" package_version)
   in
 
   let content =
@@ -184,8 +183,13 @@ let gen_parent :
         close_in ic;
         result
   in
-  let () = match Bos.OS.File.delete Fpath.(v "doc.mld") with Ok x -> x | Error (`Msg m) ->
-    Format.eprintf "Failed to remove file: doc.mld - %s\n%!" m; () in
+  let () =
+    match Bos.OS.File.delete Fpath.(v "doc.mld") with
+    | Ok x -> x
+    | Error (`Msg m) ->
+        Format.eprintf "Failed to remove file: doc.mld - %s\n%!" m;
+        ()
+  in
   let doc =
     Mld.v cwd "doc" (Some version) children
       (Printf.sprintf "{0 %s %s}\n%s\n" package_name package_version content)

@@ -14,9 +14,7 @@ type versions = {
 }
 
 let versions : versions list ref = ref []
-
 let error f = Printf.ksprintf (fun s -> Firebug.console##log (Js.string s)) f
-
 let by_id s = Dom_html.getElementById s
 
 let replace_child p n =
@@ -179,6 +177,5 @@ let _ =
   Js.export "Voodoo"
     (object%js
        method init = init ()
-
        method update_versions url = update_versions (Js.to_string url)
     end)

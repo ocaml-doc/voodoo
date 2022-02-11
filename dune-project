@@ -34,20 +34,6 @@
  (depends voodoo-lib voodoo-web odoc tyxml astring cmdliner yojson))
 
 (package
- (name voodoo-client)
- (synopsis "Voodoo client javascript")
- (description "Voodoo client javascript")
- (depends
-  (ocaml (>= 4.05))
-  js_of_ocaml
-  js_of_ocaml-ppx
-  js_of_ocaml-tyxml
-  js_of_ocaml-lwt
-  yojson
-  voodoo-web
-  ppx_deriving_yojson))
-
-(package
  (name voodoo-gen)
  (synopsis "Voodoo tool to generate tailwind-style output")
  (description "Voodoo tool to generate tailwind-style output")

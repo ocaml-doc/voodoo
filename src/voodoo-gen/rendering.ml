@@ -91,14 +91,22 @@ let render_markdown ~id ~output doc =
   | Ok page -> render_document ~output page
   | Error _ -> render_text ~id ~output doc
 
+let render_org ~id ~output doc =
+  let url = Odoc_document.Url.Path.from_identifier id in
+  match Markdown.read_org doc url with
+  | Ok page -> render_document ~output page
+  | Error _ -> render_text ~id ~output doc
+
 let render_other ~output ~parent ~otherdocs =
   docs_ids parent otherdocs >>= fun docs ->
   let errors =
     List.fold_left
       (fun acc (id, doc) ->
         let result =
-          if Fpath.get_ext doc = ".md" then render_markdown ~output ~id doc
-          else render_text ~output ~id doc
+          match Fpath.get_ext doc with
+          | ".md" -> render_markdown ~output ~id doc
+          | ".org" -> render_org ~output ~id doc
+          | _ -> render_text ~output ~id doc
         in
         match result with Ok _ -> acc | Error (`Msg m) -> (doc, m) :: acc)
       [] docs

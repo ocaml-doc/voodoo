@@ -62,9 +62,7 @@ and merge xs =
 
 and blocks xs = List.map block xs |> merge
 
-let read_md f url =
-  let name = Fpath.basename f in
-  Bos.OS.File.read f >>= fun content ->
+let of_content content ~name ~url =
   let md = Omd.of_string content in
   let intermediate = blocks md in
   let items = List.map (function It x -> x | Bl x -> Text x) intermediate in
@@ -91,6 +89,21 @@ let read_md f url =
             items;
             url;
           })
+
+let read_org f url =
+  let name = Fpath.basename f in
+  let fname = Fpath.to_string f in
+  let cmd =
+    Bos.Cmd.(
+      v "pandoc" % "--wrap" % "none" % "--from" % "org" % "--to" % "markdown"
+      % fname)
+  in
+  Bos.OS.Cmd.(run_out cmd |> to_string) >>= fun content ->
+  of_content content ~name ~url
+
+let read_md f url =
+  let name = Fpath.basename f in
+  Bos.OS.File.read f >>= fun content -> of_content content ~name ~url
 
 let read_plain f url =
   let name = Fpath.basename f in

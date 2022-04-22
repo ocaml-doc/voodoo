@@ -1,3 +1,3 @@
 pin-depends: [
-  ["pandoc.dev" "git+https://github.com/tatchi/opam-pandoc-bin#main"]
+  ["pandoc.dev" "git+https://github.com/tatchi/opam-pandoc-bin#5eeb415c7023323045371ad803f88365c7003b38"]
 ]

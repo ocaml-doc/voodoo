@@ -14,7 +14,7 @@ depends: [
   "fpath"
   "bos"
   "opam-format"
-  "odoc" {with-doc}
+  "odoc" {= "2.2.0" with-doc}
 ]
 build: [
   ["dune" "subst"] {dev}

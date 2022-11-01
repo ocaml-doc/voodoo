@@ -47,10 +47,11 @@ let rec block : 'attr block -> intermediate = function
   | Code_block (_, _a, b) ->
       Bl
         [
-          { desc = Source [ Elt [ { desc = Text b; attr = [] } ] ]; attr = [] };
+          { desc = Source ("markdown", [ Elt [ { desc = Text b; attr = [] } ] ]); attr = [] };
         ]
   | Html_block _ -> Bl []
   | Definition_list _ -> Bl []
+  | Table (_, _, _) -> Bl []
 
 and merge xs =
   List.fold_right
@@ -69,15 +70,14 @@ let of_content content ~name ~url =
   Ok
     (match items with
     | [] ->
-        Odoc_document.Types.Page.{ title = name; header = []; items = []; url }
+        Odoc_document.Types.Page.{ preamble = []; items = []; url }
     | (Heading _ as x) :: rest ->
         Odoc_document.Types.Page.
-          { title = name; header = [ x ]; items = rest; url }
+          { preamble = [ x ]; items = rest; url }
     | _ ->
         Odoc_document.Types.Page.
           {
-            title = name;
-            header =
+            preamble =
               [
                 Heading
                   {
@@ -111,10 +111,9 @@ let read_plain f url =
   Ok
     Odoc_document.Types.Page.
       {
-        title = name;
         url;
         items = [ Text [ { desc = Verbatim content; attr = [] } ] ];
-        header =
+        preamble =
           [
             Heading
               {

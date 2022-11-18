@@ -9,8 +9,6 @@ all:
 
 .PHONY: deps
 deps: ## Install development dependencies
-	opam install -y dune-release ocamlformat utop ocaml-lsp-server
-	npm install
 	opam install --deps-only --with-test --with-doc -y .
 
 .PHONY: create_switch
@@ -66,9 +64,16 @@ example: all ## Build an sample output
 	rm -rf _generated; mkdir _generated
 	cd _generated; opam exec -- dune exec -- voodoo-prep
 	cd _generated; opam exec -- dune exec -- voodoo-do -p ocaml-base-compiler -b
-	cd _generated; opam exec -- dune exec -- voodoo-gen -o output/
+	cd _generated; opam exec -- dune exec -- voodoo-gen -o output
 
 .PHONY: gen
 gen:
-	cd _generated; rm -rf output/
-	cd _generated; opam exec -- dune exec -- voodoo-gen -o output/
+	cd _generated; rm -rf output
+	cd _generated; opam exec -- dune exec -- voodoo-gen -o output
+
+.PHONY: serve
+serve:
+	opam exec -- dream-serve _generated/html
+
+.DEFAULT:
+	cd _generated; opam exec -- dune exec -- voodoo-do -p $@ -b

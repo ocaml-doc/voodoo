@@ -37,7 +37,7 @@ make example
 
 This will create a sample website with the documentation of `ocaml-base-compiler` in `_generated/output/p`.
 
-Here are some command that will be executed when running the above:
+Here are some commands that will be executed when running the above:
 
 ```bash
 $ mkdir _generated
@@ -73,14 +73,14 @@ In this case, we need to run `voodoo-do -p ocaml-base-compiler -b` first.
 Note that when being used in this mode, the `-b` (blessed) switch should
 always be passed to `voodoo-do`.
 
-At this point, to view the output, use `odoc` to generate the support files:
+At this point, to view the output, use `odoc` to generate the support files (mostly: copying `highlight.js` from https://highlightjs.org and `odoc.css`):
 
 ```bash
 $ cd ..
 $ odoc support-files -o _generated/html
 ```
 
-and load the package index in your browser (adjust version from your current switch):
+and load the package index in your browser (adjust `x.y.z` according to the current switch):
 
 ```bash
 $ open _generated/html/p/ocaml-base-compiler/4.14.0/doc/index.html
@@ -103,7 +103,7 @@ $ opam install dream-serve
 $ dream-serve _generated/html
 ```
 
-Load the package index in your browser (adjust version from your current switch):
+Load the package index in your browser (adjust `x.y.z` according to the current switch):
 
 ```bash
 $ open http://localhost:8080/p/ocaml-base-compiler/4.14.0/doc/index.html
@@ -115,3 +115,15 @@ documentation:
 ```
 make odoc
 ```
+
+### Summary
+
+1. Install packages to be documented in the current switch using `opam`
+1. Create `_generated` directory
+1. Run `voodoo-prep`. This creates the _ad-hoc_ directory structure inside `_generated` and populates it with `.cmt`, `.cmi`, `.cmti`, `.mld` from the current switch. Documentation files such as `.md`, `.html` and others are also copied.
+1. Run `voodoo-do` on each package or all at once. This triggers Odoc to generate the actual HTML documentation files.
+1. Run `voodoo-gen` to create the `_generated/output` directory
+1. Run `doc support-files -o _generated/html` to add css and styling to the `html` subdirectory
+1. Serve `_generated/html`
+
+`voodoo-*` commands must be called from the `_generated` directory.

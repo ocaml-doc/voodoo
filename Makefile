@@ -59,10 +59,15 @@ promote: ## Promote files to the source directory
 	dune build client/voodoo_client.bc.js --profile release
 	cp _build/default/client/voodoo_client.bc.js src/voodoo-gen/static/voodoo_client.bc.js
 
-.PHONY: example
-example: all ## Build an sample output
+_generated:
 	rm -rf _generated; mkdir _generated
+
+.PHONY: prep
+prep: _generated
 	cd _generated; opam exec -- dune exec -- voodoo-prep
+
+.PHONY: example
+example: all prep ## Build an sample output
 	cd _generated; opam exec -- dune exec -- voodoo-do -p ocaml-base-compiler -b
 	cd _generated; opam exec -- dune exec -- voodoo-gen -o output
 

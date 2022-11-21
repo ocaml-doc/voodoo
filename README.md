@@ -57,8 +57,9 @@ $ opam exec -- dune exec -- voodoo-do -p result -b
 $ opam exec -- dune exec -- voodoo-do ...
 ```
 
-If the packages are done out of dependency order, `voodoo-prep` will alert that there are
-missing dependencies:
+When new packages are installed in the current switch `voodoo-prep` needs to be executed in
+for `voodoo-do` to be able to process them. If the packages are done out of dependency order,
+ `voodoo-prep` will alert that there are missing dependencies:
 
 ```bash
 $ opam exec -- dune exec -- voodoo-do -p odoc -b

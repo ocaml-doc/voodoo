@@ -12,9 +12,9 @@ let process_package : Fpath.t -> Package.t -> Fpath.t list -> unit =
  fun root package files ->
   let dest = Package.prep_path package in
 
-  (* Some packages produce ocaml artefacts that can't be processed with the switch's
-      ocaml compiler - most notably the secondary compiler! This switch is intended to
-      be used to ignore those files *)
+  (* Some packages produce ocaml artefacts that can't be processed with the
+     switch's ocaml compiler - most notably the secondary compiler! This switch
+     is intended to be used to ignore those files *)
   let process_ocaml_artefacts =
     let _, name, _ = package in
     let package_blacklist = [ "ocaml-secondary-compiler" ] in

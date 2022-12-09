@@ -57,8 +57,8 @@ let pkg_contents pkg =
               else acc
             with _ ->
               acc
-              (* dose (and maybe others) sometimes creates a symlink to something that doesn't exist *)
-            )
+              (* dose (and maybe others) sometimes creates a symlink to
+                 something that doesn't exist *))
         | _ -> acc)
       changed []
   in

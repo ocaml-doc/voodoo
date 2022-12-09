@@ -7,8 +7,8 @@ module InputSelect = struct
     let ext = Fpath.get_ext path in
     match ext with ".cmti" -> 0 | ".cmt" -> 1 | ".cmi" -> 2 | _ -> 3
 
-  (* Given a list of Sourceinfo.t values, we need to find the 'best'
-     file for each, and return an Index.t of these *)
+  (* Given a list of Sourceinfo.t values, we need to find the 'best' file for
+     each, and return an Index.t of these *)
   let select sis =
     let h = Hashtbl.create (List.length sis) in
     List.iter

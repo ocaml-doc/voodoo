@@ -1,6 +1,4 @@
-(* Odoc documentation generator
-
-*)
+(* Odoc documentation generator *)
 open Cmdliner
 
 [@@@ocaml.warning "-3"]
@@ -36,7 +34,8 @@ module Prep = struct
        querying $(b,ocamlfind)."
     in
     let fpath_dir = conv_compose Fpath.of_string Fpath.to_string Arg.dir in
-    (* [some string] and not [some dir] because we don't need it to exist yet. *)
+    (* [some string] and not [some dir] because we don't need it to exist
+       yet. *)
     Arg.(value & opt_all fpath_dir [] & info [ "L" ] ~doc ~docv:"LIB_DIR")
 
   let universes =

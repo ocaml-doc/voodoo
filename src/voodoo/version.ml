@@ -1,4 +1,4 @@
-(* Version page  *)
+(* Version page *)
 
 (* Used to calculate the contents of the version page *)
 

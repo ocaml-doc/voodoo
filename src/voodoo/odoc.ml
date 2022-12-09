@@ -3,8 +3,8 @@ open Listm
 
 type compile_dep = { c_unit_name : string; c_digest : string }
 
-(** The name and optional digest of a dependency. Modules compiled with --no-alias-deps don't have
-    digests for purely aliased modules *)
+(** The name and optional digest of a dependency. Modules compiled with
+    \--no-alias-deps don't have digests for purely aliased modules *)
 
 type link_dep = {
   l_package : string;

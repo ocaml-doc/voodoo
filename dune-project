@@ -31,7 +31,7 @@
  (name voodoo-do)
  (synopsis "Voodoo compilation step")
  (description "Voodoo compilation step")
- (depends voodoo-lib voodoo-web odoc tyxml astring cmdliner yojson))
+ (depends voodoo-lib odoc tyxml astring cmdliner yojson))
 
 (package
  (name voodoo-gen)
@@ -52,9 +52,3 @@
   cmdliner
   yojson
   bos))
-
-(package
- (name voodoo-web)
- (synopsis "Voodoo web library shared between client and server")
- (description
-  "Contains everything that we'd like to reference in both the client and server contexts"))

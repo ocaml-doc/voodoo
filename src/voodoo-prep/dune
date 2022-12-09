@@ -1,5 +1,5 @@
 (executable
  (name prep)
- (public_name voodoo-prep)
- (package voodoo-prep)
+ (public_name voodoo.prep)
+ (package voodoo)
  (libraries cmdliner fpath bos opam-format))

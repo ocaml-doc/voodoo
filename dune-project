@@ -16,25 +16,7 @@
  (github jonludlam/voodoo))
 
 (package
- (name voodoo-lib)
- (synopsis "Voodoo library")
- (description "Voodoo library")
- (depends bos astring fpath opam-format sexplib yojson))
-
-(package
- (name voodoo-prep)
- (synopsis "Voodoo prep")
- (description "Voodoo prep")
- (depends cmdliner fpath bos opam-format))
-
-(package
- (name voodoo-do)
- (synopsis "Voodoo compilation step")
- (description "Voodoo compilation step")
- (depends voodoo-lib odoc tyxml astring cmdliner yojson))
-
-(package
- (name voodoo-gen)
+ (name voodoo)
  (synopsis "Voodoo tool to generate tailwind-style output")
  (description "Voodoo tool to generate tailwind-style output")
  (depends
@@ -42,14 +24,16 @@
    (>= 4.08.0))
   (omd
    (>= 2.0.0~alpha2))
-  pandoc
-  voodoo-lib
   (odoc
    (>= 2.1.0))
   (opam-format
    (>= 2.1.0~beta2))
+  (cmdliner
+   (>= 1.1.0))
+  pandoc
   tyxml
   astring
-  cmdliner
   yojson
-  bos))
+  bos
+  sexplib
+  fpath))

@@ -1,5 +1,5 @@
 (executable
  (name main)
  (public_name voodoo-gen)
- (package voodoo-gen)
- (libraries voodoo-gen.odoc_thtml cmdliner))
+ (package voodoo)
+ (libraries odoc_thtml cmdliner))

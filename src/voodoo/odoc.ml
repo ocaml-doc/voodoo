@@ -1,5 +1,4 @@
 (* Odoc *)
-open Listm
 
 type compile_dep = { c_unit_name : string; c_digest : string }
 
@@ -41,7 +40,7 @@ let compile_deps file =
       Unix.rename tmp_file (Fpath.to_string deps_file);
       lines
   in
-  let deps = lines >>= process_line in
+  let deps = List.concat_map process_line lines in
   let _, lname = Fpath.(split_base (rem_ext file)) in
   let name = Astring.String.Ascii.capitalize (Fpath.to_string lname) in
   match List.partition (fun d -> d.c_unit_name = name) deps with

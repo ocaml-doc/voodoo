@@ -39,7 +39,7 @@
  (description "Voodoo tool to generate tailwind-style output")
  (depends
   (ocaml
-    (>= 4.08.0))
+   (>= 4.08.0))
   (omd
    (>= 2.0.0~alpha2))
   pandoc

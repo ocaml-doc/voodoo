@@ -1,7 +1,3 @@
-(* parse output from ocamlobjinfo *)
-
-open Result
-
 let bind r f = match r with Ok v -> f v | Error _ as e -> e
 let ( >>= ) = bind
 let get_ok = function Ok x -> x | _ -> failwith "not ok"
@@ -31,7 +27,7 @@ let process_one file =
   in
   (library_name, units)
 
-let process packages = Ok (List.map process_one packages)
+let process packages = List.map process_one packages
 
 let find package =
   let path = Package.prep_path package in

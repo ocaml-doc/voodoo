@@ -33,7 +33,6 @@
  (description "Voodoo compilation step")
  (depends
   voodoo-lib
-  voodoo-web
   odoc ; = 2.2.0 pinned by the pipeline
   tyxml
   astring
@@ -61,9 +60,3 @@
   sexplib
   fpath
   (ppx_deriving_yaml :with-test)))
-
-(package
- (name voodoo-web)
- (synopsis "Voodoo web library shared between client and server")
- (description
-  "Contains everything that we'd like to reference in both the client and server contexts"))

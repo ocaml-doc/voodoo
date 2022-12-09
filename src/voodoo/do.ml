@@ -1,7 +1,5 @@
 (* do! - perform the odoc compile and link stages *)
 
-open Listm
-
 module InputSelect = struct
   let order path =
     let ext = Fpath.get_ext path in
@@ -176,9 +174,9 @@ let run pkg_name is_blessed failed =
   let opam_file = match Opam.find package with Ok f -> Some f | _ -> None in
 
   let libraries =
-    match Ocamlobjinfo.(find package >>= process) with
-    | Ok x -> x
-    | Error _ -> []
+    match Ocamlobjinfo.find package with
+    | Ok packages -> Ocamlobjinfo.process packages
+    | Error _err -> []
   in
 
   let package_mlds, otherdocs = Package_mlds.find package in
@@ -192,7 +190,7 @@ let run pkg_name is_blessed failed =
 
   let () = Package_info.gen ~output:output_path ~dune ~libraries () in
 
-  let sis = prep >>= get_source_info parent in
+  let sis = List.concat_map (get_source_info parent) prep in
   let this_index = InputSelect.select sis in
   Index.write this_index parent;
   let index = Index.combine this_index index in

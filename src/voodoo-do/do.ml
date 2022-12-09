@@ -1,6 +1,20 @@
-(* do!
- *
- *)
+(** This module defines a command line interface for a program called
+    [voodoo-do].
+
+    The program takes four optional arguments:
+
+    - [-p] or [--package]: a string that specifies the name of the package to
+      process
+    - [-b] or [--blessed]: a flag that indicates whether the package should be
+      marked as "blessed"
+    - [-s] or [--switch]: a string that specifies the name of the Opam switch to
+      use
+    - [--failed]: a flag that indicates that the build was a failed
+
+    The [run] function is defined to process the package according to these
+    arguments. If no package name is specified, the function runs
+    [Do.run_all()]. Otherwise, it runs [Do.run p blessed failed], where [p],
+    [blessed], and [failed] are the values of the corresponding arguments. *)
 
 open Voodoo_lib
 

@@ -1,6 +1,5 @@
 (executable
- (name do)
+ (name main)
  (public_name voodoo-do)
  (package voodoo)
- (modules do)
- (libraries voodoo_lib cmdliner))
+ (libraries voodoo cmdliner))

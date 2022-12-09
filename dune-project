@@ -31,7 +31,6 @@
   (cmdliner
    (>= 1.1.0))
   pandoc
-  tyxml
   astring
   yojson
   bos

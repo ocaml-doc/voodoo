@@ -57,21 +57,6 @@ let docs_ids parent docs =
           Ok result)
   | _ -> Error (`Msg "Parent is not a page!")
 
-let otherversions parent vs =
-  Odoc_file.load parent >>= fun root ->
-  match root.content with
-  | Page_content odoctree -> (
-      match odoctree.Odoc_model.Lang.Page.name with
-      | { iv = `LeafPage _; _ } -> Error (`Msg "Parent is a leaf!")
-      | { iv = `Page (parent_id, _); _ } ->
-          let result =
-            List.map
-              (fun v -> `Page (parent_id, Odoc_model.Names.PageName.make_std v))
-              vs
-          in
-          Ok result)
-  | _ -> Error (`Msg "Parent is not a page!")
-
 let render ~output file =
   let open Odoc_document in
   let ( let* ) = Result.bind in

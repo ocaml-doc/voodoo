@@ -48,3 +48,14 @@ let copy src dst =
   let open Result in
   let ( >>= ) m f = match m with Ok x -> f x | Error y -> Error y in
   Bos.OS.File.read src >>= Bos.OS.File.write dst
+
+let write_file filename lines =
+  let dir = fst (Fpath.split_base filename) in
+  mkdir_p dir;
+  let oc = open_out (Fpath.to_string filename) in
+  List.iter (fun line -> Printf.fprintf oc "%s\n" line) lines;
+  close_out oc
+
+let cp src dst =
+  Format.eprintf "%s -> %s\n%!" src dst;
+  assert (lines_of_process Cmd.(v "cp" % src % dst) = [])

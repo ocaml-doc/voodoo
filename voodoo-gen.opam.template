@@ -1,4 +1,4 @@
 pin-depends: [
-  ["pandoc.dev" "git+https://github.com/tatchi/opam-pandoc-bin#5eeb415c7023323045371ad803f88365c7003b38"]
+  ["pandoc.dev" "git+https://github.com/tmattio/opam-pandoc-bin#15f99609fd615c2259ed1937448c543cfcaf65e1"]
   ["odoc.dev" "git+https://github.com/ocaml/odoc#503a2e895c211f555ff1a5e0ae11f2ab1697db73"]
 ]

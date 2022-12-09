@@ -12,13 +12,13 @@ let document_of_odocl ~syntax input =
   | Unit_content odoctree ->
       Ok (Renderer.document_of_compilation_unit ~syntax odoctree)
 
-let render_document ~output:root_dir odoctree =
+let render_document ~output odoctree =
   let aux pages =
-    Odoc_document.Renderer.traverse pages ~f:(fun filename content ->
-        let filename = Fpath.normalize @@ Fs.File.append root_dir filename in
-        let directory = Fs.File.dirname filename in
+    Odoc_document.Renderer.traverse pages ~f:(fun file_path content ->
+        let output_path = output file_path in
+        let directory = Fs.File.dirname output_path in
         Fs.Directory.mkdir_p directory;
-        let oc = open_out (Fs.File.to_string filename) in
+        let oc = open_out (Fs.File.to_string output_path) in
         let fmt = Format.formatter_of_out_channel oc in
         Format.fprintf fmt "%t@?" content;
         close_out oc)
@@ -91,14 +91,22 @@ let render_markdown ~id ~output doc =
   | Ok page -> render_document ~output page
   | Error _ -> render_text ~id ~output doc
 
+let render_org ~id ~output doc =
+  let url = Odoc_document.Url.Path.from_identifier id in
+  match Markdown.read_org doc url with
+  | Ok page -> render_document ~output page
+  | Error _ -> render_text ~id ~output doc
+
 let render_other ~output ~parent ~otherdocs =
   docs_ids parent otherdocs >>= fun docs ->
   let errors =
     List.fold_left
       (fun acc (id, doc) ->
         let result =
-          if Fpath.get_ext doc = ".md" then render_markdown ~output ~id doc
-          else render_text ~output ~id doc
+          match Fpath.get_ext doc with
+          | ".md" -> render_markdown ~output ~id doc
+          | ".org" -> render_org ~output ~id doc
+          | _ -> render_text ~output ~id doc
         in
         match result with Ok _ -> acc | Error (`Msg m) -> (doc, m) :: acc)
       [] docs

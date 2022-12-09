@@ -43,7 +43,7 @@ let get_ok = function
       Format.eprintf "get_ok: Failure! msg=%s\n%!" m;
       failwith "get_ok: Not OK"
 
-let generate_pkgver output name_filter version_filter =
+let generate_pkgver output_dir name_filter version_filter =
   let linkedpath = Fpath.(v "linked") in
   match
     Bos.OS.Dir.fold_contents ~elements:`Dirs
@@ -103,11 +103,26 @@ let generate_pkgver output name_filter version_filter =
             let otherdocs = files.otherdocs in
             let files = files.odocls in
             Format.eprintf "Found %d files\n%!" (List.length files);
+            let output file_path =
+              let p, ext = Fpath.split_ext ~multi:true file_path in
+              let extensions = String.split_on_char '.' ext |> List.rev in
+              let filename = Fpath.filename p |> String.uppercase_ascii in
+              let output_path =
+                match (filename, extensions) with
+                | "README", "html" :: _ -> Fpath.set_ext "html" p ~multi:true
+                | "README", "json" :: "toc" :: _ ->
+                    Fpath.set_ext "toc.json" p ~multi:true
+                | _ -> file_path
+              in
+              Fpath.normalize @@ Odoc_odoc.Fs.File.append output_dir output_path
+            in
             let paths =
               List.rev_map (Odoc_thtml.render ~output) files
               |> List.rev_map get_ok |> List.flatten
             in
-            let foutput = Fpath.v (Odoc_odoc.Fs.Directory.to_string output) in
+            let foutput =
+              Fpath.v (Odoc_odoc.Fs.Directory.to_string output_dir)
+            in
             let output_prefix =
               match universe with
               | None -> Fpath.(foutput / "p" / pkg_name / ver)

@@ -1,18 +1,6 @@
 (* util.ml *)
 open Bos
 
-let get_ok = function Result.Ok x -> x | Error _ -> failwith "get_ok: Not OK"
-
-(* Not present on 4.02.3 *)
-let protect ~finally f =
-  try
-    let result = f () in
-    finally ();
-    result
-  with e ->
-    finally ();
-    raise e
-
 let lines_of_channel ic =
   let rec inner acc =
     try

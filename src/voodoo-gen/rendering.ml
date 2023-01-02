@@ -23,12 +23,8 @@ let render_document ~output odoctree =
         Format.fprintf fmt "%t@?" content;
         close_out oc)
   in
-  aux
-  @@ Odoc_html.Generator.render
-       ~config:
-         (Odoc_html.Config.v ~semantic_uris:true ~indent:false ~flat:false
-            ~open_details:true ~as_json:true ())
-       odoctree;
+  aux @@ Generator.render_content ~indent:false odoctree;
+  aux @@ Generator.render_toc ~indent:false odoctree;
   Ok ()
 
 let docs_ids parent docs =
@@ -36,20 +32,15 @@ let docs_ids parent docs =
   match root.content with
   | Page_content odoctree -> (
       match odoctree.Odoc_model.Lang.Page.name with
-      | { iv = `LeafPage _; _ } -> Error (`Msg "Parent is a leaf!")
-      | { iv = `Page (maybe_container_page, _); _ } as parent_id ->
+      | `LeafPage _ -> Error (`Msg "Parent is a leaf!")
+      | `Page _ as parent_id ->
           let result =
             List.map
               (fun doc ->
                 let id =
                   let basename = Fpath.basename doc in
-                  {
-                    parent_id with
-                    iv =
-                      `LeafPage
-                        ( maybe_container_page,
-                          Odoc_model.Names.PageName.make_std basename );
-                  }
+                  `LeafPage
+                    (Some parent_id, Odoc_model.Names.PageName.make_std basename)
                 in
                 (id, doc))
               docs
@@ -62,8 +53,8 @@ let otherversions parent vs =
   match root.content with
   | Page_content odoctree -> (
       match odoctree.Odoc_model.Lang.Page.name with
-      | { iv = `LeafPage _; _ } -> Error (`Msg "Parent is a leaf!")
-      | { iv = `Page (parent_id, _); _ } ->
+      | `LeafPage _ -> Error (`Msg "Parent is a leaf!")
+      | `Page (parent_id, _) ->
           let result =
             List.map
               (fun v -> `Page (parent_id, Odoc_model.Names.PageName.make_std v))

@@ -39,5 +39,4 @@ build: [
 dev-repo: "git+https://github.com/jonludlam/voodoo.git"
 pin-depends: [
   ["pandoc.dev" "git+https://github.com/tatchi/opam-pandoc-bin#5eeb415c7023323045371ad803f88365c7003b38"]
-  ["odoc.dev" "git+https://github.com/ocaml/odoc#503a2e895c211f555ff1a5e0ae11f2ab1697db73"]
 ]

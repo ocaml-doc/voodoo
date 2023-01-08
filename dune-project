@@ -1,26 +1,25 @@
-(lang dune 2.8)
+(lang dune 3.0)
 
 (name voodoo)
-
-(version 0.0.0)
 
 (generate_opam_files true)
 
 (cram enable)
 
-(maintainers "nobody@nowhere.com")
+(maintainers "Thibaut Mattio" "Sabine Schmaltz")
 
-(authors "Jon Ludlam" "Jules Aguillon")
+(authors "Jon Ludlam" "Jules Aguillon" "Lucas Pluvinage")
 
 (license ISC)
 
 (source
- (github jonludlam/voodoo))
+ (github ocaml-doc/voodoo))
 
 (package
  (name voodoo-lib)
- (synopsis "Voodoo library")
- (description "Voodoo library")
+ (synopsis "OCaml.org's package documentation generator (library)")
+ (description
+  "Voodoo is an odoc driver used to generate OCaml.org's package documentation. voodoo-lib is the base library.")
  (depends
   (ocaml
    (>= 4.08.0))
@@ -34,8 +33,9 @@
 
 (package
  (name voodoo-prep)
- (synopsis "Voodoo prep")
- (description "Voodoo prep")
+ (synopsis "OCaml.org's package documentation generator (preparation step)")
+ (description
+  "Voodoo is an odoc driver used to generate OCaml.org's package documentation. voodoo-prep runs the preparation step.")
  (depends
   (ocaml
    (>= 4.08.0))
@@ -46,8 +46,9 @@
 
 (package
  (name voodoo-do)
- (synopsis "Voodoo compilation step")
- (description "Voodoo compilation step")
+ (synopsis "OCaml.org's package documentation generator (compilation step)")
+ (description
+  "Voodoo is an odoc driver used to generate OCaml.org's package documentation. voodoo-do runs the compilation step.")
  (depends
   (ocaml
    (>= 4.08.0))
@@ -60,8 +61,9 @@
 
 (package
  (name voodoo-gen)
- (synopsis "Voodoo generate package documentation")
- (description "Voodoo generate package documentation")
+ (synopsis "OCaml.org's package documentation generator (generation step)")
+ (description
+  "Voodoo is an odoc driver used to generate OCaml.org's package documentation. voodoo-gen generates the package documentation.")
  (depends
   (ocaml
    (>= 4.08.0))

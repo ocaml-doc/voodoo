@@ -1,0 +1,2 @@
+(cram
+ (deps %{bin:voodoo-prep} %{bin:voodoo-gen} %{bin:voodoo-do}))

@@ -1,5 +1,7 @@
 (* do! - perform the odoc compile and link stages *)
 
+open Voodoo
+
 module InputSelect = struct
   let order path =
     let ext = Fpath.get_ext path in
@@ -86,7 +88,7 @@ let package_info_of_fpath p =
 
 let find_universe_and_version pkg_name =
   let universes =
-    Bos.OS.Dir.contents Fpath.(Paths.prep / "universes") |> Util.get_ok
+    Bos.OS.Dir.contents Fpath.(Paths.prep / "universes") |> Result.get_ok
   in
   let u =
     List.find
@@ -97,7 +99,7 @@ let find_universe_and_version pkg_name =
       universes
   in
   let version =
-    Bos.OS.Dir.contents ~rel:true Fpath.(u / pkg_name) |> Util.get_ok
+    Bos.OS.Dir.contents ~rel:true Fpath.(u / pkg_name) |> Result.get_ok
   in
   match (Fpath.segs u, version) with
   | _ :: _ :: u :: _, [ version ] -> Some (u, Fpath.to_string version)
@@ -110,11 +112,11 @@ let run pkg_name is_blessed failed =
   (* Remove old pages *)
   let () =
     Bos.OS.File.delete Fpath.(Paths.compile / "page-packages.odoc")
-    |> Util.get_ok
+    |> Result.get_ok
   in
   let () =
     Bos.OS.File.delete Fpath.(Paths.compile / "page-universes.odoc")
-    |> Util.get_ok
+    |> Result.get_ok
   in
 
   let universe, version =
@@ -134,7 +136,7 @@ let run pkg_name is_blessed failed =
       (fun p acc ->
         if is_interesting p && right_package p then p :: acc else acc)
       [] Paths.prep
-    |> Util.get_ok
+    |> Result.get_ok
   in
   let modules =
     List.fold_left
@@ -252,14 +254,14 @@ let run pkg_name is_blessed failed =
   List.iter (fun p -> Format.eprintf "dest: %a\n%!" Fpath.pp p) otherdocs;
   List.iter (Odoc.html output) odocls;
   (* Odoc.voodoo_gen Fpath.(output / "tailwind") pkg_name version; *)
-  let () = Bos.OS.File.delete (Fpath.v "compile/page-p.odoc") |> Util.get_ok in
-  let () = Bos.OS.File.delete (Fpath.v "compile/page-u.odoc") |> Util.get_ok in
+  let () = Bos.OS.File.delete (Fpath.v "compile/page-p.odoc") |> Result.get_ok in
+  let () = Bos.OS.File.delete (Fpath.v "compile/page-u.odoc") |> Result.get_ok in
   let () =
     Bos.OS.File.delete (Fpath.v ("compile/p/page-" ^ pkg_name ^ ".odoc"))
-    |> Util.get_ok
+    |> Result.get_ok
   in
   if failed then
-    Bos.OS.File.write Fpath.(output_path / "failed") "failed" |> Util.get_ok;
+    Bos.OS.File.write Fpath.(output_path / "failed") "failed" |> Result.get_ok;
   ()
 
 let run_all () =

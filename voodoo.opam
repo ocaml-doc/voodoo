@@ -9,7 +9,7 @@ license: "ISC"
 homepage: "https://github.com/ocaml-doc/voodoo"
 bug-reports: "https://github.com/ocaml-doc/voodoo/issues"
 depends: [
-  "dune" {>= "3.6"}
+  "dune" {>= "3.0"}
   "ocaml" {>= "4.08.0"}
   "omd" {>= "2.0.0~alpha3"}
   "odoc" {>= "2.2.0"}

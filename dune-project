@@ -4,6 +4,8 @@
 
 (version 0.0.0)
 
+(cram enable)
+
 (generate_opam_files true)
 
 (maintainers "nobody@nowhere.com")

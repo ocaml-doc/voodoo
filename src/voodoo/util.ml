@@ -12,16 +12,6 @@ let is_hidden s =
   in
   aux 0
 
-(* Not present on 4.02.3 *)
-let protect ~finally f =
-  try
-    let result = f () in
-    finally ();
-    result
-  with e ->
-    finally ();
-    raise e
-
 let lines_of_channel ic =
   let rec inner acc =
     try

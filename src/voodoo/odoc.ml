@@ -55,60 +55,6 @@ let compile_deps file =
       Format.eprintf "Failed to find digest for self (%s)\n%!" name;
       None
 
-let link_deps dir =
-  let deps_file = Fpath.(dir / "deps") in
-  let process_line line =
-    Format.eprintf "line: %s\n%!" line;
-    match Astring.String.cuts ~sep:" " line with
-    | [ parent_path; l_name; l_digest ] -> (
-        match Astring.String.cuts ~sep:"/" parent_path with
-        | "u" :: universe :: l_package :: l_version :: _ ->
-            [
-              {
-                l_package;
-                l_name;
-                l_digest;
-                l_version;
-                l_universe = Some universe;
-              };
-            ]
-        | "p" :: l_package :: l_version :: _ ->
-            [ { l_package; l_name; l_digest; l_version; l_universe = None } ]
-        | _ -> [])
-    | _ -> []
-  in
-  let exists = Sys.file_exists (Fpath.to_string deps_file) in
-  let lines =
-    if exists then (
-      let ic = open_in (Fpath.to_string deps_file) in
-      let lines = Util.lines_of_channel ic in
-      close_in ic;
-      lines)
-    else
-      let lines =
-        Util.lines_of_process
-          Bos.Cmd.(v "odoc" % "link-deps" % Fpath.to_string dir)
-      in
-      let tmp_file = Fpath.to_string (Fpath.add_ext "tmp" deps_file) in
-      let oc = open_out tmp_file in
-      List.iter (fun l -> Printf.fprintf oc "%s\n" l) lines;
-      close_out oc;
-      Unix.rename tmp_file (Fpath.to_string deps_file);
-      lines
-  in
-  List.concat_map process_line lines
-
-let generate_targets odocl ty =
-  let targets lang =
-    Bos.Cmd.(
-      v "odoc" % (lang ^ "-targets") % Fpath.to_string odocl % "--output-dir"
-      % lang)
-  in
-  match ty with
-  | `Html -> Util.lines_of_process (targets "html")
-  | `Latex -> Util.lines_of_process (targets "latex")
-  | `Man -> Util.lines_of_process (targets "man")
-
 type child =
   | CModule of string (* module name, e.g. 'String' *)
   | CPage of string
@@ -164,13 +110,4 @@ let html output path =
       v "odoc" % "html-generate" % "--indent" % Fpath.to_string path % "-o"
       % Fpath.to_string output)
   in
-  Util.lines_of_process cmd |> ignore
-
-let voodoo_gen output name version =
-  let cmd =
-    Bos.Cmd.(
-      v "voodoo-gen" % "pkgver" % "-o" % Fpath.to_string output % "-n" % name
-      % "--pkg-version" % version)
-  in
-  Format.eprintf "Odoc.gen: %a\n%!" Bos.Cmd.pp cmd;
   Util.lines_of_process cmd |> ignore

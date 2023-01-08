@@ -51,5 +51,3 @@ let of_source_infos sis =
     List.fold_left (fun t si -> M.add si.Sourceinfo.digest si t) M.empty sis
   in
   { intern; extern = M.empty }
-
-let iter = M.iter

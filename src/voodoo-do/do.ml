@@ -2,7 +2,7 @@
  *
  *)
 
-open Voodoo_lib
+open Voodoo
 
 [@@@ocaml.warning "-3"]
 

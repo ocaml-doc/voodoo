@@ -18,7 +18,8 @@
 (package
  (name voodoo)
  (synopsis "OCaml.org's package documentation generator")
- (description "Voodoo is an odoc driver used to generate OCaml.org's package documentation.")
+ (description
+  "Voodoo is an odoc driver used to generate OCaml.org's package documentation.")
  (depends
   (ocaml
    (>= 4.08.0))
@@ -36,4 +37,5 @@
   sexplib
   fpath
   (ppx_deriving_yaml :with-test)
-  (base :with-test)))
+  (base :with-test)
+  (menhir :with-test)))

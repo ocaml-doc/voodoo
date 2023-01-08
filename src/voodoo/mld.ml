@@ -33,7 +33,7 @@ let output_odocl mld =
   Fpath.(output_dir ~base:Paths.link mld / ("page-" ^ mld.name ^ ".odocl"))
 
 let rec compile mld =
-  let () = Bos.OS.File.delete (output_file mld) |> Util.get_ok in
+  let () = Bos.OS.File.delete (output_file mld) |> Result.get_ok in
   let extra_include, parent =
     match mld.parent with
     | None -> ([], None)

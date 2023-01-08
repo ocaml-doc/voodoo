@@ -254,8 +254,12 @@ let run pkg_name is_blessed failed =
   List.iter (fun p -> Format.eprintf "dest: %a\n%!" Fpath.pp p) otherdocs;
   List.iter (Odoc.html output) odocls;
   (* Odoc.voodoo_gen Fpath.(output / "tailwind") pkg_name version; *)
-  let () = Bos.OS.File.delete (Fpath.v "compile/page-p.odoc") |> Result.get_ok in
-  let () = Bos.OS.File.delete (Fpath.v "compile/page-u.odoc") |> Result.get_ok in
+  let () =
+    Bos.OS.File.delete (Fpath.v "compile/page-p.odoc") |> Result.get_ok
+  in
+  let () =
+    Bos.OS.File.delete (Fpath.v "compile/page-u.odoc") |> Result.get_ok
+  in
   let () =
     Bos.OS.File.delete (Fpath.v ("compile/p/page-" ^ pkg_name ^ ".odoc"))
     |> Result.get_ok

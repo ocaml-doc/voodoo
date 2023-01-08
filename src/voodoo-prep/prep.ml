@@ -61,7 +61,9 @@ let process_package : Fpath.t -> Package.t -> Fpath.t list -> unit =
     (fun (src, dst) ->
       let dir, _ = Fpath.split_base dst in
       Util.mkdir_p dir;
-      match Util.copy src dst with Ok () -> () | Error (`Msg err) -> failwith err)
+      match Util.copy src dst with
+      | Ok () -> ()
+      | Error (`Msg err) -> failwith err)
     actions.copy;
   List.iter
     (fun fpath ->

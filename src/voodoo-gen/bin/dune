@@ -1,4 +1,0 @@
-(executable
- (name main)
- (public_name voodoo-gen)
- (libraries odoc_thtml cmdliner))

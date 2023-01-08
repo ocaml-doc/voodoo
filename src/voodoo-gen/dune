@@ -1,12 +1,14 @@
-(library
- (name odoc_thtml)
- (public_name voodoo.odoc_thtml)
+(executable
+ (name main)
+ (public_name voodoo-gen)
+ (package voodoo)
  (libraries
+  voodoo
   odoc.model
   odoc.document
   odoc.odoc
   omd
-  tyxml
   opam-format
   bos
-  yojson))
+  yojson
+  cmdliner))

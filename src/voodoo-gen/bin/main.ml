@@ -25,13 +25,9 @@ let output =
     & opt (some (convert_directory ~create:true ())) None
     & info ~docs ~docv:"DIR" ~doc [ "o"; "output-dir" ])
 
-type files = {
-  opam : Fpath.t option;
-  otherdocs : Fpath.t list;
-  odocls : Fpath.t list;
-}
+type files = { otherdocs : Fpath.t list; odocls : Fpath.t list }
 
-let empty = { opam = None; otherdocs = []; odocls = [] }
+let empty = { otherdocs = []; odocls = [] }
 
 let get_ok = function
   | Result.Ok x -> x
@@ -79,7 +75,7 @@ let generate_pkgver output_dir name_filter version_filter =
               | ".odocl" -> { files with odocls = p :: files.odocls }
               | _ -> (
                   match Fpath.basename p with
-                  | "opam" -> { files with opam = Some p }
+                  | "opam" -> files
                   | "content.tar" -> files
                   | _ -> { files with otherdocs = p :: files.otherdocs }))
             empty pkg_path

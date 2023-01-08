@@ -2,6 +2,8 @@
  *
  *)
 
+open Voodoo
+
 type actions = {
   copy : (Fpath.t * Fpath.t) list;
   info : Fpath.t list;
@@ -59,7 +61,7 @@ let process_package : Fpath.t -> Package.t -> Fpath.t list -> unit =
     (fun (src, dst) ->
       let dir, _ = Fpath.split_base dst in
       Util.mkdir_p dir;
-      Util.cp (Fpath.to_string src) (Fpath.to_string dst))
+      match Util.copy src dst with Ok () -> () | Error (`Msg err) -> failwith err)
     actions.copy;
   List.iter
     (fun fpath ->

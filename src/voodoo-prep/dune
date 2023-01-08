@@ -1,4 +1,4 @@
 (executable
  (name main)
  (public_name voodoo-prep)
- (libraries cmdliner fpath bos opam-format))
+ (libraries voodoo cmdliner fpath bos opam-format))

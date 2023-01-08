@@ -14,7 +14,7 @@ let conv_compose ?docv parse to_string c =
   conv ~docv (parse, print)
 
 (* Just to find the location of all relevant ocaml cmt/cmti/cmis *)
-let read_lib_dir () = Opam.lib ()
+let read_lib_dir () = Voodoo.Opam.lib ()
 
 module Prep = struct
   let switch =
@@ -27,7 +27,7 @@ module Prep = struct
       & info [ "s"; "switch" ] ~doc ~docv:"SWITCH")
 
   let prep lib_dir switch universes =
-    Opam.switch := switch;
+    Voodoo.Opam.switch := switch;
     Prep.run lib_dir universes
 
   let lib_dir =

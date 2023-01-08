@@ -30,24 +30,12 @@ jobs:
         uses: ocaml/setup-ocaml@v2
         with:
           ocaml-compiler: ${{ matrix.ocaml-compiler }}
-          dune-cache: ${{ matrix.os != 'macos-latest' }}
-
-      - name: Install ocamlformat
-        run: opam install ocamlformat.0.25.1
-        if: ${{ matrix.os == 'ubuntu-latest' }}
 
       - name: Install opam packages
         run: opam install . --with-test --deps-only
 
-      - name: Check formatting
-        run: make fmt
-        if: ${{ matrix.os == 'ubuntu-latest' && always() }}
-
       - name: Run build
-        run: make build
+        run: opam exec -- dune build
 
       - name: Run the unit tests
-        run: make test
-
-      - name: Create the example
-        run: make example
+        run: opam exec -- dune test

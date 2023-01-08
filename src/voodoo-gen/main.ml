@@ -111,7 +111,7 @@ let generate_pkgver output_dir name_filter version_filter =
               Fpath.normalize @@ Odoc_odoc.Fs.File.append output_dir output_path
             in
             let paths =
-              List.rev_map (Odoc_thtml.Rendering.render ~output) files
+              List.rev_map (Rendering.render ~output) files
               |> List.rev_map get_ok |> List.flatten
             in
             let foutput =
@@ -124,10 +124,8 @@ let generate_pkgver output_dir name_filter version_filter =
                   Fpath.(foutput / "u" / universe / pkg_name / ver)
             in
 
-            Odoc_thtml.Package_info.gen ~input:parent ~output:output_prefix
-              paths;
-            Odoc_thtml.Rendering.render_other ~parent ~otherdocs ~output
-            |> get_ok;
+            Package_info.gen ~input:parent ~output:output_prefix paths;
+            Rendering.render_other ~parent ~otherdocs ~output |> get_ok;
 
             let status = if failed then Failed else Built in
             if Option.is_none universe then
@@ -136,7 +134,7 @@ let generate_pkgver output_dir name_filter version_filter =
                 (yojson_of_status status);
 
             match
-              Odoc_thtml.Search_index.generate_index
+              Search_index.generate_index
                 [
                   pkg_path |> Fpath.to_string
                   |> Odoc_odoc.Fs.Directory.of_string;

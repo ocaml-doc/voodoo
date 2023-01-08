@@ -21,6 +21,7 @@ depends: [
   "sexplib"
   "fpath"
   "ppx_deriving_yaml" {with-test}
+  "base" {with-test}
 ]
 build: [
   ["dune" "subst"] {dev}

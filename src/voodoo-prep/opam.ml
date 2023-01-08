@@ -16,10 +16,6 @@ let rec get_switch () =
       get_switch ()
   | Some s -> s
 
-let lib () =
-  Util.lines_of_process Cmd.(opam % "var" % "--switch" % get_switch () % "lib")
-  |> List.hd
-
 let prefix () =
   Util.lines_of_process
     Cmd.(opam % "var" % "--switch" % get_switch () % "prefix")

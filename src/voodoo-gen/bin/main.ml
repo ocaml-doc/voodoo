@@ -113,7 +113,7 @@ let generate_pkgver output_dir name_filter version_filter =
               Fpath.normalize @@ Odoc_odoc.Fs.File.append output_dir output_path
             in
             let paths =
-              List.rev_map (Odoc_thtml.render ~output) files
+              List.rev_map (Odoc_thtml.Rendering.render ~output) files
               |> List.rev_map get_ok |> List.flatten
             in
             let foutput =
@@ -126,9 +126,10 @@ let generate_pkgver output_dir name_filter version_filter =
                   Fpath.(foutput / "u" / universe / pkg_name / ver)
             in
 
-            Odoc_thtml.gen_package_info ~input:parent ~output:output_prefix
+            Odoc_thtml.Package_info.gen ~input:parent ~output:output_prefix
               paths;
-            Odoc_thtml.render_other ~parent ~otherdocs ~output |> get_ok;
+            Odoc_thtml.Rendering.render_other ~parent ~otherdocs ~output
+            |> get_ok;
 
             if Option.is_none universe then
               Bos.OS.File.write
@@ -137,7 +138,7 @@ let generate_pkgver output_dir name_filter version_filter =
               |> get_ok;
 
             match
-              Odoc_thtml.render_index
+              Odoc_thtml.Search_index.generate_index
                 [
                   pkg_path |> Fpath.to_string
                   |> Odoc_odoc.Fs.Directory.of_string;

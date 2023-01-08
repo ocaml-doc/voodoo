@@ -32,7 +32,6 @@
    (>= 2.1.0~beta2))
   (cmdliner
    (>= 1.1.0))
-  pandoc
   astring
   yojson
   bos

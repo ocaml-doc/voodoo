@@ -49,8 +49,8 @@
   (ocaml
     (>= 4.08.0))
   (omd
-   (= 2.0.0~alpha2))
-  voodoo-lib
+   (= 2.0.0~alpha3))
+   voodoo-lib
   (odoc
    (= 2.2.0))
   (opam-format
@@ -59,7 +59,10 @@
   astring
   cmdliner
   yojson
-  bos))
+  bos
+  sexplib
+  fpath
+  (ppx_deriving_yaml :with-test)))
 
 (package
  (name voodoo-web)

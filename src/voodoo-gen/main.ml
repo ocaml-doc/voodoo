@@ -117,7 +117,7 @@ let generate_pkgver output_dir name_filter version_filter =
               Fpath.normalize @@ Odoc_odoc.Fs.File.append output_dir output_path
             in
             let paths =
-              List.rev_map (Odoc_thtml.render ~output) files
+              List.rev_map (Rendering.render ~output) files
               |> List.rev_map get_ok |> List.flatten
             in
             let foutput =
@@ -129,9 +129,8 @@ let generate_pkgver output_dir name_filter version_filter =
               | Some universe ->
                   Fpath.(foutput / "u" / universe / pkg_name / ver)
             in
-            Odoc_thtml.gen_package_info ~input:parent ~output:output_prefix
-              paths;
-            Odoc_thtml.render_other ~parent ~otherdocs ~output |> get_ok;
+            Package_info.gen ~input:parent ~output:output_prefix paths;
+            Rendering.render_other ~parent ~otherdocs ~output |> get_ok;
             if Option.is_none universe then
               Bos.OS.File.write
                 Fpath.(output_prefix / "status.json")

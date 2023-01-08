@@ -1,14 +1,4 @@
 (executable
  (name main)
  (public_name voodoo-gen)
- (package voodoo)
- (libraries
-  voodoo
-  odoc.model
-  odoc.document
-  odoc.odoc
-  omd
-  opam-format
-  bos
-  yojson
-  cmdliner))
+ (libraries odoc.odoc omd bos yojson cmdliner))

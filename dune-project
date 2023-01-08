@@ -63,4 +63,5 @@
   sexplib
   fpath
   (conf-jq :with-test)
-  (ppx_deriving_yaml :with-test)))
+  (ppx_deriving_yaml :with-test)
+  (base :with-test)))

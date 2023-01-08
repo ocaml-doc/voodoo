@@ -1,26 +1,24 @@
-(lang dune 2.8)
+(lang dune 3.0)
 
 (name voodoo)
-
-(version 0.0.0)
 
 (cram enable)
 
 (generate_opam_files true)
 
-(maintainers "nobody@nowhere.com")
+(maintainers "Thibaut Mattio" "Sabine Schmaltz")
 
-(authors "Jon Ludlam" "Jules Aguillon")
+(authors "Jon Ludlam" "Jules Aguillon" "Lucas Pluvinage")
 
 (license ISC)
 
 (source
- (github jonludlam/voodoo))
+ (github ocaml-doc/voodoo))
 
 (package
  (name voodoo)
- (synopsis "Voodoo tool to generate tailwind-style output")
- (description "Voodoo tool to generate tailwind-style output")
+ (synopsis "OCaml.org's package documentation generator")
+ (description "Voodoo is an odoc driver used to generate OCaml.org's package documentation.")
  (depends
   (ocaml
    (>= 4.08.0))

@@ -25,7 +25,7 @@
   (ocaml
    (>= 4.08.0))
   (omd
-   (= 2.0.0~alpha2))
+   (>= 2.0.0~alpha3))
   (odoc
    (>= 2.2.0))
   (opam-format
@@ -36,4 +36,5 @@
   yojson
   bos
   sexplib
-  fpath))
+  fpath
+  (ppx_deriving_yaml :with-test)))

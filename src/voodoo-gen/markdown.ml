@@ -52,8 +52,9 @@ let rec block : 'attr block -> intermediate = function
             attr = [];
           };
         ]
-  | Html_block _ -> Bl []
-  | Definition_list _ -> Bl []
+  | (Html_block _ | Definition_list _ | Table (_, _, _)) as elt ->
+      let html = Omd.to_html [ elt ] in
+      Bl [ { desc = Raw_markup ("html", html); attr = [] } ]
 
 and merge xs =
   List.fold_right

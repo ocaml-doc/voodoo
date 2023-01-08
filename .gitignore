@@ -1,21 +1,5 @@
-# Dune generated files
+# Dune build directory
 _build/
-*.install
-
-# Merlin configuring file for Vim and Emacs
-.merlin
 
 # Local OPAM switch
 _opam/
-
-# VSCode
-.vscode
-
-# Generated files
-_generated/
-*.mld
-compile/
-html/
-linked/
-prep/
-output/

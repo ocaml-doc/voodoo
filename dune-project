@@ -27,15 +27,12 @@
   (omd
    (= 2.0.0~alpha2))
   (odoc
-   (and
-    (>= 2.1.0)
-    (< 2.2.0)))
+   (>= 2.2.0))
   (opam-format
    (>= 2.1.0~beta2))
   (cmdliner
    (>= 1.1.0))
   pandoc
-  tyxml
   astring
   yojson
   bos

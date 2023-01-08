@@ -33,7 +33,7 @@ jobs:
           dune-cache: ${{ matrix.os != 'macos-latest' }}
 
       - name: Install ocamlformat
-        run: opam install ocamlformat.0.18.0
+        run: opam install ocamlformat.0.24.1
         if: ${{ matrix.os == 'ubuntu-latest' }}
 
       - name: Install opam packages

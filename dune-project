@@ -41,11 +41,11 @@
   (ocaml
     (>= 4.08.0))
   (omd
-   (>= 2.0.0~alpha2))
+   (= 2.0.0~alpha2))
   pandoc
   voodoo-lib
   (odoc
-   (>= 2.1.0))
+   (= 2.1.0))
   (opam-format
    (>= 2.1.0~beta2))
   tyxml

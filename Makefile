@@ -9,6 +9,7 @@ all:
 
 .PHONY: deps
 deps: ## Install development dependencies
+	opam install -y ocamlformat=0.24.1
 	opam install --deps-only --with-test --with-doc -y .
 
 .PHONY: create_switch

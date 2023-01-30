@@ -51,7 +51,6 @@ let rec block : 'attr block -> intermediate = function
         ]
   | Html_block _ -> Bl []
   | Definition_list _ -> Bl []
-  | Table (_, _, _) -> Bl []
 
 and merge xs =
   List.fold_right

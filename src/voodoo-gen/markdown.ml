@@ -47,7 +47,10 @@ let rec block : 'attr block -> intermediate = function
   | Code_block (_, _a, b) ->
       Bl
         [
-          { desc = Source ("markdown", [ Elt [ { desc = Text b; attr = [] } ] ]); attr = [] };
+          {
+            desc = Source ("markdown", [ Elt [ { desc = Text b; attr = [] } ] ]);
+            attr = [];
+          };
         ]
   | Html_block _ -> Bl []
   | Definition_list _ -> Bl []
@@ -68,11 +71,9 @@ let of_content content ~name ~url =
   let items = List.map (function It x -> x | Bl x -> Text x) intermediate in
   Ok
     (match items with
-    | [] ->
-        Odoc_document.Types.Page.{ preamble = []; items = []; url }
+    | [] -> Odoc_document.Types.Page.{ preamble = []; items = []; url }
     | (Heading _ as x) :: rest ->
-        Odoc_document.Types.Page.
-          { preamble = [ x ]; items = rest; url }
+        Odoc_document.Types.Page.{ preamble = [ x ]; items = rest; url }
     | _ ->
         Odoc_document.Types.Page.
           {

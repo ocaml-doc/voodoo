@@ -31,7 +31,15 @@
  (name voodoo-do)
  (synopsis "Voodoo compilation step")
  (description "Voodoo compilation step")
- (depends voodoo-lib voodoo-web odoc tyxml astring cmdliner yojson))
+ (depends
+  voodoo-lib
+  voodoo-web
+  (odoc
+    (= 2.2.0))
+  tyxml
+  astring
+  cmdliner
+  yojson))
 
 (package
  (name voodoo-gen)
@@ -41,18 +49,20 @@
   (ocaml
     (>= 4.08.0))
   (omd
-   (>= 2.0.0~alpha2))
-  pandoc
-  voodoo-lib
+   (= 2.0.0~alpha3))
+   voodoo-lib
   (odoc
-   (>= 2.1.0))
+   (= 2.2.0))
   (opam-format
    (>= 2.1.0~beta2))
   tyxml
   astring
   cmdliner
   yojson
-  bos))
+  bos
+  sexplib
+  fpath
+  (ppx_deriving_yaml :with-test)))
 
 (package
  (name voodoo-web)

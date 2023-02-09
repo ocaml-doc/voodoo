@@ -12,7 +12,7 @@ depends: [
   "dune" {>= "2.8"}
   "voodoo-lib"
   "voodoo-web"
-  "odoc"
+  "odoc" {= "2.2.0"}
   "tyxml"
   "astring"
   "cmdliner"

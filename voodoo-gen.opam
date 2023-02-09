@@ -11,16 +11,18 @@ bug-reports: "https://github.com/jonludlam/voodoo/issues"
 depends: [
   "dune" {>= "2.8"}
   "ocaml" {>= "4.08.0"}
-  "omd" {= "2.0.0~alpha2"}
-  "pandoc"
+  "omd" {= "2.0.0~alpha3"}
   "voodoo-lib"
-  "odoc" {>= "2.1.0"}
+  "odoc" {= "2.2.0"}
   "opam-format" {>= "2.1.0~beta2"}
   "tyxml"
   "astring"
   "cmdliner"
   "yojson"
   "bos"
+  "sexplib"
+  "fpath"
+  "ppx_deriving_yaml" {with-test}
 ]
 build: [
   ["dune" "subst"] {dev}
@@ -37,6 +39,6 @@ build: [
   ]
 ]
 dev-repo: "git+https://github.com/jonludlam/voodoo.git"
-pin-depends: [
-  ["pandoc.dev" "git+https://github.com/tatchi/opam-pandoc-bin#5eeb415c7023323045371ad803f88365c7003b38"]
+depexts: [
+  ["pandoc"]
 ]

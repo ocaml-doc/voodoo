@@ -1,7 +1,3 @@
-(* Generate tailwind-style output 
- *
- *)
-
 open Cmdliner
 
 [@@@ocaml.warning "-3"]

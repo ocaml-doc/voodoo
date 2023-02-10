@@ -1,7 +1,3 @@
-(* do!
- *
- *)
-
 open Voodoo_lib
 
 [@@@ocaml.warning "-3"]

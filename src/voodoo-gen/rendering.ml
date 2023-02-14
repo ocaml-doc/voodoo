@@ -26,7 +26,7 @@ let render_document ~output odoctree =
   aux
   @@ Odoc_html.Generator.render
        ~config:
-         (Odoc_html.Config.v ~semantic_uris:true ~indent:false ~flat:false
+         (Odoc_html.Config.v ~semantic_uris:false ~indent:false ~flat:false
             ~open_details:true ~as_json:true ())
        odoctree;
   Ok ()

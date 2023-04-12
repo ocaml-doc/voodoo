@@ -16,6 +16,7 @@ depends: [
   "odoc" {= "2.2.0"}
   "opam-format" {>= "2.1.0~beta2"}
   "tyxml"
+  "conf-pandoc"
   "astring"
   "cmdliner"
   "yojson"
@@ -39,6 +40,3 @@ build: [
   ]
 ]
 dev-repo: "git+https://github.com/jonludlam/voodoo.git"
-depexts: [
-  ["pandoc"]
-]

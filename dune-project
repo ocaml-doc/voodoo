@@ -54,6 +54,7 @@
   (opam-format
    (>= 2.1.0~beta2))
   tyxml
+  conf-pandoc
   astring
   cmdliner
   yojson

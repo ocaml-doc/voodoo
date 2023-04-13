@@ -1,0 +1,3 @@
+available: [ os-distribution != "alpine" & arch != "ppc64"]
+# PPC64 fails to build with stack overflow see https://github.com/ocaml/ocaml/issues/11415
+# Alpine-3.16 doesn't have a pandoc package, however 3.17 does

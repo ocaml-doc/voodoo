@@ -125,14 +125,28 @@ let generate_pkgver output_dir name_filter version_filter =
               | Some universe ->
                   Fpath.(foutput / "u" / universe / pkg_name / ver)
             in
+
             Odoc_thtml.gen_package_info ~input:parent ~output:output_prefix
               paths;
             Odoc_thtml.render_other ~parent ~otherdocs ~output |> get_ok;
+
             if Option.is_none universe then
               Bos.OS.File.write
                 Fpath.(output_prefix / "status.json")
                 (if failed then {|"Failed"|} else {|"Built"|})
-              |> get_ok
+              |> get_ok;
+
+            (*
+              Create the search index for this package.
+              NOTE: if I do this earlier than here, voodoo silently fails to produce some files.
+              What a weird thing to happen!
+
+              odoc fuse-index -I <dir where your .odocl files are> -o <dir where your output html is> *)
+            let cmd = Bos.Cmd.(v "odoc" % "fuse-index" % "-I" % Fpath.(pkg_path |> to_string) % "-o" % (Fpath.to_string output_prefix)) in
+            Format.eprintf "cmd: %a\n%!" Bos.Cmd.pp cmd;
+            match Bos.OS.Cmd.(run_out cmd |> to_string) with
+            | Ok _out -> ()
+            | Error (`Msg m) -> Format.eprintf "Error executing fuse-index: %s\n%!" m
       in
 
       List.iter handle_package pkgs

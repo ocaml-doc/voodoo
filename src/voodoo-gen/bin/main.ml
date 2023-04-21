@@ -88,7 +88,7 @@ let generate_pkgver output_dir name_filter version_filter =
             Format.eprintf "Failed to handle package %s.%s: %s\n%!" pkg_name ver
               m;
             exit 1
-        | Ok files ->
+        | Ok files -> (
             let parent =
               List.find
                 (fun p ->
@@ -125,14 +125,28 @@ let generate_pkgver output_dir name_filter version_filter =
               | Some universe ->
                   Fpath.(foutput / "u" / universe / pkg_name / ver)
             in
+
             Odoc_thtml.gen_package_info ~input:parent ~output:output_prefix
               paths;
             Odoc_thtml.render_other ~parent ~otherdocs ~output |> get_ok;
+
             if Option.is_none universe then
               Bos.OS.File.write
                 Fpath.(output_prefix / "status.json")
                 (if failed then {|"Failed"|} else {|"Built"|})
-              |> get_ok
+              |> get_ok;
+
+            match
+              Odoc_thtml.render_index
+                [
+                  pkg_path |> Fpath.to_string
+                  |> Odoc_odoc.Fs.Directory.of_string;
+                ]
+                Fpath.(output_prefix / "index.js")
+            with
+            | Ok () -> ()
+            | Error (`Msg m) ->
+                Format.eprintf "Error generating index for fuse: %s\n%!" m)
       in
 
       List.iter handle_package pkgs

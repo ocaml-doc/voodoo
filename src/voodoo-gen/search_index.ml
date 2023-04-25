@@ -302,7 +302,12 @@ module Load_doc = struct
     | None -> ()
     | Some mt_expr -> module_type_expr ppf mt_expr
 
-  and simple_expansion _ppf _s_e = ()
+  and simple_expansion ppf s_e =
+    match s_e with
+    | ModuleType.Signature sg -> signature ppf sg
+    | Functor (param, s_e) ->
+        let () = functor_parameter ppf param in
+        simple_expansion ppf s_e
 
   and module_type_expr ppf mte =
     match mte with

@@ -102,7 +102,7 @@ module Generate = struct
    fun n ->
     match full_name_aux (n :> Odoc_model.Paths.Identifier.t) with
     | [] -> ""
-    | _ :: q -> String.concat "." q
+    | _ :: q -> String.concat "." (List.rev q)
 
   let string_of_entry { id; doc } =
     Odoc_document.Url.from_identifier ~stop_before:false id >>= fun url ->

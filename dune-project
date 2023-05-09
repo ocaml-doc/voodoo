@@ -34,7 +34,7 @@
  (depends
   voodoo-lib
   voodoo-web
-  odoc ; = 2.2.0 pinned by the pipeline
+  (odoc (= 2.2.0))
   tyxml
   astring
   cmdliner
@@ -50,7 +50,7 @@
   (omd
    (= 2.0.0~alpha3))
    voodoo-lib
-  odoc  ; = 2.2.0 pinned by the pipeline
+  (odoc (= 2.2.0))
   (opam-format
    (>= 2.1.0~beta2))
   tyxml

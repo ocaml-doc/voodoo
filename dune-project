@@ -6,6 +6,8 @@
 
 (generate_opam_files true)
 
+(cram enable)
+
 (maintainers "nobody@nowhere.com")
 
 (authors "Jon Ludlam" "Jules Aguillon")
@@ -59,4 +61,5 @@
   (ppx_yojson_conv (= v0.15.1))
   sexplib
   fpath
+  (conf-jq :with-test)
   (ppx_deriving_yaml :with-test)))

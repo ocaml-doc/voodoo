@@ -23,6 +23,7 @@ depends: [
   "ppx_yojson_conv" {= "v0.15.1"}
   "sexplib"
   "fpath"
+  "conf-jq" {with-test}
   "ppx_deriving_yaml" {with-test}
 ]
 build: [

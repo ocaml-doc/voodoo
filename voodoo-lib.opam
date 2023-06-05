@@ -14,6 +14,7 @@ depends: [
   "astring"
   "fpath"
   "opam-format"
+  "ppx_yojson_conv"
   "sexplib"
   "yojson"
   "odoc" {with-doc}

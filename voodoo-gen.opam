@@ -21,6 +21,7 @@ depends: [
   "cmdliner"
   "yojson"
   "bos"
+  "ppx_yojson_conv"
   "sexplib"
   "fpath"
   "ppx_deriving_yaml" {with-test}

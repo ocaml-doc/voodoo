@@ -19,7 +19,7 @@
  (name voodoo-lib)
  (synopsis "Voodoo library")
  (description "Voodoo library")
- (depends bos astring fpath opam-format sexplib yojson))
+ (depends bos astring fpath opam-format ppx_yojson_conv sexplib yojson))
 
 (package
  (name voodoo-prep)
@@ -59,6 +59,7 @@
   cmdliner
   yojson
   bos
+  ppx_yojson_conv
   sexplib
   fpath
   (ppx_deriving_yaml :with-test)))

@@ -1,8 +1,4 @@
-type universe_id = string
-and package_name = string
-and package_version = string
-and t = universe_id * package_name * package_version
+type t = { universe_id : string; name : string; version : string }
 
-let prep_path package =
-  let universe, pkg_name, pkg_version = package in
-  Fpath.(Paths.prep / "universes" / universe / pkg_name / pkg_version)
+let prep_path p =
+  Fpath.(Paths.prep / "universes" / p.universe_id / p.name / p.version)

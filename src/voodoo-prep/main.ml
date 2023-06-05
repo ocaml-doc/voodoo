@@ -16,9 +16,8 @@ let process_package : Fpath.t -> Package.t -> Fpath.t list -> unit =
       ocaml compiler - most notably the secondary compiler! This switch is intended to
       be used to ignore those files *)
   let process_ocaml_artefacts =
-    let _, name, _ = package in
     let package_blacklist = [ "ocaml-secondary-compiler" ] in
-    not (List.mem name package_blacklist)
+    not (List.mem package.name package_blacklist)
   in
 
   let foldfn fpath acc =
@@ -80,12 +79,18 @@ let run _ (universes : (string * string) list) =
            universes\n\
            %!";
         fun pkg ->
-          let universe = string_of_int !id in
+          let universe_id = string_of_int !id in
+          let name = pkg.Opam.name in
+          let version = pkg.version in
           incr id;
-          Some (universe, pkg.Opam.name, pkg.version)
+          Some { Package.universe_id; name; version }
     | _ -> (
         fun pkg ->
-          try Some (List.assoc pkg.Opam.name universes, pkg.name, pkg.version)
+          try
+            let universe_id = List.assoc pkg.Opam.name universes in
+            let name = pkg.name in
+            let version = pkg.version in
+            Some { universe_id; name; version }
           with _ -> None)
   in
 
@@ -99,8 +104,7 @@ let run _ (universes : (string * string) list) =
   let root = Opam.prefix () |> Fpath.v in
   let pkg_contents =
     List.map
-      (fun ((_, pkg_name, _) as package) ->
-        (package, Opam.pkg_contents pkg_name))
+      (fun package -> (package, Opam.pkg_contents package.Package.name))
       packages
   in
   List.iter
@@ -108,8 +112,7 @@ let run _ (universes : (string * string) list) =
     pkg_contents;
   List.iter
     (fun package ->
-      let _, name, version = package in
-      match Opam.opam_file name version with
+      match Opam.opam_file package.Package.name package.version with
       | Some lines ->
           let dest = Package.prep_path package in
           Util.write_file Fpath.(dest / "opam") lines

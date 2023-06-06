@@ -2,7 +2,22 @@ open Cmdliner
 
 [@@@ocaml.warning "-3"]
 
-type status = Failed | Built [@@deriving yojson]
+module Fpath = struct
+  include Fpath
+
+  let t_of_yojson x = Fpath.v @@ string_of_yojson x
+  let yojson_of_t x = yojson_of_string @@ Fpath.to_string x
+end
+
+type otherdocs = {
+  readme : Fpath.t list;
+  license : Fpath.t list;
+  changes : Fpath.t list;
+  others : Fpath.t list;
+}
+[@@deriving yojson]
+
+type status = { failed : bool; otherdocs : otherdocs } [@@deriving yojson]
 
 let docs = "ARGUMENTS"
 
@@ -62,7 +77,7 @@ let generate_pkgver output_dir name_filter version_filter =
       Format.eprintf "Failed to find any packages: %s\n%!" m;
       exit 1
   | Ok (pkgs, vs) ->
-      Format.eprintf "%d other versons, %d packages\n%!" (List.length vs)
+      Format.eprintf "%d other versions, %d packages\n%!" (List.length vs)
         (List.length pkgs);
       let handle_package (pkg_path, universe, pkg_name, ver) =
         let failed =
@@ -94,7 +109,7 @@ let generate_pkgver output_dir name_filter version_filter =
                   f = Fpath.v "page-doc.odocl")
                 files.odocls
             in
-            let otherdocs = files.otherdocs in
+            let otherdocs = List.sort Fpath.compare files.otherdocs in
             let files = files.odocls in
             Format.eprintf "Found %d files\n%!" (List.length files);
             let output file_path =
@@ -127,7 +142,22 @@ let generate_pkgver output_dir name_filter version_filter =
             Package_info.gen ~input:parent ~output:output_prefix paths;
             Rendering.render_other ~parent ~otherdocs ~output |> get_ok;
 
-            let status = if failed then Failed else Built in
+            let otherdocs =
+              let init =
+                { readme = []; license = []; changes = []; others = [] }
+              in
+              List.fold_left
+                (fun acc path ->
+                  let _, file = Fpath.split_base path in
+                  let file = Fpath.rem_ext file |> Fpath.to_string in
+                  match file with
+                  | "README" -> { acc with readme = path :: acc.readme }
+                  | "LICENSE" -> { acc with license = path :: acc.license }
+                  | "CHANGES" -> { acc with changes = path :: acc.changes }
+                  | _ -> { acc with others = path :: acc.others })
+                init otherdocs
+            in
+            let status = { failed; otherdocs } in
             if Option.is_none universe then
               Yojson.Safe.to_file
                 Fpath.(output_prefix / "status.json" |> to_string)

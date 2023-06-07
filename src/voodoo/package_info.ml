@@ -1,13 +1,13 @@
 (* Generate a package.json describing the content of that package *)
 
-type library = {
+type 'a library = {
   name : string;
-  modules : string list;
+  modules : 'a list;
   dependencies : string list option;
 }
 [@@deriving yojson]
 
-type info = { libraries : library list } [@@deriving yojson]
+type 'a t = { libraries : 'a library list } [@@deriving yojson]
 
 let gen ~output ~(dune : Dune.t option) ~libraries () =
   let dune_modules = function
@@ -33,4 +33,4 @@ let gen ~output ~(dune : Dune.t option) ~libraries () =
   in
 
   let output = Fpath.(to_string (output / "package.json")) in
-  Yojson.Safe.to_file output (yojson_of_info { libraries })
+  Yojson.Safe.to_file output (yojson_of_t yojson_of_string { libraries })

@@ -4,8 +4,6 @@
  (preprocess
   (pps ppx_yojson_conv))
  (libraries
-  odoc.model
-  odoc.document
   odoc.odoc
   omd
   tyxml

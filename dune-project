@@ -45,14 +45,10 @@
  (synopsis "Voodoo tool to generate tailwind-style output")
  (description "Voodoo tool to generate tailwind-style output")
  (depends
-  (ocaml
-    (>= 4.08.0))
   (omd
    (= 2.0.0~alpha3))
    voodoo-lib
   odoc  ; = 2.2.0 pinned by the pipeline
-  (opam-format
-   (>= 2.1.0~beta2))
   tyxml
   conf-pandoc
   astring

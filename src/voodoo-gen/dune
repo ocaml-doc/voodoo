@@ -3,14 +3,4 @@
  (public_name voodoo-gen.odoc_thtml)
  (preprocess
   (pps ppx_yojson_conv))
- (libraries
-  odoc.model
-  odoc.document
-  odoc.odoc
-  omd
-  tyxml
-  opam-format
-  ppx_yojson_conv
-  bos
-  voodoo_lib
-  yojson))
+ (libraries odoc.model odoc.document odoc.odoc omd tyxml bos yojson ppx_yojson_conv))

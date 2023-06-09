@@ -190,7 +190,7 @@ let run pkg_name is_blessed failed =
 
   let () = Package_info.gen ~output:output_path ~dune ~libraries () in
 
-  let sis = List.concat_map (get_source_info parent) prep in
+  let sis = Compat.List.concat_map (get_source_info parent) prep in
   let this_index = InputSelect.select sis in
   Index.write this_index parent;
   let index = Index.combine this_index index in

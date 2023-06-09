@@ -44,7 +44,7 @@ let compile_deps file =
       Unix.rename tmp_file (Fpath.to_string deps_file);
       lines
   in
-  let deps = List.concat_map process_line lines in
+  let deps = Compat.List.concat_map process_line lines in
   let _, lname = Fpath.(split_base (rem_ext file)) in
   let name = Astring.String.Ascii.capitalize (Fpath.to_string lname) in
   match List.partition (fun d -> d.c_unit_name = name) deps with
@@ -96,7 +96,7 @@ let link_deps dir =
       Unix.rename tmp_file (Fpath.to_string deps_file);
       lines
   in
-  List.concat_map process_line lines
+  Compat.List.concat_map process_line lines
 
 let generate_targets odocl ty =
   let targets lang =

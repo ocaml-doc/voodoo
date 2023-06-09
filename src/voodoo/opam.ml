@@ -46,7 +46,7 @@ let dependencies package =
           opam % "list" % "--switch" % get_switch () % "--required-by"
           % package' % "--columns=name,version" % "--color=never" % "--short")
     in
-    List.concat_map deps_of_opam_result args
+    Compat.List.concat_map deps_of_opam_result args
 
 let all_opam_packages () =
   let args =
@@ -55,7 +55,7 @@ let all_opam_packages () =
         opam % "list" % "--switch" % get_switch () % "--columns=name,version"
         % "--color=never" % "--short")
   in
-  List.concat_map deps_of_opam_result args
+  Compat.List.concat_map deps_of_opam_result args
 
 open Result
 

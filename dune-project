@@ -42,9 +42,11 @@
 
 (package
  (name voodoo-gen)
- (synopsis "Voodoo tool to generate tailwind-style output")
- (description "Voodoo tool to generate tailwind-style output")
+ (synopsis "Voodoo generate package documentation")
+ (description "Voodoo generate package documentation")
  (depends
+  (ocaml
+    (>= 4.08.0))
   (omd
    (= 2.0.0~alpha3))
    voodoo-lib

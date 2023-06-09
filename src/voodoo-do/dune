@@ -2,5 +2,4 @@
  (name do)
  (public_name voodoo-do)
  (modules do)
- (package voodoo-do)
- (libraries voodoo-lib cmdliner))
+ (libraries voodoo_lib cmdliner))

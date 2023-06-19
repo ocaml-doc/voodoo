@@ -21,19 +21,36 @@
  (name voodoo-lib)
  (synopsis "Voodoo library")
  (description "Voodoo library")
- (depends bos astring fpath opam-format ppx_yojson_conv sexplib yojson))
+ (depends
+  (ocaml
+    (>= 4.08.0))
+  bos
+  astring
+  fpath
+  opam-format
+  ppx_yojson_conv
+  sexplib
+  yojson))
 
 (package
  (name voodoo-prep)
  (synopsis "Voodoo prep")
  (description "Voodoo prep")
- (depends cmdliner fpath bos opam-format))
+ (depends 
+  (ocaml
+    (>= 4.08.0))
+  cmdliner
+  fpath
+  bos
+  opam-format))
 
 (package
  (name voodoo-do)
  (synopsis "Voodoo compilation step")
  (description "Voodoo compilation step")
  (depends
+  (ocaml
+    (>= 4.08.0))
   voodoo-lib
   odoc ; = 2.2.0 pinned by the pipeline
   tyxml

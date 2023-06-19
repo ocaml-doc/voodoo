@@ -23,7 +23,7 @@
  (description "Voodoo library")
  (depends
   (ocaml
-    (>= 4.08.0))
+   (>= 4.08.0))
   bos
   astring
   fpath
@@ -36,9 +36,9 @@
  (name voodoo-prep)
  (synopsis "Voodoo prep")
  (description "Voodoo prep")
- (depends 
+ (depends
   (ocaml
-    (>= 4.08.0))
+   (>= 4.08.0))
   cmdliner
   fpath
   bos
@@ -50,7 +50,7 @@
  (description "Voodoo compilation step")
  (depends
   (ocaml
-    (>= 4.08.0))
+   (>= 4.08.0))
   voodoo-lib
   odoc ; = 2.2.0 pinned by the pipeline
   tyxml

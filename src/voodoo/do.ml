@@ -85,7 +85,7 @@ let package_info_of_fpath p =
       failwith "Bad path"
 
 let find_universe_and_version pkg_name =
-  let ( >>= ) = Result.bind in
+  let ( >>= ) = Stdlib.Result.bind in
   Bos.OS.Dir.contents Fpath.(Paths.prep / "universes") >>= fun universes ->
   let universe =
     match

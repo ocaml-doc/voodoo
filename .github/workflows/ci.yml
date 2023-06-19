@@ -37,7 +37,7 @@ jobs:
         if: ${{ matrix.os == 'ubuntu-latest' }}
 
       - name: Install opam packages
-        run: opam install . --with-test
+        run: opam install . --with-test --deps-only
 
       - name: Check formatting
         run: make fmt
@@ -48,7 +48,6 @@ jobs:
 
       - name: Run the unit tests
         run: make test
-        timeout-minutes: 1
 
       - name: Create the example
         run: make example

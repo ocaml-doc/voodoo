@@ -6,11 +6,6 @@ let switch = ref None
 
 type package = { name : string; version : string }
 
-let of_string str =
-  match Astring.String.cut ~sep:"." str with
-  | Some (name, version) -> Some { name; version }
-  | _ -> None
-
 let rec get_switch () =
   match !switch with
   | None ->
@@ -59,15 +54,7 @@ let all_opam_packages () =
 
 open Result
 
-let bind r f = match r with Ok v -> f v | Error _ as e -> e
 let join = function Ok r -> r | Error _ as e -> e
-let ( >>= ) = bind
-
-let process_file f =
-  let ic = open_in (Fpath.to_string f) in
-  let result = OpamFile.OPAM.read_from_channel ic in
-  close_in ic;
-  Ok result
 
 let find package =
   let path = Package.prep_path package in

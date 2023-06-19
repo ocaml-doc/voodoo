@@ -3,4 +3,4 @@
  (public_name voodoo-lib)
  (preprocess
   (pps ppx_yojson_conv))
- (libraries astring fpath bos opam-format ppx_yojson_conv sexplib yojson))
+ (libraries astring fpath bos opam-format ppx_yojson_conv_lib sexplib yojson))

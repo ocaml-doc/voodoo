@@ -20,7 +20,7 @@ depends: [
   "cmdliner"
   "yojson"
   "bos"
-  "ppx_yojson_conv" {= "v0.15.1"}
+  "ppx_yojson_conv_lib"
   "sexplib"
   "fpath"
   "conf-jq" {with-test}

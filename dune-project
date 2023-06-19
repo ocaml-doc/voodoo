@@ -47,18 +47,19 @@
  (description "Voodoo generate package documentation")
  (depends
   (ocaml
-    (>= 4.08.0))
+   (>= 4.08.0))
   (omd
    (= 2.0.0~alpha3))
-   voodoo-lib
-  odoc  ; = 2.2.0 pinned by the pipeline
+  voodoo-lib
+  odoc ; = 2.2.0 pinned by the pipeline
   tyxml
   conf-pandoc
   astring
   cmdliner
   yojson
   bos
-  (ppx_yojson_conv (= v0.15.1))
+  (ppx_yojson_conv
+   (= v0.15.1))
   sexplib
   fpath
   (conf-jq :with-test)

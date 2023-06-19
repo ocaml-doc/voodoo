@@ -56,7 +56,7 @@
   cmdliner
   yojson
   bos
-  ppx_yojson_conv
+  (ppx_yojson_conv (= v0.15.1))
   sexplib
   fpath
   (ppx_deriving_yaml :with-test)))

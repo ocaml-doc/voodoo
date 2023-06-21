@@ -14,7 +14,6 @@ depends: [
   "omd" {= "2.0.0~alpha3"}
   "voodoo-lib"
   "odoc"
-  "tyxml"
   "conf-pandoc"
   "astring"
   "cmdliner"

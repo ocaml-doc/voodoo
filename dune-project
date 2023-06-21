@@ -53,7 +53,6 @@
    (>= 4.08.0))
   voodoo-lib
   odoc ; = 2.2.0 pinned by the pipeline
-  tyxml
   astring
   cmdliner
   yojson))
@@ -69,7 +68,6 @@
    (= 2.0.0~alpha3))
   voodoo-lib
   odoc ; = 2.2.0 pinned by the pipeline
-  tyxml
   conf-pandoc
   astring
   cmdliner

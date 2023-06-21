@@ -1,120 +1,55 @@
-(* Prep
- *
- *)
+(* Odoc documentation generator
 
-type actions = {
-  copy : (Fpath.t * Fpath.t) list;
-  info : Fpath.t list;
-  objinfo : Fpath.t list;
-}
+*)
+open Cmdliner
 
-let process_package : Fpath.t -> Package.t -> Fpath.t list -> unit =
- fun root package files ->
-  let dest = Package.prep_path package in
+[@@@ocaml.warning "-3"]
 
-  (* Some packages produce ocaml artefacts that can't be processed with the switch's
-      ocaml compiler - most notably the secondary compiler! This switch is intended to
-      be used to ignore those files *)
-  let process_ocaml_artefacts =
-    let package_blacklist = [ "ocaml-secondary-compiler" ] in
-    not (List.mem package.name package_blacklist)
-  in
+(** Example: [conv_compose Fpath.of_string Fpath.to_string Arg.dir] *)
+let conv_compose ?docv parse to_string c =
+  let open Arg in
+  let docv = match docv with Some v -> v | None -> conv_docv c in
+  let parse v = match conv_parser c v with Ok x -> parse x | Error _ as e -> e
+  and print fmt t = conv_printer c fmt (to_string t) in
+  conv ~docv (parse, print)
 
-  let foldfn fpath acc =
-    let is_in_doc_dir =
-      match Fpath.segs fpath with "doc" :: _ -> true | _ -> false
+module Prep = struct
+  let switch =
+    let doc =
+      "Opam switch to use. If not set, defaults to the current switch"
     in
+    Arg.(
+      value
+      & opt (some string) None
+      & info [ "s"; "switch" ] ~doc ~docv:"SWITCH")
 
-    (* Menhir puts a dune build dir into docs for some reason *)
-    let in_build_dir = List.exists (fun x -> x = "_build") (Fpath.segs fpath) in
+  let prep lib_dir switch universes =
+    Opam.switch := switch;
+    Prep.run lib_dir universes
 
-    let _, filename = Fpath.split_base fpath in
-    let ext = Fpath.get_ext filename in
-    let no_ext = Fpath.rem_ext filename in
-    let has_hyphen = String.contains (Fpath.to_string filename) '-' in
-    let is_module =
-      process_ocaml_artefacts
-      && List.mem ext [ ".cmt"; ".cmti"; ".cmi" ]
-      && not has_hyphen
+  let lib_dir =
+    let doc =
+      "Path to libraries. If not set, defaults to the global environment by \
+       querying $(b,ocamlfind)."
     in
-    let do_copy =
-      (not in_build_dir)
-      && (is_in_doc_dir || is_module
-         || List.mem no_ext (List.map Fpath.v [ "META"; "dune-package" ]))
-    in
-    let is_cma = process_ocaml_artefacts && List.mem ext [ ".cma"; ".cmxa" ] in
-    let copy =
-      if do_copy then Fpath.(root // fpath, dest // fpath) :: acc.copy
-      else acc.copy
-    in
-    let info = if is_module then fpath :: acc.info else acc.info in
-    let objinfo = if is_cma then fpath :: acc.objinfo else acc.objinfo in
-    { copy; info; objinfo }
-  in
-  let actions =
-    List.fold_right foldfn files { copy = []; info = []; objinfo = [] }
-  in
-  List.iter
-    (fun (src, dst) ->
-      let dir, _ = Fpath.split_base dst in
-      Util.mkdir_p dir;
-      Util.cp (Fpath.to_string src) (Fpath.to_string dst))
-    actions.copy;
-  List.iter
-    (fun fpath ->
-      let lines =
-        Util.lines_of_process
-          Bos.Cmd.(v "ocamlobjinfo" % Fpath.(to_string (root // fpath)))
-      in
-      Util.write_file Fpath.(dest // set_ext "ocamlobjinfo" fpath) lines)
-    actions.objinfo
+    let fpath_dir = conv_compose Fpath.of_string Fpath.to_string Arg.dir in
+    (* [some string] and not [some dir] because we don't need it to exist yet. *)
+    Arg.(value & opt_all fpath_dir [] & info [ "L" ] ~doc ~docv:"LIB_DIR")
 
-let run _ (universes : (string * string) list) =
-  let get_universe =
-    match universes with
-    | [] ->
-        let id = ref 0 in
-        Printf.eprintf
-          "Warning: No universes have been specified: will generate dummy \
-           universes\n\
-           %!";
-        fun pkg ->
-          let universe_id = string_of_int !id in
-          let name = pkg.Opam.name in
-          let version = pkg.version in
-          incr id;
-          Some { Package.universe_id; name; version }
-    | _ -> (
-        fun pkg ->
-          try
-            let universe_id = List.assoc pkg.Opam.name universes in
-            let name = pkg.name in
-            let version = pkg.version in
-            Some { universe_id; name; version }
-          with _ -> None)
-  in
+  let universes =
+    let doc = "Provide universe spec as 'package=universe id' couples" in
+    Arg.(
+      value
+      & opt (list (pair ~sep:':' string string)) []
+      & info [ "u"; "universes" ] ~doc)
 
-  let packages =
-    Opam.all_opam_packages ()
-    |> List.fold_left
-         (fun acc pkg ->
-           match get_universe pkg with Some pkg -> pkg :: acc | None -> acc)
-         []
-  in
-  let root = Opam.prefix () |> Fpath.v in
-  let pkg_contents =
-    List.map
-      (fun package -> (package, Opam.pkg_contents package.Package.name))
-      packages
-  in
-  List.iter
-    (fun (package, files) -> process_package root package files)
-    pkg_contents;
-  List.iter
-    (fun package ->
-      match Opam.opam_file package.Package.name package.version with
-      | Some lines ->
-          let dest = Package.prep_path package in
-          Util.write_file Fpath.(dest / "opam") lines
-      | None -> ())
-    packages
+  let cmd = Term.(const prep $ lib_dir $ switch $ universes)
+  let info = Term.info "prep" ~doc:"Prep a directory tree for compiling"
+end
+
+let _ =
+  match Term.eval_choice ~err:Format.err_formatter Prep.(cmd, info) [] with
+  | `Error _ ->
+      Format.pp_print_flush Format.err_formatter ();
+      exit 2
+  | _ -> ()

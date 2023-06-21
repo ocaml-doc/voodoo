@@ -85,23 +85,25 @@ let package_info_of_fpath p =
       failwith "Bad path"
 
 let find_universe_and_version pkg_name =
-  let universes =
-    Bos.OS.Dir.contents Fpath.(Paths.prep / "universes") |> Util.get_ok
+  let ( >>= ) = Stdlib.Result.bind in
+  Bos.OS.Dir.contents Fpath.(Paths.prep / "universes") >>= fun universes ->
+  let universe =
+    match
+      List.find_opt
+        (fun u ->
+          match Bos.OS.Dir.exists Fpath.(u / pkg_name) with
+          | Ok b -> b
+          | Error _ -> false)
+        universes
+    with
+    | Some u -> Ok u
+    | None -> Error (`Msg (Format.sprintf "Failed to find package %s" pkg_name))
   in
-  let u =
-    List.find
-      (fun u ->
-        match Bos.OS.Dir.exists Fpath.(u / pkg_name) with
-        | Ok b -> b
-        | Error _ -> false)
-      universes
-  in
-  let version =
-    Bos.OS.Dir.contents ~rel:true Fpath.(u / pkg_name) |> Util.get_ok
-  in
+  universe >>= fun u ->
+  Bos.OS.Dir.contents ~rel:true Fpath.(u / pkg_name) >>= fun version ->
   match (Fpath.segs u, version) with
-  | _ :: _ :: u :: _, [ version ] -> Some (u, Fpath.to_string version)
-  | _ -> None
+  | _ :: _ :: u :: _, [ version ] -> Ok (u, Fpath.to_string version)
+  | _ -> Error (`Msg (Format.sprintf "Failed to find package %s" pkg_name))
 
 let run pkg_name is_blessed failed =
   let is_interesting p =
@@ -119,9 +121,9 @@ let run pkg_name is_blessed failed =
 
   let universe, version =
     match find_universe_and_version pkg_name with
-    | Some x -> x
-    | None ->
-        Format.eprintf "Failed to find package\n%!";
+    | Ok x -> x
+    | Error (`Msg e) ->
+        Format.eprintf "%s\n%!" e;
         exit 1
   in
 

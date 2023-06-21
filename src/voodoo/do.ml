@@ -65,7 +65,7 @@ let get_source_info parent path =
           [
             Sourceinfo.
               {
-                package = (id, pkg_name, version);
+                package = { universe = id; name = pkg_name; version };
                 path;
                 name;
                 digest;
@@ -146,7 +146,7 @@ let run pkg_name is_blessed failed =
         if List.mem name acc then acc else name :: acc)
       [] prep
   in
-  let package = (universe, pkg_name, version) in
+  let package = { Package.universe; name = pkg_name; version } in
   let output_path =
     if is_blessed then Fpath.(Paths.link / "p" / pkg_name / version)
     else Fpath.(Paths.link / "u" / universe / pkg_name / version)

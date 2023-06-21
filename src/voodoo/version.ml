@@ -142,36 +142,37 @@ let gen_parent :
   let children =
     match children with [] -> [ Odoc.CPage "dummy" ] | _ -> children
   in
-  let universe, package_name, package_version = package in
   let top_parents =
     if blessed then
       let packages =
         Mld.v cwd "p" None
-          [ Odoc.CPage package_name ]
-          (Printf.sprintf "{0 Packages}\n{!childpage:%s}\n" package_name)
+          [ Odoc.CPage package.name ]
+          (Printf.sprintf "{0 Packages}\n{!childpage:%s}\n" package.name)
       in
       packages
     else
       let universes =
-        Mld.v cwd "u" None [ Odoc.CPage universe ]
-          (Printf.sprintf "{0 Universes}\n{!childpage:%s}\n" universe)
+        Mld.v cwd "u" None
+          [ Odoc.CPage package.universe ]
+          (Printf.sprintf "{0 Universes}\n{!childpage:%s}\n" package.universe)
       in
       let universe =
-        Mld.v cwd universe (Some universes)
-          [ Odoc.CPage package_name ]
-          (Printf.sprintf "{0 %s}\n{!childpage:%s}\n" universe package_name)
+        Mld.v cwd package.universe (Some universes)
+          [ Odoc.CPage package.name ]
+          (Printf.sprintf "{0 %s}\n{!childpage:%s}\n" package.universe
+             package.name)
       in
       universe
   in
-  let package =
-    Mld.v cwd package_name (Some top_parents)
-      [ Odoc.CPage package_version ]
-      (Printf.sprintf "{0 %s}\n{!childpage:%s}\n" package_name package_version)
+  let pkg =
+    Mld.v cwd package.name (Some top_parents)
+      [ Odoc.CPage package.version ]
+      (Printf.sprintf "{0 %s}\n{!childpage:%s}\n" package.name package.version)
   in
 
   let version =
-    Mld.v cwd package_version (Some package) [ Odoc.CPage "doc" ]
-      (Printf.sprintf "{0 %s}\n{!childpage:doc}\n" package_version)
+    Mld.v cwd package.version (Some pkg) [ Odoc.CPage "doc" ]
+      (Printf.sprintf "{0 %s}\n{!childpage:doc}\n" package.version)
   in
 
   let content =
@@ -192,7 +193,7 @@ let gen_parent :
   in
   let doc =
     Mld.v cwd "doc" (Some version) children
-      (Printf.sprintf "{0 %s %s}\n%s\n" package_name package_version content)
+      (Printf.sprintf "{0 %s %s}\n%s\n" package.name package.version content)
   in
   Mld.compile doc;
   doc

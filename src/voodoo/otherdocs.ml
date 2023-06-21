@@ -1,5 +1,19 @@
 (* otherdocs *)
 
+let convert_org_to_md src =
+  let dst = Filename.remove_extension src ^ ".md" in
+  let cmd =
+    Bos.Cmd.(
+      v "pandoc" % "--wrap" % "none" % "--from" % "org" % "--to" % "markdown"
+      % "-o" % dst % src)
+  in
+  let () =
+    match Bos.OS.Cmd.run cmd with
+    | Ok () -> ()
+    | Error (`Msg err) -> failwith err
+  in
+  dst
+
 (* Copy the other docs into the version directory *)
 let copy version docs opam_file =
   let dir = Fpath.(Mld.link_dir version / version.name) in
@@ -14,7 +28,20 @@ let copy version docs opam_file =
     in
     let dst = Fpath.(dir // n) in
     Format.eprintf "dst: %a\n%!" Fpath.pp dst;
-    match Util.copy src dst with Ok _ -> [ dst ] | Error _ -> []
+    match Fpath.get_ext src with
+    | ".org" -> (
+        let src_md =
+          match Fpath.of_string (convert_org_to_md (Fpath.to_string src)) with
+          | Ok s -> s
+          | Error (`Msg err) -> failwith err
+        in
+        let dst_md = Fpath.set_ext ".md" dst in
+        match (Util.copy src dst, Util.copy src_md dst_md) with
+        | Ok _, Ok _ -> [ dst; dst_md ]
+        | Ok _, Error _ -> [ dst ]
+        | Error _, Ok _ -> [ dst; dst_md ]
+        | Error _, Error _ -> [])
+    | _ -> ( match Util.copy src dst with Ok _ -> [ dst ] | Error _ -> [])
   in
   let opam_file =
     match opam_file with

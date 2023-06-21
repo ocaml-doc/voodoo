@@ -2,6 +2,8 @@ open Cmdliner
 
 [@@@ocaml.warning "-3"]
 
+type status = Failed | Built [@@deriving yojson]
+
 let docs = "ARGUMENTS"
 
 let convert_directory ?(create = false) () :
@@ -127,11 +129,11 @@ let generate_pkgver output_dir name_filter version_filter =
             Odoc_thtml.Rendering.render_other ~parent ~otherdocs ~output
             |> get_ok;
 
+            let status = if failed then Failed else Built in
             if Option.is_none universe then
-              Bos.OS.File.write
-                Fpath.(output_prefix / "status.json")
-                (if failed then {|"Failed"|} else {|"Built"|})
-              |> get_ok;
+              Yojson.Safe.to_file
+                Fpath.(output_prefix / "status.json" |> to_string)
+                (yojson_of_status status);
 
             match
               Odoc_thtml.Search_index.generate_index

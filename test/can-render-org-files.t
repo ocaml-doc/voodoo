@@ -16,7 +16,7 @@ Generate the base documentation
 
 Generates a status.json file
   $ cat output/p/base/v0.15.1/status.json
-  "Built"
+  ["Built"]
 
 Converted the README.org file in markdown
   $ ls output/p/base/v0.15.1/

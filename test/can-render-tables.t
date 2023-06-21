@@ -10,7 +10,7 @@ Generate the ppx_deriving_yaml documentation
 
 Generates a status.json file
   $ cat output/p/ppx_deriving_yaml/0.2.1/status.json
-  "Built"
+  ["Built"]
 
 Generate a README.md file with the tables formatted in HTML
   $ cat output/p/ppx_deriving_yaml/0.2.1/README.md.html.json | jq '.content'

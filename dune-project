@@ -52,7 +52,9 @@
   (ocaml
    (>= 4.08.0))
   voodoo-lib
-  odoc ; = 2.2.0 pinned by the pipeline
+  ; odoc.2.2.0 pinned by the pipeline
+  (odoc
+   (>= 2.2.0))
   astring
   cmdliner
   yojson))
@@ -68,7 +70,9 @@
   (omd
    (= 2.0.0~alpha3))
   voodoo-lib
-  odoc ; = 2.2.0 pinned by the pipeline
+  ; odoc.2.2.0 pinned by the pipeline
+  (odoc
+   (>= 2.2.0))
   conf-pandoc
   astring
   cmdliner

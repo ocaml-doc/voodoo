@@ -12,7 +12,7 @@ depends: [
   "dune" {>= "3.0"}
   "ocaml" {>= "4.08.0"}
   "voodoo-lib"
-  "odoc"
+  "odoc" {>= "2.2.0"}
   "astring"
   "cmdliner"
   "yojson"

@@ -13,7 +13,7 @@ depends: [
   "ocaml" {>= "4.08.0"}
   "omd" {= "2.0.0~alpha3"}
   "voodoo-lib"
-  "odoc"
+  "odoc" {>= "2.2.0"}
   "conf-pandoc"
   "astring"
   "cmdliner"

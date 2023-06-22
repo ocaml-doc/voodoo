@@ -1,7 +1,7 @@
 (* package mlds *)
 
 let find package =
-  let path = Fpath.(Package.prep_path package / "doc" / Package.name package) in
+  let path = Fpath.(Package.prep_path package / "doc" / package.name) in
   let res =
     Bos.OS.Dir.fold_contents ~elements:`Files ~dotfiles:false
       (fun p (mlds, other) ->

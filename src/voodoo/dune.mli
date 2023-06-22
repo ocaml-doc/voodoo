@@ -24,4 +24,4 @@ type t = { name : string; version : string option; libraries : Library.t list }
 
 val ( >>= ) : ('a, 'b) result -> ('a -> ('c, 'b) result) -> ('c, 'b) result
 val process_file : Fpath.t -> (t, [> `Msg of string ]) result
-val find : string * string * string -> (Fpath.t, [> Rresult.R.msg ]) result
+val find : Package.t -> (Fpath.t, [> Rresult.R.msg ]) result

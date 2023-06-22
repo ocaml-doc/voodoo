@@ -1,3 +1,5 @@
+module Result = Stdlib.Result
+
 type t = {
   path : Paths.t;
   name : string;

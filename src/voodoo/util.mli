@@ -1,4 +1,3 @@
-val get_ok : ('a, 'b) result -> 'a
 val is_hidden : string -> bool
 val lines_of_channel : in_channel -> string list
 val lines_of_process : Bos.Cmd.t -> string list

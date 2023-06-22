@@ -27,7 +27,6 @@
   bos
   astring
   fpath
-  opam-format
   ppx_yojson_conv
   sexplib
   yojson))

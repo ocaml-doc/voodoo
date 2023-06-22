@@ -87,4 +87,7 @@
    (and
     (= 0.2.1)
     :with-test))
-  (base :with-test)))
+  (base
+   (and
+    (= v0.15.1)
+    :with-test))))

@@ -4,12 +4,4 @@
  (package voodoo-gen)
  (preprocess
   (pps ppx_yojson_conv))
- (libraries
-  voodoo_lib
-  odoc.odoc
-  omd
-  opam-format
-  bos
-  yojson
-  ppx_yojson_conv
-  cmdliner))
+ (libraries voodoo_lib odoc.odoc omd bos yojson ppx_yojson_conv cmdliner))

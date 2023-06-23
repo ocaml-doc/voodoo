@@ -3,5 +3,5 @@
  (public_name voodoo-gen)
  (package voodoo-gen)
  (preprocess
-  (pps ppx_yojson_conv))
- (libraries voodoo_lib odoc.odoc omd bos yojson ppx_yojson_conv cmdliner))
+  (pps ppx_deriving_yojson))
+ (libraries voodoo_lib odoc.odoc omd bos yojson ppx_deriving_yojson cmdliner))

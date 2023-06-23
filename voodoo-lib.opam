@@ -14,7 +14,7 @@ depends: [
   "bos"
   "astring"
   "fpath"
-  "ppx_yojson_conv"
+  "ppx_deriving_yojson"
   "sexplib"
   "yojson"
   "odoc" {with-doc}

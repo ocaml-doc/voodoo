@@ -26,7 +26,7 @@
   bos
   astring
   fpath
-  ppx_yojson_conv
+  ppx_deriving_yojson
   sexplib
   yojson))
 
@@ -78,8 +78,7 @@
   cmdliner
   yojson
   bos
-  (ppx_yojson_conv
-   (= v0.15.1))
+  ppx_deriving_yojson
   sexplib
   fpath
   (conf-jq :with-test)

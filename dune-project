@@ -52,7 +52,9 @@
   (ocaml
    (>= 4.08.0))
   voodoo-lib
-  odoc ; = 2.2.0 pinned by the pipeline
+  ; odoc.2.2.0 pinned by the pipeline
+  (odoc
+   (>= 2.2.0))
   astring
   cmdliner
   yojson))
@@ -68,7 +70,9 @@
   (omd
    (= 2.0.0~alpha3))
   voodoo-lib
-  odoc ; = 2.2.0 pinned by the pipeline
+  ; odoc.2.2.0 pinned by the pipeline
+  (odoc
+   (>= 2.2.0))
   conf-pandoc
   astring
   cmdliner
@@ -79,5 +83,11 @@
   sexplib
   fpath
   (conf-jq :with-test)
-  (ppx_deriving_yaml :with-test)
-  (base :with-test)))
+  (ppx_deriving_yaml
+   (and
+    (= 0.2.1)
+    :with-test))
+  (base
+   (and
+    (= v0.15.1)
+    :with-test))))

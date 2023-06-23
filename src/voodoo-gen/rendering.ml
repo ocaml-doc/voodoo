@@ -1,7 +1,7 @@
 open Odoc_odoc
-open Result
+module Result = Stdlib.Result
 
-let ( >>= ) r f = match r with Ok v -> f v | Error _ as e -> e
+let ( >>= ) = Result.bind
 
 let document_of_odocl ~syntax input =
   let open Odoc_document in

@@ -1,3 +1,5 @@
+module Result = Stdlib.Result
+
 type kind =
   [ `Module
   | `Page

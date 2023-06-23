@@ -33,4 +33,4 @@ let gen ~output ~(dune : Dune.t option) ~libraries () =
   in
 
   let output = Fpath.(to_string (output / "package.json")) in
-  Yojson.Safe.to_file output (yojson_of_t yojson_of_string { libraries })
+  Yojson.Safe.to_file output (to_yojson [%to_yojson: string] { libraries })

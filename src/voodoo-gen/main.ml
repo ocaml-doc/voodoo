@@ -131,7 +131,7 @@ let generate_pkgver output_dir name_filter version_filter =
             if Option.is_none universe then
               Yojson.Safe.to_file
                 Fpath.(output_prefix / "status.json" |> to_string)
-                (yojson_of_status status);
+                (status_to_yojson status);
 
             match
               Search_index.generate_index

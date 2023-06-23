@@ -63,13 +63,17 @@ let info_of_paths ~(info : string Voodoo_lib.Package_info.t) paths =
     info.libraries
 
 let gen ~input ~output paths =
+  Result.iter_error ignore
+  @@
   let input = Fpath.(parent input / "package.json" |> to_string) in
-  let info =
-    Voodoo_lib.Package_info.t_of_yojson string_of_yojson
-      (Yojson.Safe.from_file input)
-  in
+  let ( >>= ) = Result.bind in
+  Voodoo_lib.Package_info.of_yojson [%of_yojson: string]
+    (Yojson.Safe.from_file input)
+  |> Result.map_error (fun x -> `Msg x)
+  >>= fun info ->
   let libraries = info_of_paths ~info paths in
-  let _ = Bos.OS.Dir.create output |> Result.get_ok in
+  Bos.OS.Dir.create output >>= fun (_ : bool) ->
   let output = Fpath.(to_string (output / "package.json")) in
   Yojson.Safe.to_file output
-    (Voodoo_lib.Package_info.yojson_of_t yojson_of_modul { libraries })
+    (Voodoo_lib.Package_info.to_yojson modul_to_yojson { libraries });
+  Ok ()

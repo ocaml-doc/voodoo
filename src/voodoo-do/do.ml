@@ -4,6 +4,8 @@ open Voodoo_lib
 module Result = Bos_setup.R
 open Result.Infix
 
+type ('a, 'e) result = ('a, 'e) Rresult.result = Ok of 'a | Error of 'e
+
 module InputSelect = struct
   let order path =
     let ext = Fpath.get_ext path in
@@ -92,7 +94,7 @@ let find_universe_and_version pkg_name =
   Bos.OS.Dir.contents Fpath.(Paths.prep / "universes") >>= fun universes ->
   let universe =
     match
-      List.find_opt
+      Compat.List.find_opt
         (fun u ->
           match Bos.OS.Dir.exists Fpath.(u / pkg_name) with
           | Ok b -> b

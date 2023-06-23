@@ -1,6 +1,4 @@
 (library
  (name voodoo_lib)
  (public_name voodoo-lib)
- (preprocess
-  (pps ppx_deriving_yojson))
- (libraries astring fpath bos bos.setup ppx_deriving_yojson sexplib yojson))
+ (libraries astring fpath bos bos.setup sexplib yojson voodoo-lib.serialize))

@@ -10,12 +10,12 @@ homepage: "https://github.com/ocaml-doc/voodoo"
 bug-reports: "https://github.com/ocaml-doc/voodoo/issues"
 depends: [
   "dune" {>= "3.0"}
+  "alcotest" {with-test & >= "0.7.0"}
   "bos"
   "astring"
   "fpath"
-  "ppx_deriving_yojson" {>= "3.6.0"}
   "sexplib"
-  "yojson"
+  "yojson" {>= "1.6.0"}
   "odoc" {with-doc}
 ]
 build: [

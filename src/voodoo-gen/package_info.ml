@@ -1,22 +1,7 @@
 module Result = Stdlib.Result
-
-type kind =
-  [ `Module
-  | `Page
-  | `LeafPage
-  | `ModuleType
-  | `Parameter of int
-  | `Class
-  | `ClassType
-  | `File ]
-[@@deriving yojson]
-
-type modul = { name : string; submodules : modul list; kind : kind }
-[@@deriving yojson]
-
 module StringMap = Map.Make (String)
 
-let info_of_paths ~(info : string Voodoo_lib.Package_info.t) paths =
+let info_of_paths ~(info : string Voodoo_serialize.Package_info.t) paths =
   let children = ref StringMap.empty in
   let kind = ref StringMap.empty in
   let path_to_string v =
@@ -50,16 +35,16 @@ let info_of_paths ~(info : string Voodoo_lib.Package_info.t) paths =
     let name =
       List.fold_left (fun _ -> Fun.id) root (String.split_on_char '.' root)
     in
-    { name; kind; submodules }
+    { Voodoo_serialize.Package_info.Module.name; kind; submodules }
   in
   List.map
-    (fun { Voodoo_lib.Package_info.name; modules; dependencies } ->
+    (fun { Voodoo_serialize.Package_info.Library.name; modules; dependencies } ->
       let modules =
         List.filter_map
           (fun t -> try Some (get_tree t) with Not_found -> None)
           modules
       in
-      { Voodoo_lib.Package_info.name; modules; dependencies })
+      { Voodoo_serialize.Package_info.Library.name; modules; dependencies })
     info.libraries
 
 let gen ~input ~output paths =
@@ -67,13 +52,14 @@ let gen ~input ~output paths =
   @@
   let input = Fpath.(parent input / "package.json" |> to_string) in
   let ( >>= ) = Result.bind in
-  Voodoo_lib.Package_info.of_yojson [%of_yojson: string]
-    (Yojson.Safe.from_file input)
-  |> Result.map_error (fun x -> `Msg x)
-  >>= fun info ->
+  let info =
+    Voodoo_serialize.Package_info.of_yojson Voodoo_serialize.String_.of_yojson
+      (Yojson.Safe.from_file input)
+  in
   let libraries = info_of_paths ~info paths in
   Bos.OS.Dir.create output >>= fun (_ : bool) ->
   let output = Fpath.(to_string (output / "package.json")) in
   Yojson.Safe.to_file output
-    (Voodoo_lib.Package_info.to_yojson modul_to_yojson { libraries });
+    (Voodoo_serialize.Package_info.to_yojson
+       Voodoo_serialize.Package_info.Module.to_yojson { libraries });
   Ok ()

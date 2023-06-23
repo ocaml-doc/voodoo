@@ -1,0 +1,4 @@
+(test
+ (name main)
+ (package voodoo-lib)
+ (libraries alcotest voodoo-lib.serialize))

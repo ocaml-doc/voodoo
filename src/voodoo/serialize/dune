@@ -1,0 +1,4 @@
+(library
+ (name voodoo_serialize)
+ (public_name voodoo-lib.serialize)
+ (libraries fpath yojson))

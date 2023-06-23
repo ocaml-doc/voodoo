@@ -2,6 +2,8 @@
 module Result = Bos_setup.R
 open Result.Infix
 
+type ('a, 'e) result = ('a, 'e) Rresult.result = Ok of 'a | Error of 'e
+
 module Library = struct
   type wrapped_t = {
     main_module_name : string;

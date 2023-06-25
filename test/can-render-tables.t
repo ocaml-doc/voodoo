@@ -5,12 +5,28 @@ Generate the ppx_deriving_yaml documentation
   $ voodoo-do -p ppx_deriving_yaml -b 2> /dev/null
 
   $ voodoo-gen -o output
-  0 other versons, 1 packages
+  0 other versions, 1 packages
   Found 2 files
 
 Generates a status.json file
-  $ cat output/p/ppx_deriving_yaml/0.2.1/status.json
-  ["Built"]
+  $ cat output/p/ppx_deriving_yaml/0.2.1/status.json | jq .
+  {
+    "failed": false,
+    "otherdocs": {
+      "readme": [
+        "linked/p/ppx_deriving_yaml/0.2.1/doc/README.md"
+      ],
+      "license": [
+        "linked/p/ppx_deriving_yaml/0.2.1/doc/LICENSE.md"
+      ],
+      "changes": [
+        "linked/p/ppx_deriving_yaml/0.2.1/doc/CHANGES.md"
+      ],
+      "others": [
+        "linked/p/ppx_deriving_yaml/0.2.1/package.json"
+      ]
+    }
+  }
 
 Generate a README.md file with the tables formatted in HTML
   $ cat output/p/ppx_deriving_yaml/0.2.1/README.md.html.json | jq '.content'

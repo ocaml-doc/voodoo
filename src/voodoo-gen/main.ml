@@ -1,12 +1,17 @@
 open Cmdliner
+module Result = Stdlib.Result
+
+let ( >>= ) = Result.bind
 
 [@@@ocaml.warning "-3"]
 
 module Fpath = struct
   include Fpath
 
-  let t_of_yojson x = Fpath.v @@ string_of_yojson x
-  let yojson_of_t x = yojson_of_string @@ Fpath.to_string x
+  type repr = string [@@deriving yojson]
+
+  let of_yojson x = repr_of_yojson x >>= fun s -> Ok (Fpath.v s)
+  let to_yojson x = repr_to_yojson @@ Fpath.to_string x
 end
 
 type otherdocs = {

@@ -1,5 +1,7 @@
 (* util.ml *)
 open Bos
+module Result = Bos_setup.R
+open Result.Infix
 
 let is_hidden s =
   let len = String.length s in
@@ -42,7 +44,4 @@ let mkdir_p d =
   in
   ()
 
-let copy src dst =
-  let open Result in
-  let ( >>= ) m f = match m with Ok x -> f x | Error y -> Error y in
-  Bos.OS.File.read src >>= Bos.OS.File.write dst
+let copy src dst = Bos.OS.File.read src >>= Bos.OS.File.write dst

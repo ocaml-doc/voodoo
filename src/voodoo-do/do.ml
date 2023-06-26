@@ -1,7 +1,8 @@
 (* do! - perform the odoc compile and link stages *)
 
 open Voodoo_lib
-module Result = Stdlib.Result
+module Result = Bos_setup.R
+open Result.Infix
 
 module InputSelect = struct
   let order path =
@@ -88,7 +89,6 @@ let package_info_of_fpath p =
       failwith "Bad path"
 
 let find_universe_and_version pkg_name =
-  let ( >>= ) = Result.bind in
   Bos.OS.Dir.contents Fpath.(Paths.prep / "universes") >>= fun universes ->
   let universe =
     match

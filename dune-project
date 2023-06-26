@@ -46,6 +46,7 @@
   ; odoc.2.2.0 pinned by the pipeline
   (odoc
    (>= 2.2.0))
+  bos
   astring
   cmdliner
   yojson))

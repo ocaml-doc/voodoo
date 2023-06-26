@@ -10,7 +10,6 @@ homepage: "https://github.com/ocaml-doc/voodoo"
 bug-reports: "https://github.com/ocaml-doc/voodoo/issues"
 depends: [
   "dune" {>= "3.0"}
-  "ocaml" {>= "4.08.0"}
   "bos"
   "astring"
   "fpath"

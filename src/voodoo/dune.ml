@@ -1,5 +1,6 @@
 (* Process dune-package *)
-open Result
+module Result = Bos_setup.R
+open Result.Infix
 
 module Library = struct
   type wrapped_t = {
@@ -20,9 +21,6 @@ module Library = struct
 end
 
 type t = { name : string; version : string option; libraries : Library.t list }
-
-let ( >>= ) m f = match m with Ok v -> f v | Error e -> Error e
-let join = function Ok r -> r | Error _ as e -> e
 
 let assoc_list = function
   | Sexplib.Sexp.List ls ->
@@ -152,4 +150,4 @@ let find package =
       if name = Fpath.v "dune-package" then Ok p else acc)
     (Error (`Msg "Missing"))
     path
-  |> join
+  |> Result.join

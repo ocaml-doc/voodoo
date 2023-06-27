@@ -1,4 +1,4 @@
-module Result = Stdlib.Result
+module Result = Bos_setup.R
 
 type t = {
   path : Paths.t;

@@ -21,12 +21,11 @@
  (description
   "Voodoo is an odoc driver used to generate OCaml.org's package documentation. voodoo-lib is the base library.")
  (depends
-  (ocaml
-   (>= 4.08.0))
   bos
   astring
   fpath
-  ppx_deriving_yojson
+  (ppx_deriving_yojson
+   (>= 3.6.0))
   sexplib
   yojson))
 
@@ -35,13 +34,7 @@
  (synopsis "OCaml.org's package documentation generator (preparation step)")
  (description
   "Voodoo is an odoc driver used to generate OCaml.org's package documentation. voodoo-prep runs the preparation step.")
- (depends
-  (ocaml
-   (>= 4.08.0))
-  cmdliner
-  fpath
-  bos
-  opam-format))
+ (depends cmdliner fpath bos opam-format))
 
 (package
  (name voodoo-do)
@@ -49,12 +42,11 @@
  (description
   "Voodoo is an odoc driver used to generate OCaml.org's package documentation. voodoo-do runs the compilation step.")
  (depends
-  (ocaml
-   (>= 4.08.0))
   voodoo-lib
   ; odoc.2.2.0 pinned by the pipeline
   (odoc
    (>= 2.2.0))
+  bos
   astring
   cmdliner
   yojson))
@@ -78,7 +70,8 @@
   cmdliner
   yojson
   bos
-  ppx_deriving_yojson
+  (ppx_deriving_yojson
+   (>= 3.6.0))
   sexplib
   fpath
   (conf-jq :with-test)

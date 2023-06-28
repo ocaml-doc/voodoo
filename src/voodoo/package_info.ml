@@ -1,6 +1,4 @@
-(* Generate a package.json describing the content of that package *)
-
-let gen ~output ~(dune : Dune.t option) ~libraries () =
+let gen ~output ~(dune : Dune.t option) ~libraries =
   let dune_modules = function
     | Dune.Library.Singleton m -> [ m ]
     | Unwrapped { modules; _ } -> modules

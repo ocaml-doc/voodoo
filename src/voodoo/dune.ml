@@ -1,4 +1,3 @@
-(* Process dune-package *)
 module Result = Bos_setup.R
 open Result.Infix
 

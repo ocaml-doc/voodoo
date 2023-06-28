@@ -1,5 +1,3 @@
-.DEFAULT_GOAL := all
-
 ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
 $(eval $(ARGS):;@:)
 
@@ -18,10 +16,6 @@ create_switch:
 
 .PHONY: switch
 switch: create_switch deps ## Create an opam switch and install development dependencies
-
-.PHONY: lock
-lock: ## Generate a lock file
-	opam lock -y .
 
 .PHONY: build
 build: ## Build the project, including non installable libraries and executables
@@ -47,43 +41,6 @@ doc: ## Generate odoc documentation
 fmt: ## Format the codebase with ocamlformat
 	opam exec -- dune build --root . --auto-promote @fmt
 
-.PHONY: watch
-watch: ## Watch for the filesystem and rebuild on every change
-	opam exec -- script/watch.sh
-
 .PHONY: utop
 utop: ## Run a REPL and link with the project's libraries
 	opam exec -- dune utop --root . lib -- -implicit-bindings
-
-.PHONY: promote
-promote: ## Promote files to the source directory
-	dune build client/voodoo_client.bc.js --profile release
-	cp _build/default/client/voodoo_client.bc.js src/voodoo-gen/static/voodoo_client.bc.js
-
-_generated:
-	rm -rf _generated; mkdir _generated
-
-.PHONY: support
-support:
-	odoc support-files -o _generated/html
-
-.PHONY: prep
-prep: _generated
-	cd _generated; opam exec -- dune exec -- voodoo-prep
-
-.PHONY: example
-example: all prep ## Build an sample output
-	cd _generated; opam exec -- dune exec -- voodoo-do -p ocaml-base-compiler -b
-	cd _generated; opam exec -- dune exec -- voodoo-gen -o output
-
-.PHONY: gen
-gen:
-	cd _generated; rm -rf output
-	cd _generated; opam exec -- dune exec -- voodoo-gen -o output
-
-.PHONY: serve
-serve:
-	opam exec -- dream-serve _generated/html
-
-.DEFAULT:
-	cd _generated; opam exec -- dune exec -- voodoo-do -p $@ -b

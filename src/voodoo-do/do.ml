@@ -1,5 +1,3 @@
-(* do! - perform the odoc compile and link stages *)
-
 open Voodoo_lib
 module Result = Bos_setup.R
 open Result.Infix
@@ -110,7 +108,7 @@ let find_universe_and_version pkg_name =
   | _ :: _ :: u :: _, [ version ] -> Ok (u, Fpath.to_string version)
   | _ -> Error (`Msg (Format.sprintf "Failed to find package %s" pkg_name))
 
-let run pkg_name is_blessed failed =
+let run pkg_name ~blessed ~failed =
   let is_interesting p =
     List.mem (Fpath.get_ext p) [ ".cmti"; ".cmt"; ".cmi" ]
   in
@@ -153,7 +151,7 @@ let run pkg_name is_blessed failed =
   in
   let package = { Package.universe; name = pkg_name; version } in
   let output_path =
-    if is_blessed then Fpath.(Paths.link / "p" / pkg_name / version)
+    if blessed then Fpath.(Paths.link / "p" / pkg_name / version)
     else Fpath.(Paths.link / "u" / universe / pkg_name / version)
   in
   Util.mkdir_p output_path;
@@ -191,11 +189,11 @@ let run pkg_name is_blessed failed =
   let error_log = Error_log.find package in
 
   let parent =
-    Version.gen_parent package ~blessed:is_blessed ~modules ~dune ~libraries
-      ~package_mlds ~error_log ~failed
+    Version.gen_parent package ~blessed ~modules ~dune ~libraries ~package_mlds
+      ~error_log ~failed
   in
 
-  let () = Package_info.gen ~output:output_path ~dune ~libraries () in
+  let () = Package_info.gen ~output:output_path ~dune ~libraries in
 
   let sis = Compat.List.concat_map (get_source_info parent) prep in
   let this_index = InputSelect.select sis in
@@ -219,7 +217,7 @@ let run pkg_name is_blessed failed =
       si.path :: compiled
   in
   let _ = ignore (Index.M.fold compile this_index.intern []) in
-  let mldvs = Package_mlds.compile parent package_mlds in
+  let mldvs = Package_mlds.compile ~parent package_mlds in
   let unit_includes = IncludePaths.link index in
   let docs_includes = Package_mlds.include_paths mldvs in
   let all_includes = Fpath.Set.union unit_includes docs_includes in
@@ -253,8 +251,7 @@ let run pkg_name is_blessed failed =
   Format.eprintf "%d other files to copy\n%!" (List.length otherdocs);
   let otherdocs, _opam_file = Otherdocs.copy parent otherdocs opam_file in
   List.iter (fun p -> Format.eprintf "dest: %a\n%!" Fpath.pp p) otherdocs;
-  List.iter (Odoc.html output) odocls;
-  (* Odoc.voodoo_gen Fpath.(output / "tailwind") pkg_name version; *)
+  List.iter (Odoc.html ~output) odocls;
   let () =
     Bos.OS.File.delete (Fpath.v "compile/page-p.odoc") |> Result.get_ok
   in

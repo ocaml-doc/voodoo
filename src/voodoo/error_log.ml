@@ -1,5 +1,3 @@
-(* Pull out error log *)
-
 type t = string list option
 
 let find package =

@@ -6,7 +6,7 @@ open Cmdliner
 
 let run package blessed switch failed =
   Opam.switch := switch;
-  Do.run package blessed failed
+  Do.run package ~blessed ~failed
 
 let package =
   let doc = "Select the package to process" in

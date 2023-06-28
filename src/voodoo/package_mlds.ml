@@ -1,5 +1,3 @@
-(* package mlds *)
-
 let find package =
   let path = Fpath.(Package.prep_path package / "doc" / package.name) in
   let res =
@@ -20,7 +18,7 @@ let find package =
       Format.eprintf "Found no other pages\n%!";
       ([], [])
 
-let compile version package_mlds =
+let compile ~parent package_mlds =
   if List.length package_mlds = 0 then (
     Format.eprintf "No children\n%!";
     [])
@@ -30,9 +28,7 @@ let compile version package_mlds =
     let package_mlds =
       List.filter (fun p -> Fpath.basename p <> "index.mld") package_mlds
     in
-    let package_mldvs =
-      List.map (fun p -> Mld.of_fpath version p) package_mlds
-    in
+    let package_mldvs = List.map (Mld.of_fpath ~parent) package_mlds in
     List.iter Mld.compile package_mldvs;
     package_mldvs)
 

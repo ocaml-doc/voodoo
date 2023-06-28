@@ -1,6 +1,3 @@
-(* otherdocs *)
-
-(* Copy the other docs into the version directory *)
 let copy version docs opam_file =
   let dir = Fpath.(Mld.link_dir version / version.name) in
   let copy src =

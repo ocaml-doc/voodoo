@@ -1,4 +1,3 @@
-(* Map of module digest to source info *)
 module M = Map.Make (String)
 
 type t = { intern : Sourceinfo.t M.t; extern : Fpath.t M.t }
@@ -10,12 +9,8 @@ type serialisable = (string * Fpath.t) list
 let find_opt name t = try Some (M.find name t.intern) with _ -> None
 let find_extern_opt name t = try Some (M.find name t.extern) with _ -> None
 
-(* Write the index file into 'packages/<pkg_name>/<version>/index.m or
-   universes/<universe>/<pkg_name>/<version>/index.m *)
 let write t parent_mld =
-  (* Format.eprintf "Index.write: parent_mld=%a\n%!" Mld.pp parent_mld; *)
   let output_dir = Mld.compile_dir parent_mld in
-  (* Format.eprintf "Output dir: %a\n%!" Fpath.pp output_dir; *)
   Util.mkdir_p Fpath.(output_dir / parent_mld.name);
   let oc =
     open_out Fpath.(to_string (output_dir / parent_mld.name / "index.m"))
@@ -39,8 +34,7 @@ let read f =
   in
   { intern = M.empty; extern }
 
-let combine : t -> t -> t =
- fun t1 t2 ->
+let combine t1 t2 =
   {
     intern = M.fold M.add t1.intern t2.intern;
     extern = M.fold M.add t1.extern t2.extern;

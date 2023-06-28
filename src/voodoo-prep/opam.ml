@@ -1,4 +1,3 @@
-(* opam *)
 open Bos
 
 let opam = Cmd.v "opam"
@@ -34,10 +33,10 @@ let all_opam_packages () =
   |> List.map deps_of_opam_result
   |> List.flatten
 
-let pkg_contents pkg =
+let pkg_contents { Package.name; _ } =
   let prefix = Fpath.v (prefix ()) in
   let changes_file =
-    Format.asprintf "%a/.opam-switch/install/%s.changes" Fpath.pp prefix pkg
+    Format.asprintf "%a/.opam-switch/install/%s.changes" Fpath.pp prefix name
   in
   let file = OpamFilename.raw changes_file in
   let filename =
@@ -72,9 +71,9 @@ let pkg_contents pkg =
         | _ -> acc)
       changed []
   in
-  List.map (fun path -> Fpath.(v path)) added
+  List.map Fpath.v added
 
-let opam_file name version =
+let opam_file { Package.name; version; _ } =
   let prefix = Fpath.v (prefix ()) in
   let opam_file =
     Format.asprintf "%a/.opam-switch/packages/%s.%s/opam" Fpath.pp prefix name

@@ -20,8 +20,7 @@ Generates a status.json file
     "failed": false,
     "otherdocs": {
       "readme": [
-        "linked/p/base/v0.15.1/doc/README.org",
-        "linked/p/base/v0.15.1/doc/README.md"
+        "linked/p/base/v0.15.1/doc/README.org"
       ],
       "license": [
         "linked/p/base/v0.15.1/doc/LICENSE.md"
@@ -39,7 +38,6 @@ Converted the README.org file in markdown
   $ ls output/p/base/v0.15.1/
   CHANGES.md.html.json
   LICENSE.md.html.json
-  README.md.html.json
   README.org.html.json
   doc
   index.js

@@ -52,7 +52,7 @@ let rec files_with_ext ext path =
       let children =
         match OS.Dir.contents path with Ok paths -> paths | Error _ -> []
       in
-      List.concat_map (files_with_ext ext) children
+      List.concat @@ List.map (files_with_ext ext) children
   | Ok false -> (
       match OS.File.exists path with
       | Ok true -> if Fpath.has_ext ext path then [ path ] else []

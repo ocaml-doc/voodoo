@@ -22,6 +22,7 @@ depends: [
   "ppx_deriving_yojson" {>= "3.6.0"}
   "sexplib"
   "fpath"
+  "olinkcheck"
   "conf-jq" {with-test}
   "ppx_deriving_yaml" {= "0.2.1" & with-test}
   "base" {= "v0.15.1" & with-test}
@@ -44,3 +45,4 @@ dev-repo: "git+https://github.com/ocaml-doc/voodoo.git"
 available: [ os-distribution != "alpine" & arch != "ppc64"]
 # PPC64 fails to build with stack overflow see https://github.com/ocaml/ocaml/issues/11415
 # Alpine-3.16 doesn't have a pandoc package, however 3.17 does
+pin-depends: [["olinkcheck.~dev" "git+https://github.com/tarides/olinkcheck"]]

@@ -22,7 +22,18 @@ type otherdocs = {
 }
 [@@deriving yojson]
 
-type status = { failed : bool; otherdocs : otherdocs } [@@deriving yojson]
+type file_with_links = {
+  file : Fpath.t;
+  broken_links : ((int * string) * string) list;
+}
+[@@deriving yojson]
+
+type status = {
+  failed : bool;
+  otherdocs : otherdocs;
+  broken_link_files : file_with_links list;
+}
+[@@deriving yojson]
 
 let docs = "ARGUMENTS"
 
@@ -147,6 +158,28 @@ let generate_pkgver output_dir name_filter version_filter =
             Package_info.gen ~input:parent ~output:output_prefix paths;
             Rendering.render_other ~parent ~otherdocs ~output |> get_ok;
 
+            let htmls =
+              Voodoo_lib.Util.files_with_ext ".html.json" output_prefix
+            in
+            let broken_link_files =
+              List.fold_left
+                (fun acc path ->
+                  let links =
+                    Bos.OS.File.read path |> get_ok
+                    |> Olinkcheck.Plaintext.extract_links
+                  in
+                  let status = Olinkcheck.Link.status_many links in
+                  let broken =
+                    List.combine status links
+                    |> List.filter (fun ((code, _), _) -> code <> 200)
+                  in
+                  if List.length broken <> 0 then
+                    let entry = { file = path; broken_links = broken } in
+                    entry :: acc
+                  else acc)
+                [] htmls
+            in
+
             let otherdocs =
               let init =
                 { readme = []; license = []; changes = []; others = [] }
@@ -162,7 +195,7 @@ let generate_pkgver output_dir name_filter version_filter =
                   | _ -> { acc with others = path :: acc.others })
                 init otherdocs
             in
-            let status = { failed; otherdocs } in
+            let status = { failed; otherdocs; broken_link_files } in
             if Option.is_none universe then
               Yojson.Safe.to_file
                 Fpath.(output_prefix / "status.json" |> to_string)

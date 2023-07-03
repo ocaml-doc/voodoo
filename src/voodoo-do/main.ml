@@ -6,12 +6,12 @@ open Cmdliner
 
 let run package blessed switch failed =
   Opam.switch := switch;
-  match package with None -> Do.run_all () | Some p -> Do.run p blessed failed
+  Do.run package blessed failed
 
 let package =
   let doc = "Select the package to process" in
   Arg.(
-    value & opt (some string) None & info [ "p"; "package" ] ~docv:"PKG" ~doc)
+    required & opt (some string) None & info [ "p"; "package" ] ~docv:"PKG" ~doc)
 
 let blessed =
   let doc = "Mark the package as blessed" in
@@ -23,7 +23,7 @@ let switch =
     value & opt (some string) None & info [ "s"; "switch" ] ~doc ~docv:"SWITCH")
 
 let failed =
-  let doc = "Indicate that the build was a failed" in
+  let doc = "Indicate that the build failed" in
   Arg.(value & flag & info [ "failed" ] ~doc)
 
 let cmd =

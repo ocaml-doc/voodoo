@@ -69,7 +69,7 @@ let process_package : Fpath.t -> Package.t -> Fpath.t list -> unit =
       Util.write_file Fpath.(dest // set_ext "ocamlobjinfo" fpath) lines)
     actions.objinfo
 
-let run _ (universes : (string * string) list) =
+let run (universes : (string * string) list) =
   let get_universe =
     match universes with
     | [] ->

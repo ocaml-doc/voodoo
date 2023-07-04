@@ -31,7 +31,8 @@ Generates a status.json file
       "others": [
         "linked/p/base/v0.15.1/package.json"
       ]
-    }
+    },
+    "broken_link_files": []
   }
 
 Converted the README.org file in markdown

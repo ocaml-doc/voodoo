@@ -1,3 +1,4 @@
 available: [ os-distribution != "alpine" & arch != "ppc64"]
 # PPC64 fails to build with stack overflow see https://github.com/ocaml/ocaml/issues/11415
 # Alpine-3.16 doesn't have a pandoc package, however 3.17 does
+pin-depends: [["olinkcheck.~dev" "git+https://github.com/tarides/olinkcheck#ef33ab71da9767596b9b6ae6c5b4c89cf6fabe3e"]]

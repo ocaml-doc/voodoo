@@ -74,6 +74,7 @@
    (>= 3.6.0))
   sexplib
   fpath
+  olinkcheck
   (conf-jq :with-test)
   (ppx_deriving_yaml
    (and

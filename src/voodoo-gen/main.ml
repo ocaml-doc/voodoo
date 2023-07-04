@@ -22,7 +22,18 @@ type otherdocs = {
 }
 [@@deriving yojson]
 
-type status = { failed : bool; otherdocs : otherdocs } [@@deriving yojson]
+type file_with_links = {
+  file : Fpath.t;
+  broken_links : ((int * string) * string) list;
+}
+[@@deriving yojson]
+
+type status = {
+  failed : bool;
+  otherdocs : otherdocs;
+  broken_link_files : file_with_links list;
+}
+[@@deriving yojson]
 
 let docs = "ARGUMENTS"
 
@@ -57,7 +68,7 @@ let get_ok = function
       Format.eprintf "get_ok: Failure! msg=%s\n%!" m;
       failwith "get_ok: Not OK"
 
-let generate_pkgver output_dir name_filter version_filter =
+let generate_pkgver output_dir name_filter version_filter check_links_flag =
   let linkedpath = Fpath.(v "linked") in
   match
     Bos.OS.Dir.fold_contents ~elements:`Dirs
@@ -147,6 +158,31 @@ let generate_pkgver output_dir name_filter version_filter =
             Package_info.gen ~input:parent ~output:output_prefix paths;
             Rendering.render_other ~parent ~otherdocs ~output |> get_ok;
 
+            let broken_link_files =
+              if check_links_flag then
+                let htmls =
+                  Voodoo_lib.Util.files_with_ext ".html.json" output_prefix
+                in
+                List.fold_left
+                  (fun acc path ->
+                    let links =
+                      Bos.OS.File.read path |> get_ok
+                      |> Olinkcheck.Html.from_string
+                      |> Olinkcheck.Html.extract_links
+                    in
+                    let status = Olinkcheck.Link.status_many links in
+                    let broken =
+                      List.combine status links
+                      |> List.filter (fun ((code, _), _) -> code <> 200)
+                    in
+                    if List.length broken <> 0 then
+                      let entry = { file = path; broken_links = broken } in
+                      entry :: acc
+                    else acc)
+                  [] htmls
+              else []
+            in
+
             let otherdocs =
               let init =
                 { readme = []; license = []; changes = []; others = [] }
@@ -162,7 +198,7 @@ let generate_pkgver output_dir name_filter version_filter =
                   | _ -> { acc with others = path :: acc.others })
                 init otherdocs
             in
-            let status = { failed; otherdocs } in
+            let status = { failed; otherdocs; broken_link_files } in
             if Option.is_none universe then
               Yojson.Safe.to_file
                 Fpath.(output_prefix / "status.json" |> to_string)
@@ -206,10 +242,15 @@ let package_version_opt =
     & opt (some string) None
     & info ~docs ~docv:"VERSION" ~doc [ "pkg-version" ])
 
+let check_links_flag =
+  let doc = "Flag to check if the links in the documentation are broken" in
+  Arg.(value & flag & info [ "check-links" ] ~doc)
+
 let default_cmd =
   let doc = "Documentation generator" in
   ( Term.(
-      const generate_pkgver $ output $ package_name_opt $ package_version_opt),
+      const generate_pkgver $ output $ package_name_opt $ package_version_opt
+      $ check_links_flag),
     Term.info "voodoo-gen" ~version ~doc ~exits:Term.default_exits )
 
 let () = Term.(exit @@ eval default_cmd)

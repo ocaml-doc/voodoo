@@ -25,7 +25,8 @@ Generates a status.json file
       "others": [
         "linked/p/ppx_deriving_yaml/0.2.1/package.json"
       ]
-    }
+    },
+    "broken_link_files": []
   }
 
 Generate a README.md file with the tables formatted in HTML

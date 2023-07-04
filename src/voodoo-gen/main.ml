@@ -166,7 +166,8 @@ let generate_pkgver output_dir name_filter version_filter =
                 (fun acc path ->
                   let links =
                     Bos.OS.File.read path |> get_ok
-                    |> Olinkcheck.Plaintext.extract_links
+                    |> Olinkcheck.Html.from_string
+                    |> Olinkcheck.Html.extract_links
                   in
                   let status = Olinkcheck.Link.status_many links in
                   let broken =

@@ -1,6 +1,6 @@
 val gen :
   output:Fpath.t ->
   dune:Dune.t option ->
-  libraries:(string * string list) list ->
+  libraries:Ocamlobjinfo.t list ->
   unit ->
   unit

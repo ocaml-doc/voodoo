@@ -74,12 +74,12 @@ prep: _generated
 .PHONY: example
 example: all prep ## Build an sample output
 	cd _generated; opam exec -- dune exec -- voodoo-do -p ocaml-base-compiler -b
-	cd _generated; opam exec -- dune exec -- voodoo-gen -o output
+	cd _generated; opam exec -- dune exec -- voodoo-gen -o output --check-links
 
 .PHONY: gen
 gen:
 	cd _generated; rm -rf output
-	cd _generated; opam exec -- dune exec -- voodoo-gen -o output
+	cd _generated; opam exec -- dune exec -- voodoo-gen -o output --check-links
 
 .PHONY: serve
 serve:

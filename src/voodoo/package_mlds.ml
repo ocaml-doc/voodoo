@@ -20,7 +20,7 @@ let find package =
       Format.eprintf "Found no other pages\n%!";
       ([], [])
 
-let compile _package version package_mlds =
+let compile version package_mlds =
   if List.length package_mlds = 0 then (
     Format.eprintf "No children\n%!";
     [])

@@ -19,7 +19,7 @@ val compile :
   Fpath.t ->
   includes:Fpath.set ->
   children:child list ->
-  string list
+  unit
 
-val link : Fpath.t -> includes:Fpath.set -> output:Fpath.t -> string list
+val link : Fpath.t -> includes:Fpath.set -> output:Fpath.t -> unit
 val html : Fpath.t -> Fpath.t -> unit

@@ -212,9 +212,8 @@ let run pkg_name is_blessed failed =
       in
       let includes = IncludePaths.get index si in
       let output = Sourceinfo.output_file si in
-      ignore
-        (Odoc.compile ~parent:parent.Mld.name ~output si.path ~includes
-           ~children:[]);
+      Odoc.compile ~parent:parent.Mld.name ~output si.path ~includes
+        ~children:[];
       si.path :: compiled
   in
   let _ = ignore (Index.M.fold compile this_index.intern []) in
@@ -229,11 +228,10 @@ let run pkg_name is_blessed failed =
     (fun _ si ->
       if Sourceinfo.is_hidden si then ()
       else
-        ignore
-          (Odoc.link
-             (Sourceinfo.output_file si)
-             ~includes:all_includes
-             ~output:(Sourceinfo.output_odocl si)))
+        Odoc.link
+          (Sourceinfo.output_file si)
+          ~includes:all_includes
+          ~output:(Sourceinfo.output_odocl si))
     this_index.intern;
   let odocls =
     Index.M.fold
@@ -242,14 +240,12 @@ let run pkg_name is_blessed failed =
         else Sourceinfo.output_odocl si :: acc)
       this_index.intern []
   in
-  ignore
-    (Odoc.link (Mld.output_file parent) ~includes:all_includes
-       ~output:(Mld.output_odocl parent));
+  Odoc.link (Mld.output_file parent) ~includes:all_includes
+    ~output:(Mld.output_odocl parent);
   List.iter
     (fun mldv ->
-      ignore
-        (Odoc.link (Mld.output_file mldv) ~includes:all_includes
-           ~output:(Mld.output_odocl mldv)))
+      Odoc.link (Mld.output_file mldv) ~includes:all_includes
+        ~output:(Mld.output_odocl mldv))
     mldvs;
   let odocls = odocls @ List.map Mld.output_odocl (parent :: mldvs) in
   Format.eprintf "%d other files to copy\n%!" (List.length otherdocs);

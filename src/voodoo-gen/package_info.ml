@@ -1,4 +1,5 @@
-module Result = Stdlib.Result
+module Result = Bos_setup.R
+open Result.Infix
 module StringMap = Map.Make (String)
 
 let info_of_paths ~(info : string Voodoo_serialize.Package_info.t) paths =
@@ -48,10 +49,9 @@ let info_of_paths ~(info : string Voodoo_serialize.Package_info.t) paths =
     info.libraries
 
 let gen ~input ~output paths =
-  Result.iter_error ignore
+  Result.ignore_error ~use:ignore
   @@
   let input = Fpath.(parent input / "package.json" |> to_string) in
-  let ( >>= ) = Result.bind in
   let info =
     Voodoo_serialize.Package_info.of_yojson Voodoo_serialize.String_.of_yojson
       (Yojson.Safe.from_file input)

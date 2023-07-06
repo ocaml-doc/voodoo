@@ -2,4 +2,4 @@
  (name main)
  (public_name voodoo-gen)
  (package voodoo-gen)
- (libraries odoc.odoc omd bos yojson cmdliner voodoo_lib))
+ (libraries odoc.odoc omd bos bos.setup yojson cmdliner voodoo_lib))

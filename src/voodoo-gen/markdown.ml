@@ -1,8 +1,7 @@
 (* Markdown renderer *)
 open Omd
-open Result
-
-let ( >>= ) m f = match m with Ok x -> f x | Error y -> Error y
+module Result = Bos_setup.R
+open Result.Infix
 
 type intermediate =
   | Bl of Odoc_document.Types.Block.t

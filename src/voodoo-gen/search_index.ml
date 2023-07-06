@@ -1,9 +1,10 @@
+module Result = Bos_setup.R
+open Result.Infix
+
 type entry = {
   id : Odoc_model.Paths.Identifier.Any.t;
   doc : Odoc_model.Comment.docs option;
 }
-
-let ( >>= ) x f = match x with Ok v -> f v | Error _ as e -> e
 
 module Generate = struct
   (** Get plain text doc-comment from a doc comment *)

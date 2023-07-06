@@ -1,5 +1,5 @@
 open Cmdliner
-module Result = Stdlib.Result
+module Result = Bos_setup.R
 
 [@@@ocaml.warning "-3"]
 
@@ -29,12 +29,6 @@ let output =
 type files = { otherdocs : Fpath.t list; odocls : Fpath.t list }
 
 let empty = { otherdocs = []; odocls = [] }
-
-let get_ok = function
-  | Result.Ok x -> x
-  | Error (`Msg m) ->
-      Format.eprintf "get_ok: Failure! msg=%s\n%!" m;
-      failwith "get_ok: Not OK"
 
 let generate_pkgver output_dir name_filter version_filter =
   let linkedpath = Fpath.(v "linked") in
@@ -111,7 +105,7 @@ let generate_pkgver output_dir name_filter version_filter =
             in
             let paths =
               List.rev_map (Rendering.render ~output) files
-              |> List.rev_map get_ok |> List.flatten
+              |> List.rev_map Result.get_ok |> List.flatten
             in
             let foutput =
               Fpath.v (Odoc_odoc.Fs.Directory.to_string output_dir)
@@ -124,7 +118,7 @@ let generate_pkgver output_dir name_filter version_filter =
             in
 
             Package_info.gen ~input:parent ~output:output_prefix paths;
-            Rendering.render_other ~parent ~otherdocs ~output |> get_ok;
+            Rendering.render_other ~parent ~otherdocs ~output |> Result.get_ok;
 
             let otherdocs =
               let init = Voodoo_serialize.Status.Otherdocs.empty in

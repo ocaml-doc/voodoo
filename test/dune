@@ -1,4 +1,8 @@
 (cram
- (deps %{bin:voodoo-prep} %{bin:voodoo-do} %{bin:voodoo-gen})
+ (deps
+  %{bin:voodoo-prep}
+  %{bin:voodoo-do}
+  %{bin:voodoo-gen}
+  (source_tree packages))
  (enabled_if
   (>= %{ocaml_version} 4.08.0)))

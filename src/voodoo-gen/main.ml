@@ -131,11 +131,18 @@ let generate_pkgver output_dir name_filter version_filter =
                   | _ -> { acc with others = path :: acc.others })
                 init otherdocs
             in
-            let status = { Voodoo_serialize.Status.failed; otherdocs } in
-            if Option.is_none universe then
-              Yojson.Safe.to_file
-                Fpath.(output_prefix / "status.json" |> to_string)
-                (Voodoo_serialize.Status.to_yojson status);
+
+            (if Option.is_none universe then
+               let universe =
+                 Bos.OS.File.read Fpath.(pkg_path / "universe.txt")
+                 |> Result.get_ok
+               in
+               let status =
+                 { Voodoo_serialize.Status.failed; universe; otherdocs }
+               in
+               Yojson.Safe.to_file
+                 Fpath.(output_prefix / "status.json" |> to_string)
+                 (Voodoo_serialize.Status.to_yojson status));
 
             match
               Search_index.generate_index

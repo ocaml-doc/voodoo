@@ -41,8 +41,13 @@
   cmdliner
   fpath
   bos
+  js_of_ocaml
+  js_top_worker
+  ocaml-base-compiler
   (opam-format
-   (>= 2.0.0))))
+   (>= 2.0.0))
+  (yojson
+   (>= 1.6.0))))
 
 (package
  (name voodoo-do)

@@ -85,3 +85,5 @@ let opam_file { Package.name; version; _ } =
     close_in ic;
     Some lines
   with _ -> None
+
+let exec () = Bos.Cmd.(opam % "exec" % "--switch" % get_switch () % "--")

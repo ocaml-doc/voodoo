@@ -7,6 +7,7 @@ Generate the can-render-tables documentation
 
   $ voodoo-prep
   Warning: No universes have been specified: will generate dummy universes
+  Ignoring jsoo option passed: -linkall
 
   $ voodoo-do -p $PKG -b 2> /dev/null
 
@@ -18,6 +19,7 @@ Generates a status.json file
   $ cat output/p/$PKG/1.0/status.json | jq .
   {
     "failed": false,
+    "universe": "14",
     "otherdocs": {
       "readme": [
         "linked/p/can-render-tables/1.0/doc/README.md"
@@ -25,6 +27,7 @@ Generates a status.json file
       "license": [],
       "changes": [],
       "others": [
+        "linked/p/can-render-tables/1.0/universe.txt",
         "linked/p/can-render-tables/1.0/package.json"
       ]
     }

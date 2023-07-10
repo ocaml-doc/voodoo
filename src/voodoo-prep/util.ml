@@ -10,9 +10,14 @@ let lines_of_channel ic =
   inner []
 
 let lines_of_process cmd =
-  match OS.Cmd.(run_out ~err:err_null cmd |> to_lines) with
+  match OS.Cmd.(run_out ~err:err_stderr cmd |> to_lines) with
   | Ok x -> x
   | Error (`Msg e) -> failwith ("Error: " ^ e)
+
+let run_silent cmd =
+  match OS.Cmd.(run_out ~err:err_stderr cmd |> to_null) with
+  | Ok () -> ()
+  | Error _ -> Logs.err (fun m -> m "Command failed: %a%!" Bos.Cmd.pp cmd)
 
 let mkdir_p d =
   let segs =
@@ -39,4 +44,23 @@ let write_file filename lines =
   List.iter (fun line -> Printf.fprintf oc "%s\n" line) lines;
   close_out oc
 
-let cp src dst = assert (lines_of_process Cmd.(v "cp" % src % dst) = [])
+let cp src dst = run_silent Cmd.(v "cp" % p src % p dst)
+let mv src dst = run_silent Cmd.(v "mv" % p src % p dst)
+
+module O = struct
+  let to_result ~none = function Some x -> Ok x | None -> Error none
+end
+
+module R = struct
+  open Bos_setup.R.Infix
+
+  let combine_list lx =
+    List.fold_left
+      (fun acc x ->
+        acc >>= fun acc ->
+        x >>| fun x -> x :: acc)
+      (Ok []) lx
+
+  let iter_list ~f lx =
+    List.fold_left (fun acc x -> acc >>= fun () -> f x) (Ok ()) lx
+end

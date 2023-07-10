@@ -13,7 +13,7 @@ module Otherdocs : sig
   val to_yojson : t Conv.to_yojson
 end
 
-type t = { failed : bool; otherdocs : Otherdocs.t }
+type t = { failed : bool; universe : string; otherdocs : Otherdocs.t }
 
 val equal : t -> t -> bool
 val pp : Format.formatter -> t -> unit

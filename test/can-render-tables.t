@@ -1,6 +1,619 @@
 Generate the ppx_deriving_yaml documentation
 
-  $ voodoo-prep 2> /dev/null
+  $ voodoo-prep
+  Warning: No universes have been specified: will generate dummy universes
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
+  [WARNING] Errors in ./<none>, some fields have been ignored:
+              - At ./<none>:1:0:
+                Invalid field opam-version
+  
 
   $ voodoo-do -p ppx_deriving_yaml -b 2> /dev/null
 

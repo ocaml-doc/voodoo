@@ -40,6 +40,4 @@ let write_file filename lines =
   List.iter (fun line -> Printf.fprintf oc "%s\n" line) lines;
   close_out oc
 
-let cp src dst =
-  Format.eprintf "%s -> %s\n%!" src dst;
-  assert (lines_of_process Cmd.(v "cp" % src % dst) = [])
+let cp src dst = assert (lines_of_process Cmd.(v "cp" % src % dst) = [])

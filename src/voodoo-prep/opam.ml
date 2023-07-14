@@ -39,12 +39,23 @@ let pkg_contents pkg =
   let changes_file =
     Format.asprintf "%a/.opam-switch/install/%s.changes" Fpath.pp prefix pkg
   in
+  let file = OpamFilename.raw changes_file in
   let filename =
     OpamFile.make @@ OpamFilename.raw @@ Filename.basename changes_file
   in
-  let ic = open_in changes_file in
-  let changed = OpamFile.Changes.read_from_channel ~filename ic in
-  close_in ic;
+  let changed =
+    OpamFilename.with_contents
+      (fun str ->
+        OpamFile.Changes.read_from_string ~filename
+        @@
+        (* Field [opam-version] is invalid in [*.changes] files, displaying a warning. *)
+        if OpamStd.String.starts_with ~prefix:"opam-version" str then
+          match OpamStd.String.cut_at str '\n' with
+          | Some (_, str) -> str
+          | None -> assert false
+        else str)
+      file
+  in
   let added =
     OpamStd.String.Map.fold
       (fun file x acc ->

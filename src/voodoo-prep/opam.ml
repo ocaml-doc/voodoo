@@ -39,8 +39,11 @@ let pkg_contents pkg =
   let changes_file =
     Format.asprintf "%a/.opam-switch/install/%s.changes" Fpath.pp prefix pkg
   in
+  let filename =
+    OpamFile.make @@ OpamFilename.raw @@ Filename.basename changes_file
+  in
   let ic = open_in changes_file in
-  let changed = OpamFile.Changes.read_from_channel ic in
+  let changed = OpamFile.Changes.read_from_channel ~filename ic in
   close_in ic;
   let added =
     OpamStd.String.Map.fold

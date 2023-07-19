@@ -91,16 +91,16 @@ let package_info_of_fpath p =
 let find_universe_and_version pkg_name =
   Bos.OS.Dir.contents Fpath.(Paths.prep / "universes") >>= fun universes ->
   let universe =
-    match
-      List.find_opt
-        (fun u ->
-          match Bos.OS.Dir.exists Fpath.(u / pkg_name) with
-          | Ok b -> b
-          | Error _ -> false)
-        universes
-    with
-    | Some u -> Ok u
-    | None -> Error (`Msg (Format.sprintf "Failed to find package %s" pkg_name))
+    try
+      Ok
+        (List.find
+           (fun u ->
+             match Bos.OS.Dir.exists Fpath.(u / pkg_name) with
+             | Ok b -> b
+             | Error _ -> false)
+           universes)
+    with Not_found ->
+      Error (`Msg (Format.sprintf "Failed to find package %s" pkg_name))
   in
   universe >>= fun u ->
   Bos.OS.Dir.contents ~rel:true Fpath.(u / pkg_name) >>= fun version ->

@@ -13,7 +13,7 @@ depends: [
   "bos"
   "astring"
   "fpath"
-  "ppx_deriving_yojson" {>= "3.6.0"}
+  "ppx_deriving_yojson" {>= "3.5.3"}
   "sexplib"
   "yojson"
   "odoc" {with-doc}

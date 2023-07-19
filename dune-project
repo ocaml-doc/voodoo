@@ -25,7 +25,7 @@
   astring
   fpath
   (ppx_deriving_yojson
-   (>= 3.6.0))
+   (>= 3.5.3))
   sexplib
   yojson))
 
@@ -71,7 +71,7 @@
   yojson
   bos
   (ppx_deriving_yojson
-   (>= 3.6.0))
+   (>= 3.5.3))
   sexplib
   fpath
   (conf-jq :with-test)

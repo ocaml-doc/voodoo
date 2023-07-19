@@ -72,8 +72,4 @@
    (>= 3.6.0))
   sexplib
   fpath
-  (conf-jq :with-test)
-  (base
-   (and
-    (= v0.15.1)
-    :with-test))))
+  (conf-jq :with-test)))

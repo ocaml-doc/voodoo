@@ -6,3 +6,5 @@
   (source_tree packages))
  (enabled_if
   (>= %{ocaml_version} 4.08.0)))
+
+(data_only_dirs packages)

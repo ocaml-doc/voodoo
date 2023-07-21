@@ -5,14 +5,6 @@ open Cmdliner
 
 [@@@ocaml.warning "-3"]
 
-(** Example: [conv_compose Fpath.of_string Fpath.to_string Arg.dir] *)
-let conv_compose ?docv parse to_string c =
-  let open Arg in
-  let docv = match docv with Some v -> v | None -> conv_docv c in
-  let parse v = match conv_parser c v with Ok x -> parse x | Error _ as e -> e
-  and print fmt t = conv_printer c fmt (to_string t) in
-  conv ~docv (parse, print)
-
 module Prep = struct
   let switch =
     let doc =
@@ -23,18 +15,9 @@ module Prep = struct
       & opt (some string) None
       & info [ "s"; "switch" ] ~doc ~docv:"SWITCH")
 
-  let prep lib_dir switch universes =
+  let prep switch universes =
     Opam.switch := switch;
-    Prep.run lib_dir universes
-
-  let lib_dir =
-    let doc =
-      "Path to libraries. If not set, defaults to the global environment by \
-       querying $(b,ocamlfind)."
-    in
-    let fpath_dir = conv_compose Fpath.of_string Fpath.to_string Arg.dir in
-    (* [some string] and not [some dir] because we don't need it to exist yet. *)
-    Arg.(value & opt_all fpath_dir [] & info [ "L" ] ~doc ~docv:"LIB_DIR")
+    Prep.run universes
 
   let universes =
     let doc = "Provide universe spec as 'package=universe id' couples" in
@@ -43,7 +26,7 @@ module Prep = struct
       & opt (list (pair ~sep:':' string string)) []
       & info [ "u"; "universes" ] ~doc)
 
-  let cmd = Term.(const prep $ lib_dir $ switch $ universes)
+  let cmd = Term.(const prep $ switch $ universes)
   let info = Term.info "prep" ~doc:"Prep a directory tree for compiling"
 end
 

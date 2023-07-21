@@ -1,1 +1,1 @@
-val run : 'a -> (string * string) list -> unit
+val run : (string * string) list -> unit

@@ -5,7 +5,8 @@ Install the package
 
 Generate the can-render-org-files documentation
 
-  $ voodoo-prep 2> /dev/null
+  $ voodoo-prep
+  Warning: No universes have been specified: will generate dummy universes
 
   $ voodoo-do -p $PKG -b 2> /dev/null
 

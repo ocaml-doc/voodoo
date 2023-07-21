@@ -26,6 +26,11 @@ let lines_of_process cmd =
   | Ok x -> x
   | Error (`Msg e) -> failwith ("Error: " ^ e)
 
+let run_silent cmd =
+  match OS.Cmd.(run_out ~err:err_stderr cmd |> to_null) with
+  | Ok x -> x
+  | Error (`Msg e) -> failwith ("Error: " ^ e)
+
 let mkdir_p d =
   let segs =
     Fpath.segs (Fpath.normalize d) |> List.filter (fun s -> String.length s > 0)

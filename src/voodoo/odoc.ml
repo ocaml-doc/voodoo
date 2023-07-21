@@ -89,7 +89,7 @@ let compile ?parent ?output path ~includes ~children =
       cmd children
   in
   Format.eprintf "compile command: %a\n%!" Bos.Cmd.pp cmd;
-  Util.lines_of_process cmd
+  Util.run_silent cmd
 
 let link path ~includes ~output =
   let cmd =
@@ -101,8 +101,7 @@ let link path ~includes ~output =
       (fun i c -> Bos.Cmd.(c % "-I" % Fpath.to_string i))
       includes cmd
   in
-  (* Format.eprintf "link: cmd=%a\n%!" Bos.Cmd.pp cmd; *)
-  Util.lines_of_process cmd
+  Util.run_silent cmd
 
 let html output path =
   let cmd =
@@ -110,4 +109,4 @@ let html output path =
       v "odoc" % "html-generate" % "--indent" % Fpath.to_string path % "-o"
       % Fpath.to_string output)
   in
-  Util.lines_of_process cmd |> ignore
+  Util.run_silent cmd

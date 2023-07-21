@@ -72,12 +72,4 @@
    (>= 3.6.0))
   sexplib
   fpath
-  (conf-jq :with-test)
-  (ppx_deriving_yaml
-   (and
-    (= 0.2.1)
-    :with-test))
-  (base
-   (and
-    (= v0.15.1)
-    :with-test))))
+  (conf-jq :with-test)))

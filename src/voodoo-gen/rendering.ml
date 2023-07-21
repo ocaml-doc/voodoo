@@ -1,7 +1,6 @@
 open Odoc_odoc
-module Result = Stdlib.Result
-
-let ( >>= ) = Result.bind
+module Result = Bos_setup.R
+open Result.Infix
 
 let document_of_odocl ~syntax input =
   let open Odoc_document in
@@ -59,10 +58,9 @@ let docs_ids parent docs =
 
 let render ~output file =
   let open Odoc_document in
-  let ( let* ) = Result.bind in
   let f = Fs.File.of_string (Fpath.to_string file) in
-  let* document = document_of_odocl ~syntax:Renderer.OCaml f in
-  let* () = render_document ~output document in
+  document_of_odocl ~syntax:Renderer.OCaml f >>= fun document ->
+  render_document ~output document >>= fun () ->
   let urls =
     let rec get_subpages document =
       document

@@ -220,7 +220,7 @@ let run pkg_name is_blessed failed =
       si.path :: compiled
   in
   let _ = ignore (Index.M.fold compile this_index.intern []) in
-  let mldvs = Package_mlds.compile package parent package_mlds in
+  let mldvs = Package_mlds.compile parent package_mlds in
   let unit_includes = IncludePaths.link index in
   let docs_includes = Package_mlds.include_paths mldvs in
   let all_includes = Fpath.Set.union unit_includes docs_includes in

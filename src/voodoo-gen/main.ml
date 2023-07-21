@@ -1,28 +1,7 @@
 open Cmdliner
 module Result = Stdlib.Result
 
-let ( >>= ) = Result.bind
-
 [@@@ocaml.warning "-3"]
-
-module Fpath = struct
-  include Fpath
-
-  type repr = string [@@deriving yojson]
-
-  let of_yojson x = repr_of_yojson x >>= fun s -> Ok (Fpath.v s)
-  let to_yojson x = repr_to_yojson @@ Fpath.to_string x
-end
-
-type otherdocs = {
-  readme : Fpath.t list;
-  license : Fpath.t list;
-  changes : Fpath.t list;
-  others : Fpath.t list;
-}
-[@@deriving yojson]
-
-type status = { failed : bool; otherdocs : otherdocs } [@@deriving yojson]
 
 let docs = "ARGUMENTS"
 
@@ -148,11 +127,9 @@ let generate_pkgver output_dir name_filter version_filter =
             Rendering.render_other ~parent ~otherdocs ~output |> get_ok;
 
             let otherdocs =
-              let init =
-                { readme = []; license = []; changes = []; others = [] }
-              in
+              let init = Voodoo_serialize.Status.Otherdocs.empty in
               List.fold_left
-                (fun acc path ->
+                (fun (acc : Voodoo_serialize.Status.Otherdocs.t) path ->
                   let _, file = Fpath.split_base path in
                   let file = Fpath.rem_ext file |> Fpath.to_string in
                   match file with
@@ -162,11 +139,11 @@ let generate_pkgver output_dir name_filter version_filter =
                   | _ -> { acc with others = path :: acc.others })
                 init otherdocs
             in
-            let status = { failed; otherdocs } in
+            let status = { Voodoo_serialize.Status.failed; otherdocs } in
             if Option.is_none universe then
               Yojson.Safe.to_file
                 Fpath.(output_prefix / "status.json" |> to_string)
-                (status_to_yojson status);
+                (Voodoo_serialize.Status.to_yojson status);
 
             match
               Search_index.generate_index

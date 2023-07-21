@@ -16,9 +16,8 @@ depends: [
   "conf-pandoc"
   "astring"
   "cmdliner"
-  "yojson"
+  "yojson" {>= "1.6.0"}
   "bos"
-  "ppx_deriving_yojson" {>= "3.6.0"}
   "sexplib"
   "fpath"
   "conf-jq" {with-test}

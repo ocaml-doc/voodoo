@@ -22,5 +22,5 @@ end
 
 type t = { name : string; version : string option; libraries : Library.t list }
 
-val process_file : Fpath.t -> (t, [> `Msg of string ]) result
-val find : Package.t -> (Fpath.t, [> Rresult.R.msg ]) result
+val process_file : Fpath.t -> (t, [> `Msg of string ]) Bos_setup.result
+val find : Package.t -> (Fpath.t, [> Bos_setup.R.msg ]) Bos_setup.result

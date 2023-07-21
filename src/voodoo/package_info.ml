@@ -1,14 +1,5 @@
 (* Generate a package.json describing the content of that package *)
 
-type 'a library = {
-  name : string;
-  modules : 'a list;
-  dependencies : string list option;
-}
-[@@deriving yojson]
-
-type 'a t = { libraries : 'a library list } [@@deriving yojson]
-
 let gen ~output ~(dune : Dune.t option) ~libraries () =
   let dune_modules = function
     | Dune.Library.Singleton m -> [ m ]
@@ -20,17 +11,23 @@ let gen ~output ~(dune : Dune.t option) ~libraries () =
     | None ->
         libraries
         |> List.map (fun (name, modules) ->
-               { name; modules; dependencies = None })
+               {
+                 Voodoo_serialize.Package_info.Library.name;
+                 modules;
+                 dependencies = [];
+               })
     | Some { libraries; _ } ->
         List.map
           (fun (v : Dune.Library.t) ->
             {
-              name = v.name;
+              Voodoo_serialize.Package_info.Library.name = v.name;
               modules = dune_modules v.ty;
-              dependencies = Some v.dependencies;
+              dependencies = v.dependencies;
             })
           libraries
   in
 
   let output = Fpath.(to_string (output / "package.json")) in
-  Yojson.Safe.to_file output (to_yojson [%to_yojson: string] { libraries })
+  Yojson.Safe.to_file output
+    (Voodoo_serialize.Package_info.to_yojson Voodoo_serialize.String_.to_yojson
+       { libraries })

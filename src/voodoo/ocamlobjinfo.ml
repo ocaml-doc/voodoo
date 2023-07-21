@@ -1,3 +1,5 @@
+type t = { library_name : string; units : string list }
+
 let process_one file =
   let ic = open_in (Fpath.to_string file) in
   let lines = Util.lines_of_channel ic in
@@ -21,7 +23,7 @@ let process_one file =
   let library_name =
     Fpath.rem_ext ~multi:true library_name |> Fpath.to_string
   in
-  (library_name, units)
+  { library_name; units }
 
 let process packages = List.map process_one packages
 

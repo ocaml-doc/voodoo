@@ -3,7 +3,7 @@ val gen_parent :
   blessed:bool ->
   modules:string list ->
   dune:Dune.t option ->
-  libraries:(string * string list) list ->
+  libraries:Ocamlobjinfo.t list ->
   package_mlds:Fpath.t list ->
   error_log:Error_log.t ->
   failed:bool ->

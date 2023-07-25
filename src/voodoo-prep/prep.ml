@@ -9,29 +9,34 @@ let process_package : Fpath.t -> Package.t -> Fpath.t list -> unit =
   let format_matches_compiler_version path =
     let open Unix in
     let cmd = "ocamlobjinfo " ^ Fpath.to_string path in
-    let ic, oc = open_process cmd in
-    let rec matches_version ic =
-      try
-        let line = input_line ic in
-        let prefix = "Wrong magic number" in
-        let str_len = String.length line in
-        if str_len >= 18 && String.sub line 0 18 = prefix then (
-          Printf.eprintf "ERROR: Ocamlobjinfo on %s: %s\n"
-            (Fpath.to_string path) line;
-          false)
-        else if str_len > 0 then matches_version ic
-        else true
-      with End_of_file -> true
-    in
-    let matches_version = matches_version ic in
-    let _ = close_process (ic, oc) in
-    matches_version
+    try
+      let ic, oc = open_process cmd in
+      let rec matches_version ic =
+        try
+          let line = input_line ic in
+          let prefix = "Wrong magic number" in
+          let str_len = String.length line in
+          if str_len >= 18 && String.sub line 0 18 = prefix then (
+            Printf.eprintf "ERROR: ocamlobjinfo on %s: %s\n"
+              (Fpath.to_string path) line;
+            false)
+          else if str_len > 0 then matches_version ic
+          else true
+        with End_of_file -> true
+      in
+      let matches_version = matches_version ic in
+      let _ = close_process (ic, oc) in
+      matches_version
+    with _ ->
+      Printf.eprintf "ERROR: Failed to run ocamlobjinfo on %s\n"
+        (Fpath.to_string path);
+      false
   in
 
   (* Some packages produce ocaml artefacts that can't be processed with the switch's
       ocaml compiler - most notably the secondary compiler! This switch is intended to
       be used to ignore those files *)
-  let is_not_blacklisted =
+  let is_blacklisted =
     let package_blacklist = [ "ocaml-secondary-compiler" ] in
     not (List.mem package.name package_blacklist)
   in
@@ -49,7 +54,7 @@ let process_package : Fpath.t -> Package.t -> Fpath.t list -> unit =
     let no_ext = Fpath.rem_ext filename in
     let has_hyphen = String.contains (Fpath.to_string filename) '-' in
     let is_module =
-      is_not_blacklisted
+      (not is_blacklisted)
       && List.mem ext [ ".cmt"; ".cmti"; ".cmi" ]
       && (not has_hyphen)
       && format_matches_compiler_version Fpath.(root // fpath)
@@ -59,7 +64,7 @@ let process_package : Fpath.t -> Package.t -> Fpath.t list -> unit =
       && (is_in_doc_dir || is_module
          || List.mem no_ext (List.map Fpath.v [ "META"; "dune-package" ]))
     in
-    let is_cma = is_not_blacklisted && List.mem ext [ ".cma"; ".cmxa" ] in
+    let is_cma = (not is_blacklisted) && List.mem ext [ ".cma"; ".cmxa" ] in
     let copy =
       if do_copy then Fpath.(root // fpath, dest // fpath) :: acc.copy
       else acc.copy

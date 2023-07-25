@@ -38,7 +38,7 @@ let process_package : Fpath.t -> Package.t -> Fpath.t list -> unit =
       be used to ignore those files *)
   let is_blacklisted =
     let package_blacklist = [ "ocaml-secondary-compiler" ] in
-    not (List.mem package.name package_blacklist)
+    List.mem package.name package_blacklist
   in
 
   let foldfn fpath acc =

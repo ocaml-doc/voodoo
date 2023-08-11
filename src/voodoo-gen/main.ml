@@ -97,8 +97,6 @@ let generate_pkgver output_dir name_filter version_filter =
               let output_path =
                 match (filename, extensions) with
                 | "README", "html" :: _ -> Fpath.set_ext "html" p ~multi:true
-                | "README", "json" :: "toc" :: _ ->
-                    Fpath.set_ext "toc.json" p ~multi:true
                 | _ -> file_path
               in
               Fpath.normalize @@ Odoc_odoc.Fs.File.append output_dir output_path

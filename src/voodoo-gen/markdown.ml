@@ -15,7 +15,7 @@ let rec inline : 'attr inline -> Odoc_document.Types.Inline.t = function
   | Code (_, c) ->
       [ { desc = Source [ Elt [ { desc = Text c; attr = [] } ] ]; attr = [] } ]
   | Hard_break _ -> [ { desc = Linebreak; attr = [] } ]
-  | Soft_break _ -> [ { desc = Text " "; attr = []} ]
+  | Soft_break _ -> [ { desc = Text " "; attr = [] } ]
   | Link (_, l) ->
       [ { desc = Link (l.destination, inline l.label); attr = [] } ]
   | Image _ -> []

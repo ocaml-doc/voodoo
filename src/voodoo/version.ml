@@ -1,7 +1,3 @@
-(* Version page  *)
-
-(* Used to calculate the contents of the version page *)
-
 let gen_with_dune (dune : Dune.t) =
   let libraries =
     if List.length dune.Dune.libraries = 0 then []

@@ -23,4 +23,8 @@ end
 type t = { name : string; version : string option; libraries : Library.t list }
 
 val process_file : Fpath.t -> (t, [> `Msg of string ]) Bos_setup.result
+(** [process_file f] processes the [dune-package] file located at [f]. *)
+
 val find : Package.t -> (Fpath.t, [> Bos_setup.R.msg ]) Bos_setup.result
+(** [find p] returns the path to the [dune-package], if it exists, in the
+    prepped directory of package [p]. *)

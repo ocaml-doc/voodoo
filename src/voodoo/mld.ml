@@ -27,12 +27,8 @@ let rec output_dir : base:Fpath.t -> t -> Paths.t =
 
 let compile_dir = output_dir ~base:Paths.compile
 let link_dir = output_dir ~base:Paths.link
-
-let output_file mld =
-  Fpath.(output_dir ~base:Paths.compile mld / ("page-" ^ mld.name ^ ".odoc"))
-
-let output_odocl mld =
-  Fpath.(output_dir ~base:Paths.link mld / ("page-" ^ mld.name ^ ".odocl"))
+let output_file mld = Fpath.(compile_dir mld / ("page-" ^ mld.name ^ ".odoc"))
+let output_odocl mld = Fpath.(link_dir mld / ("page-" ^ mld.name ^ ".odocl"))
 
 let rec compile mld =
   let () = Bos.OS.File.delete (output_file mld) |> Result.get_ok in
@@ -60,7 +56,7 @@ let v dir name parent children contents =
   write mld contents;
   mld
 
-let of_fpath parent path =
+let of_fpath ~parent path =
   let _, name_ext = Fpath.split_base path in
   let name = Fpath.rem_ext name_ext |> Fpath.to_string in
   { path; name; parent = Some parent; children = [] }

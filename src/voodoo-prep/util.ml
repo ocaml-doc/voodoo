@@ -1,4 +1,3 @@
-(* util.ml *)
 open Bos
 
 let lines_of_channel ic =

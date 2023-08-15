@@ -1,9 +1,4 @@
-(* Odoc *)
-
 type compile_dep = { c_unit_name : string; c_digest : string }
-
-(** The name and optional digest of a dependency. Modules compiled with --no-alias-deps don't have
-    digests for purely aliased modules *)
 
 type link_dep = {
   l_package : string;
@@ -55,10 +50,7 @@ let compile_deps file =
       Format.eprintf "Failed to find digest for self (%s)\n%!" name;
       None
 
-type child =
-  | CModule of string (* module name, e.g. 'String' *)
-  | CPage of string
-(* page name, e.g. 'packages' *)
+type child = CModule of string | CPage of string
 
 let compile ?parent ?output path ~includes ~children =
   let cmd = Bos.Cmd.(v "odoc" % "compile" % Fpath.to_string path) in
@@ -103,7 +95,7 @@ let link path ~includes ~output =
   in
   Util.run_silent cmd
 
-let html output path =
+let html path ~output =
   let cmd =
     Bos.Cmd.(
       v "odoc" % "html-generate" % "--indent" % Fpath.to_string path % "-o"

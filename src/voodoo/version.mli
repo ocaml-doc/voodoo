@@ -8,3 +8,4 @@ val gen_parent :
   error_log:Error_log.t ->
   failed:bool ->
   Mld.t
+(** [gen_parent] generates the content of the version page. *)

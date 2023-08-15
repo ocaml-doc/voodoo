@@ -1,10 +1,6 @@
-(* opam *)
+module Result = Bos_setup.R
 
 let switch = ref None
-
-open Result
-
-let join = function Ok r -> r | Error _ as e -> e
 
 let find package =
   let path = Package.prep_path package in
@@ -14,4 +10,4 @@ let find package =
       if name = Fpath.v "opam" then Ok p else acc)
     (Error (`Msg "No opam file found"))
     path
-  |> join
+  |> Result.join

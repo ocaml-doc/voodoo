@@ -359,12 +359,6 @@ let generate_index dirs output =
   in
   Format.fprintf ppf "let documents = [";
   let () = List.iter (Load_doc.unit ppf) units in
-  (* List.iter *)
-  (*   (fun entry -> *)
-  (*     match string_of_entry entry with *)
-  (*     | Ok entry -> Format.fprintf ppf "%s,\n" entry *)
-  (*     | Error _ -> ()) *)
-  (*   index; *)
   let () =
     Format.fprintf ppf
       {|];
@@ -372,5 +366,3 @@ const options = { keys: ['name', 'comment'] };
 var idx_fuse = new Fuse(documents, options);|}
   in
   Ok ()
-(* Ok *)
-(* (Generate.render_index index output) *)

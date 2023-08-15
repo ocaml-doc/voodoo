@@ -1,4 +1,3 @@
-(* util.ml *)
 open Bos
 module Result = Bos_setup.R
 open Result.Infix

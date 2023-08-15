@@ -1,13 +1,7 @@
-(* Prep
- *
- *)
+type actions = { copy : (Fpath.t * Fpath.t) list; objinfo : Fpath.t list }
 
-type actions = {
-  copy : (Fpath.t * Fpath.t) list;
-  info : Fpath.t list;
-  objinfo : Fpath.t list;
-}
-
+(** [process_package root p files] copies some files among [files] to the
+    [Package.prep_path p]. Store the [ocamlobjinfo] of the [.cma] files. *)
 let process_package : Fpath.t -> Package.t -> Fpath.t list -> unit =
  fun root package files ->
   let dest = Package.prep_path package in
@@ -47,13 +41,10 @@ let process_package : Fpath.t -> Package.t -> Fpath.t list -> unit =
       if do_copy then Fpath.(root // fpath, dest // fpath) :: acc.copy
       else acc.copy
     in
-    let info = if is_module then fpath :: acc.info else acc.info in
     let objinfo = if is_cma then fpath :: acc.objinfo else acc.objinfo in
-    { copy; info; objinfo }
+    { copy; objinfo }
   in
-  let actions =
-    List.fold_right foldfn files { copy = []; info = []; objinfo = [] }
-  in
+  let actions = List.fold_right foldfn files { copy = []; objinfo = [] } in
   List.iter
     (fun (src, dst) ->
       let dir, _ = Fpath.split_base dst in
@@ -103,16 +94,14 @@ let run (universes : (string * string) list) =
   in
   let root = Opam.prefix () |> Fpath.v in
   let pkg_contents =
-    List.map
-      (fun package -> (package, Opam.pkg_contents package.Package.name))
-      packages
+    List.map (fun package -> (package, Opam.pkg_contents package)) packages
   in
   List.iter
     (fun (package, files) -> process_package root package files)
     pkg_contents;
   List.iter
     (fun package ->
-      match Opam.opam_file package.Package.name package.version with
+      match Opam.opam_file package with
       | Some lines ->
           let dest = Package.prep_path package in
           Util.write_file Fpath.(dest / "opam") lines

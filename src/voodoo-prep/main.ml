@@ -1,6 +1,3 @@
-(* Odoc documentation generator
-
-*)
 open Cmdliner
 
 [@@@ocaml.warning "-3"]
@@ -20,7 +17,7 @@ module Prep = struct
     Prep.run universes
 
   let universes =
-    let doc = "Provide universe spec as 'package=universe id' couples" in
+    let doc = "Provide universe spec as 'package:universe_id' couples" in
     Arg.(
       value
       & opt (list (pair ~sep:':' string string)) []

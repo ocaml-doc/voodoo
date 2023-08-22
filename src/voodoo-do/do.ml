@@ -2,8 +2,6 @@ open Voodoo_lib
 module Result = Bos_setup.R
 open Result.Infix
 
-type ('a, 'e) result = ('a, 'e) Rresult.result = Ok of 'a | Error of 'e
-
 module InputSelect = struct
   let order path =
     let ext = Fpath.get_ext path in
@@ -62,33 +60,15 @@ module IncludePaths = struct
 end
 
 let get_source_info parent path =
-  match Fpath.segs path with
-  | "prep" :: "universes" :: id :: pkg_name :: version :: _ -> (
+  match Package.of_path path with
+  | Ok package -> (
       match Odoc.compile_deps path with
       | Some (name, digest, deps) ->
-          [
-            Sourceinfo.
-              {
-                package = { universe = id; name = pkg_name; version };
-                path;
-                name;
-                digest;
-                deps;
-                parent;
-              };
-          ]
+          [ { Sourceinfo.package; path; name; digest; deps; parent } ]
       | None -> [])
-  | _ -> []
+  | Error _ -> []
 
-let package_info_of_fpath p =
-  match Fpath.segs p with
-  | "prep" :: "universes" :: id :: pkg_name :: pkg_version :: _ ->
-      (id, pkg_name, pkg_version)
-  | _ ->
-      Format.eprintf "%s\n%!" (Fpath.to_string p);
-      failwith "Bad path"
-
-let find_universe_and_version pkg_name =
+let find_pkg pkg_name =
   Bos.OS.Dir.contents Fpath.(Paths.prep / "universes") >>= fun universes ->
   let universe =
     match
@@ -103,10 +83,10 @@ let find_universe_and_version pkg_name =
     | None -> Error (`Msg (Format.sprintf "Failed to find package %s" pkg_name))
   in
   universe >>= fun u ->
-  Bos.OS.Dir.contents ~rel:true Fpath.(u / pkg_name) >>= fun version ->
-  match (Fpath.segs u, version) with
-  | _ :: _ :: u :: _, [ version ] -> Ok (u, Fpath.to_string version)
-  | _ -> Error (`Msg (Format.sprintf "Failed to find package %s" pkg_name))
+  Bos.OS.Dir.contents ~rel:false Fpath.(u / pkg_name) >>= function
+  | [ path ] -> Package.of_path path
+  | _ ->
+      Error (`Msg (Format.sprintf "Multiple versions for package %s" pkg_name))
 
 let run pkg_name ~blessed ~failed =
   let is_interesting p =
@@ -122,8 +102,8 @@ let run pkg_name ~blessed ~failed =
     |> Result.get_ok
   in
 
-  let universe, version =
-    match find_universe_and_version pkg_name with
+  let package =
+    match find_pkg pkg_name with
     | Ok x -> x
     | Error (`Msg e) ->
         Format.eprintf "%s\n%!" e;
@@ -131,8 +111,9 @@ let run pkg_name ~blessed ~failed =
   in
 
   let right_package p =
-    let _, n, _ = package_info_of_fpath p in
-    n = pkg_name
+    match Package.of_path p with
+    | Ok pkg -> pkg.name = pkg_name
+    | Error _ -> false
   in
   let prep =
     Bos.OS.Dir.fold_contents ~dotfiles:true
@@ -149,10 +130,11 @@ let run pkg_name ~blessed ~failed =
         if List.mem name acc then acc else name :: acc)
       [] prep
   in
-  let package = { Package.universe; name = pkg_name; version } in
   let output_path =
-    if blessed then Fpath.(Paths.link / "p" / pkg_name / version)
-    else Fpath.(Paths.link / "u" / universe / pkg_name / version)
+    if blessed then Fpath.(Paths.link / "p" / package.name / package.version)
+    else
+      Fpath.(
+        Paths.link / "u" / package.universe / package.name / package.version)
   in
   Util.mkdir_p output_path;
 

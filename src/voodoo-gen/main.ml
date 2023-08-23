@@ -68,6 +68,7 @@ let generate_pkgver output_dir name_filter version_filter =
             (fun p files ->
               match Fpath.get_ext p with
               | ".odocl" -> { files with odocls = p :: files.odocls }
+              | ".odoc" -> { files with odocls = p :: files.odocls }
               | _ -> (
                   match Fpath.basename p with
                   | "opam" -> files
@@ -101,10 +102,13 @@ let generate_pkgver output_dir name_filter version_filter =
               in
               Fpath.normalize @@ Odoc_odoc.Fs.File.append output_dir output_path
             in
-            let paths =
-              List.rev_map (Rendering.render ~output) files
-              |> List.rev_map Result.get_ok |> List.flatten
-            in
+            let root = Fpath.(pkg_path / "src") in
+            Voodoo_lib.Util.mkdir_p root;
+            let src_output = Odoc_odoc.Fs.Directory.to_string output_dir in
+            List.iter
+              (Voodoo_lib.Odoc.html_gen_source ~root ~output:src_output)
+              files;
+            let paths = [] in
             let foutput =
               Fpath.v (Odoc_odoc.Fs.Directory.to_string output_dir)
             in

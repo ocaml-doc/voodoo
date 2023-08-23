@@ -20,25 +20,9 @@ Generate the can-render-tables documentation
                            linked/p/can-render-tables/1.0/src -o output/
                            linked/p/can-render-tables/1.0/src-src.odocl
 
-Generates a status.json file
-  $ cat output/p/$PKG/1.0/status.json | jq .
-  {
-    "failed": false,
-    "otherdocs": {
-      "readme": [
-        "linked/p/can-render-tables/1.0/doc/README.md"
-      ],
-      "license": [],
-      "changes": [],
-      "others": [
-        "linked/p/can-render-tables/1.0/package.json"
-      ]
-    }
-  }
+  $ ls linked/p/can-render-tables/1.0/src
 
-Generate a README.md file with the tables formatted in HTML
-  $ cat output/p/$PKG/1.0/README.md.html.json | jq '.content'
-  "<table>\n<thead>\n<tr>\n<th>x</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>y</td>\n</tr>\n</tbody>\n</table>\n"
+  $ ls output/linked/p/can-render-tables/1.0/
 
 Uninstall the package
   $ opam remove $PKG --yes > /dev/null

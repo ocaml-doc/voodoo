@@ -1,6 +1,7 @@
 type t = {
   package : Package.t;
   path : Fpath.t;
+  src_file : Fpath.t option;
   name : string;
   digest : string;
   parent : Mld.t;
@@ -18,5 +19,9 @@ val output_file : t -> Fpath.t
 val output_odocl : t -> Fpath.t
 (** [output_odocl x] returns the path of the [.odocl] file resulting of running
     [odoc link] on [x]. *)
+
+val output_linked_odoc_for_src : t -> Fpath.t
+(** [output_linked_odoc_for_src x] returns the path of the [.odoc] file for
+    source rendering. *)
 
 val is_hidden : t -> bool

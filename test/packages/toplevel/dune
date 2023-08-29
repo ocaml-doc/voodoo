@@ -1,2 +1,3 @@
 (library
- (name toplevel))
+ (name toplevel)
+ (public_name toplevel))

@@ -27,7 +27,6 @@ Generates a status.json file
       "license": [],
       "changes": [],
       "others": [
-        "linked/p/can-render-org-files/1.0/universe.txt",
         "linked/p/can-render-org-files/1.0/package.json"
       ]
     }

@@ -33,13 +33,12 @@ let run path package =
   let toplevels =
     List.fold_left
       (fun acc x ->
-        acc >>= fun acc ->
-        if Fpath.has_ext Jsoo_cma.ext x then
-          Jsoo_cma.process x >>| fun () -> acc
-        else Jsoo_toplevel.process x >>| fun t -> t :: acc)
-      (Ok []) files
+        if Fpath.has_ext Jsoo_cma.ext x then (
+          Jsoo_cma.process x;
+          acc)
+        else Jsoo_toplevel.process x :: acc)
+      [] files
   in
-  toplevels >>= fun toplevels ->
   let cmis =
     List.concat
       (List.map (fun toplevel -> toplevel.Jsoo_toplevel.cmis) toplevels)

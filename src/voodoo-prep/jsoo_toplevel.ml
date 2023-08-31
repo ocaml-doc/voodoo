@@ -87,7 +87,7 @@ let process toplevel_fpath =
   Util.mkdir_p dir;
   Logs.debug (fun m -> m "Toplevel: %a\n%!" Bos.Cmd.pp cmd);
   Util.run_silent cmd;
-  Ok toplevel
+  toplevel
 
 let to_yojson t =
   let package = ("package", `String (Fpath.basename t.cma_fpath)) in

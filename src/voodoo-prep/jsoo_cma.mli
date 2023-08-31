@@ -11,6 +11,6 @@ val findlib : unit -> (Fpath.t * string) list
 val ext : string
 (** [.jscma] file extension. *)
 
-val process : Fpath.t -> (unit, Bos_setup.R.msg) Bos_setup.result
+val process : Fpath.t -> unit
 (** [process path] deserializes the cma file located at [path], then runs
     [js_of_ocaml] on it. *)

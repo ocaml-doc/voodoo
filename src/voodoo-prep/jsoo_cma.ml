@@ -67,5 +67,4 @@ let process cma_fpath =
   Logs.debug (fun m -> m "Cma: %a\n%!" Bos.Cmd.pp cmd);
   Util.run_silent cmd;
   Logs.info (fun m -> m "Produced %a%!" Fpath.pp (output_path cma));
-  Logs.info (fun m -> m "Wrapping function: %s%!" (func_name cma));
-  Ok ()
+  Logs.info (fun m -> m "Wrapping function: %s%!" (func_name cma))

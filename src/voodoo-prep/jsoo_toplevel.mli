@@ -21,7 +21,7 @@ val marshal : t -> unit
 val meta_ext : string
 (** [.jstop] file extension. *)
 
-val process : Fpath.t -> (t, Bos_setup.R.msg) Bos_setup.result
+val process : Fpath.t -> t
 (** [process path] deserializes the toplevel file located at [path], then runs
     [js_of_ocaml] on it. *)
 

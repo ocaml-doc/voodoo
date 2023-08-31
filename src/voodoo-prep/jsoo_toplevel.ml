@@ -106,20 +106,11 @@ let process toplevel_fpath =
   Util.mv (output_path toplevel) digested_path;
   { toplevel with digest }
 
-let dep_cma_to_yojson cma =
-  `Assoc
-    [
-      ("path", `String (Jsoo_cma.server_path cma |> Fpath.to_string));
-      ("function", `String (Jsoo_cma.func_name cma));
-    ]
-
-let cmi_to_yojson cmi = `String (Jsoo_cmi.server_path cmi |> Fpath.to_string)
-
 let to_yojson t =
   let package = ("package", `String (Fpath.basename t.cma_fpath)) in
   let cma = ("cma", `String (js_name t)) in
-  let dep_cmas = ("dep_cmas", `List (List.map dep_cma_to_yojson t.dep_cmas)) in
-  let cmis = ("cmis", `List (List.map cmi_to_yojson t.cmis)) in
+  let dep_cmas = ("dep_cmas", `List (List.map Jsoo_cma.to_yojson t.dep_cmas)) in
+  let cmis = ("cmis", `List (List.map Jsoo_cmi.to_yojson t.cmis)) in
   Util.O.to_result t.digest ~none:(Bos_setup.R.msg "No digest")
   >>| fun digest ->
   let digest = ("digest", `String digest) in

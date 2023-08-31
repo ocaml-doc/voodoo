@@ -24,6 +24,11 @@ let output_path vv =
 
 let server_path vv = Fpath.(v "/toplevels" // output_path vv)
 
+let to_yojson t =
+  let path = ("path", `String (server_path t |> Fpath.to_string)) in
+  let function_ = ("function", `String (func_name t)) in
+  `Assoc [ path; function_ ]
+
 let marshal v =
   let path = meta_path v in
   let oc = open_out_bin (Fpath.to_string path) in

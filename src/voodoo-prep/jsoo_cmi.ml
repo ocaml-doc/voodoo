@@ -15,6 +15,8 @@ let compare v1 v2 =
   let s2 = Format.asprintf "%a" pp v2 in
   String.compare s1 s2
 
+let to_yojson t = `String (server_path t |> Fpath.to_string)
+
 let copy universes cmis =
   let cmis =
     List.filter

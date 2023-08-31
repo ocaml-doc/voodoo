@@ -1,13 +1,9 @@
-module Result = Bos_setup.R
-open Result.Infix
-
 type t = {
   package : Package.t;
   cma_fpath : Fpath.t;
   dep_cmas : Jsoo_cma.t list;
   cmis : Jsoo_cmi.t list;
   js_files : Fpath.t list;
-  digest : Digest.t option;
 }
 
 let meta_ext = ".jstop"
@@ -30,11 +26,6 @@ let meta_path vv = Fpath.(Package.prep_path vv.package / meta_name vv)
 let output_path vv = Fpath.(Package.jsoo_path vv.package / js_name vv)
 let bc_exe_path vv = Fpath.(Package.prep_path vv.package / bc_exe_name vv)
 let js_dest_path vv = Fpath.(Package.prep_path vv.package / "voodoo_js_files")
-
-let digested_path vv =
-  Util.O.to_result vv.digest ~none:(Bos_setup.R.msg "No digest")
-  >>| fun digest ->
-  Fpath.(Paths.jsoo / "toplevel-by-digest" / digest / "toplevel.js")
 
 let marshal v =
   let path = meta_path v in
@@ -96,22 +87,11 @@ let process toplevel_fpath =
   Util.mkdir_p dir;
   Logs.debug (fun m -> m "Toplevel: %a\n%!" Bos.Cmd.pp cmd);
   Util.run_silent cmd;
-  let digest =
-    Some (Digest.file (Fpath.to_string @@ output_path toplevel) |> Digest.to_hex)
-  in
-  let toplevel = { toplevel with digest } in
-  digested_path toplevel >>| fun digested_path ->
-  let digested_dir, _ = Fpath.split_base digested_path in
-  Util.mkdir_p digested_dir;
-  Util.mv (output_path toplevel) digested_path;
-  { toplevel with digest }
+  Ok toplevel
 
 let to_yojson t =
   let package = ("package", `String (Fpath.basename t.cma_fpath)) in
   let cma = ("cma", `String (js_name t)) in
   let dep_cmas = ("dep_cmas", `List (List.map Jsoo_cma.to_yojson t.dep_cmas)) in
   let cmis = ("cmis", `List (List.map Jsoo_cmi.to_yojson t.cmis)) in
-  Util.O.to_result t.digest ~none:(Bos_setup.R.msg "No digest")
-  >>| fun digest ->
-  let digest = ("digest", `String digest) in
-  `Assoc [ package; cma; dep_cmas; cmis; digest ]
+  `Assoc [ package; cma; dep_cmas; cmis ]

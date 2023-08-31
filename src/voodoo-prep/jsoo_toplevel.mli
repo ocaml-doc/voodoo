@@ -4,7 +4,6 @@ type t = {
   dep_cmas : Jsoo_cma.t list;
   cmis : Jsoo_cmi.t list;
   js_files : Fpath.t list;
-  digest : Digest.t option;
 }
 
 val pp : t Fmt.t
@@ -26,4 +25,4 @@ val process : Fpath.t -> (t, Bos_setup.R.msg) Bos_setup.result
 (** [process path] deserializes the toplevel file located at [path], then runs
     [js_of_ocaml] on it. *)
 
-val to_yojson : t -> (Yojson.Safe.t, Bos_setup.R.msg) Bos_setup.result
+val to_yojson : t -> Yojson.Safe.t

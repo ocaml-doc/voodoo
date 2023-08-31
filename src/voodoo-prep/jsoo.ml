@@ -49,15 +49,15 @@ let run path package =
   toplevels
   |> List.map (fun t -> t.Jsoo_toplevel.package)
   |> List.sort_uniq Package.compare
-  |> Util.R.iter_list ~f:(fun package ->
+  |> List.iter (fun package ->
          toplevels
          |> List.filter (fun t -> t.Jsoo_toplevel.package = package)
          |> List.map Jsoo_toplevel.to_yojson
-         |> Util.R.combine_list
-         >>| fun toplevels ->
+         |> fun toplevels ->
          Yojson.Safe.to_file
            Fpath.(Package.jsoo_path package / "toplevels.json" |> to_string)
-           (`List toplevels))
+           (`List toplevels));
+  Ok ()
 
 let copy_files root pkg_contents =
   let findlib_cmas = Jsoo_cma.findlib () in
@@ -119,8 +119,8 @@ let copy_files root pkg_contents =
                     None)
               (Ocamlfind.dep_cmas findlib_pkg)
           in
-          let toplevel : Jsoo_toplevel.t =
-            { package; cma_fpath; js_files; dep_cmas; cmis; digest = None }
+          let toplevel =
+            { Jsoo_toplevel.package; cma_fpath; js_files; dep_cmas; cmis }
           in
           Jsoo_toplevel.build_toplevel toplevel;
           Jsoo_toplevel.copy_js_files root toplevel;

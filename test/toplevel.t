@@ -453,8 +453,7 @@ Generates a toplevels.json file
         "/toplevels/jsoo/universes/45/ocaml-base-compiler/5.0.0/lib/ocaml/stdlib__Uchar.cmi",
         "/toplevels/jsoo/universes/45/ocaml-base-compiler/5.0.0/lib/ocaml/stdlib__Option.cmi",
         "/toplevels/jsoo/universes/45/ocaml-base-compiler/5.0.0/lib/ocaml/stdlib__Effect.cmi"
-      ],
-      "digest": "bb43e838b293bae7378d22a393bd6f46"
+      ]
     }
   ]
 

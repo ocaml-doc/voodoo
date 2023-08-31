@@ -121,6 +121,5 @@ let copy_files root pkg_contents =
           let toplevel =
             { Jsoo_toplevel.package; cma_fpath; js_files; dep_cmas; cmis }
           in
-          Jsoo_toplevel.build_toplevel toplevel;
           Jsoo_toplevel.copy_js_files root toplevel;
           Jsoo_toplevel.marshal toplevel))

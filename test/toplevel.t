@@ -15,7 +15,7 @@ Generate the toplevel documentation
 
   $ voodoo-gen -o output
   0 other versions, 1 packages
-  Found 3 files
+  Found 2 files
 
 Generates a status.json file
   $ cat output/p/$PKG/1.0/status.json | jq .

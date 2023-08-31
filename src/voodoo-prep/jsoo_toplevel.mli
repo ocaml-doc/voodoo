@@ -8,9 +8,6 @@ type t = {
 
 val pp : t Fmt.t
 
-val build_toplevel : t -> unit
-(** [build_toplevel t] builds the toplevel worker for package [t]. *)
-
 val copy_js_files : Fpath.t -> t -> unit
 (** [copy_js_files root t] copies the [*.js] files from the [root/lib] directory
     into [prep/voodoo_js_files]. *)

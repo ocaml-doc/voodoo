@@ -41,7 +41,7 @@
   cmdliner
   fpath
   bos
-  js_of_ocaml
+  js_of_ocaml-compiler
   ocaml-base-compiler
   (opam-format
    (>= 2.0.0))

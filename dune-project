@@ -42,7 +42,6 @@
   fpath
   bos
   js_of_ocaml
-  js_top_worker
   ocaml-base-compiler
   (opam-format
    (>= 2.0.0))

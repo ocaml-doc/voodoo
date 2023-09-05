@@ -10,6 +10,7 @@ Generate the toplevel documentation
   Ignoring jsoo option passed: -linkall
 
   $ voodoo-prep jsoo -p $PKG
+  voodoo-prep: [INFO] Built jsoo/universes/88/toplevel/1.0/toplevel.cma.js ✅
 
   $ voodoo-do -p $PKG -b 2> /dev/null
 
@@ -453,7 +454,8 @@ Generates a toplevels.json file
         "/toplevels/jsoo/universes/45/ocaml-base-compiler/5.0.0/lib/ocaml/stdlib__Uchar.cmi",
         "/toplevels/jsoo/universes/45/ocaml-base-compiler/5.0.0/lib/ocaml/stdlib__Option.cmi",
         "/toplevels/jsoo/universes/45/ocaml-base-compiler/5.0.0/lib/ocaml/stdlib__Effect.cmi"
-      ]
+      ],
+      "js_files": []
     }
   ]
 

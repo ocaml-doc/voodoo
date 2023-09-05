@@ -52,4 +52,8 @@ let to_yojson t =
   let cma = ("cma", `String (js_name t)) in
   let dep_cmas = ("dep_cmas", `List (List.map Jsoo_cma.to_yojson t.dep_cmas)) in
   let cmis = ("cmis", `List (List.map Jsoo_cmi.to_yojson t.cmis)) in
-  `Assoc [ package; cma; dep_cmas; cmis ]
+  let js_files =
+    ( "js_files",
+      `List (List.map (fun s -> `String (Fpath.to_string s)) t.js_files) )
+  in
+  `Assoc [ package; cma; dep_cmas; cmis; js_files ]

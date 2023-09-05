@@ -52,9 +52,7 @@ let js_files pkg =
          | _ -> Bos_setup.R.error_msg s)
   |> Util.R.combine_list
   >>| fun js_files ->
-  List.fold_right
-    (fun f acc -> match f with Some x -> x :: acc | None -> acc)
-    js_files []
+  List.filter_map (fun x -> x) js_files
 
 let dep_cmas pkg =
   let cmd =

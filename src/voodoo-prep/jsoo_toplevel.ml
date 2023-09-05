@@ -47,7 +47,6 @@ let copy_js_files root vv =
     vv.js_files
 
 let process toplevel_fpath =
-  Logs.info (fun m -> m "Processing %a%!" Fpath.pp toplevel_fpath);
   unmarshal (Fpath.to_string toplevel_fpath)
 
 let to_yojson t =

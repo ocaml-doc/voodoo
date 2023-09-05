@@ -69,8 +69,9 @@ let copy_files root pkg_contents =
             match List.assoc_opt Fpath.(root // p) findlib_cmas with
             | Some pkg -> Some (p, pkg)
             | None ->
-                Logs.info (fun m ->
-                    m "No findlib pkg for archive %a%!" Fpath.pp p);
+                (* This doesn't look like a critical failure *)
+                Logs.debug (fun m ->
+                    m "No findlib pkg for archive %a ❌%!" Fpath.pp p);
                 None)
           cmas
       in
@@ -98,6 +99,9 @@ let copy_files root pkg_contents =
           let cmis = cmis @ stdlib_cmis in
           Ocamlfind.js_files findlib_pkg
           |> Bos_setup.R.reword_error_msg (fun s ->
+                 Logs.info (fun m ->
+                     m "Bad js file for: %a (%s) ❌%!" Package.pp package s);
+                 (* XXX maybe we should not return an error and continue instead *)
                  Bos_setup.R.msgf "Bad js file for: %a (%s)\n%!" Package.pp
                    package s)
           >>| fun js_files ->
@@ -113,7 +117,7 @@ let copy_files root pkg_contents =
                 | Some (package, _, _) -> Some { Jsoo_cma.package; path }
                 | None ->
                     Logs.info (fun m ->
-                        m "Failed to find package containing %a\n%!" Fpath.pp
+                        m "Failed to find package containing %a ❌%!" Fpath.pp
                           path);
                     None)
               (Ocamlfind.dep_cmas findlib_pkg)

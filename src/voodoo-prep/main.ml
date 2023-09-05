@@ -55,7 +55,7 @@ end
 
 let _ =
   Logs.set_reporter (Logs_fmt.reporter ());
-  Logs.set_level (Some Logs.App);
+  Logs.set_level (Some Logs.Info);
   match
     Term.eval_choice ~err:Format.err_formatter
       Prep.(Term.term_result @@ cmd, info)

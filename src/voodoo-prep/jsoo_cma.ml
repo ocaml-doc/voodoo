@@ -59,12 +59,10 @@ let findlib () =
     findlib_pkgs
 
 let process cma_fpath =
-  Logs.debug (fun m -> m "Processing %a%!" Fpath.pp cma_fpath);
   let cma = unmarshal (Fpath.to_string cma_fpath) in
   let cmd = cmd cma in
   let dir = fst (Fpath.split_base (output_path cma)) in
   Util.mkdir_p dir;
   Logs.debug (fun m -> m "Cma: %a\n%!" Bos.Cmd.pp cmd);
   Util.run_silent cmd;
-  Logs.info (fun m -> m "Produced %a%!" Fpath.pp (output_path cma));
-  Logs.info (fun m -> m "Wrapping function: %s%!" (func_name cma))
+  Logs.info (fun m -> m "Built %a ✅%!" Fpath.pp (output_path cma))

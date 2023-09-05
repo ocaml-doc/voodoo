@@ -7,7 +7,6 @@ type t = {
 }
 
 let meta_ext = ".jstop"
-
 let js_name vv = Fpath.basename vv.cma_fpath ^ ".worker.js"
 let meta_name vv = js_name vv ^ meta_ext
 
@@ -46,8 +45,7 @@ let copy_js_files root vv =
       Util.cp src dst)
     vv.js_files
 
-let process toplevel_fpath =
-  unmarshal (Fpath.to_string toplevel_fpath)
+let process toplevel_fpath = unmarshal (Fpath.to_string toplevel_fpath)
 
 let to_yojson t =
   let package = ("package", `String (Fpath.basename t.cma_fpath)) in

@@ -51,7 +51,7 @@ let js_files pkg =
          | '+' -> Ok (Some (String.sub s 1 (String.length s - 1) |> Fpath.v))
          | _ -> Bos_setup.R.error_msg s)
   |> Util.R.combine_list
-  >>| fun js_files -> List.filter_map (fun x -> x) js_files
+  >>| List.filter_map (fun x -> x)
 
 let dep_cmas pkg =
   let cmd =

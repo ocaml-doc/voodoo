@@ -15,7 +15,8 @@ let process_package : Fpath.t -> Package.t -> Fpath.t list -> unit =
       | _ -> assert false);
       true
     with _ ->
-      Format.eprintf "[WARNING] %a ignored: wrong magic number\n%!" Fpath.pp path;
+      Format.eprintf "[WARNING] %a ignored: wrong magic number\n%!" Fpath.pp
+        path;
       false
   in
 

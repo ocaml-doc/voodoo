@@ -7,29 +7,15 @@ let process_package : Fpath.t -> Package.t -> Fpath.t list -> unit =
   let dest = Package.prep_path package in
 
   let format_matches_compiler_version path =
-    let open Unix in
-    let cmd = "ocamlobjinfo " ^ Fpath.to_string path in
+    let filename = Fpath.to_string path in
     try
-      let ic, oc = open_process cmd in
-      let rec matches_version ic =
-        try
-          let line = input_line ic in
-          let prefix = "Wrong magic number" in
-          let str_len = String.length line in
-          if str_len >= 18 && String.sub line 0 18 = prefix then (
-            Printf.eprintf "ERROR: ocamlobjinfo on %s: %s\n"
-              (Fpath.to_string path) line;
-            false)
-          else if str_len > 0 then matches_version ic
-          else true
-        with End_of_file -> true
-      in
-      let matches_version = matches_version ic in
-      let _ = close_process (ic, oc) in
-      matches_version
+      (match Fpath.get_ext path with
+      | ".cmt" | ".cmti" -> ignore @@ Cmt_format.read_cmt filename
+      | ".cmi" -> ignore @@ Cmi_format.read_cmi filename
+      | _ -> assert false);
+      true
     with _ ->
-      Printf.eprintf "ERROR: Failed to run ocamlobjinfo on %s\n"
-        (Fpath.to_string path);
+      Format.eprintf "[WARNING] %a ignored: wrong magic number\n%!" Fpath.pp path;
       false
   in
 

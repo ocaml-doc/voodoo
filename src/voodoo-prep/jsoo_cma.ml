@@ -24,6 +24,11 @@ let output_path vv =
 
 let server_path vv = Fpath.(v "/toplevels" // output_path vv)
 
+let runtime_path vv =
+  Fpath.(
+    Package.prep_path vv.package
+    / "voodoo_js_files" / vv.package.name / "runtime.js")
+
 let to_yojson t =
   let path = ("path", `String (server_path t |> Fpath.to_string)) in
   let function_ = ("function", `String (func_name t)) in
@@ -42,8 +47,14 @@ let unmarshal path =
   result
 
 let cmd vv =
+  let runtime_js = runtime_path vv in
+  let has_runtime = Util.file_exists runtime_js in
+  Logs.info (fun m ->
+      m "runtime %a: %s" Fpath.pp runtime_js
+        (if has_runtime then "found" else "not found"));
   Bos.Cmd.(
     v "js_of_ocaml"
+    %% on has_runtime (v "--linkall" % "--no-runtime" % p (runtime_path vv))
     % p (cma_path vv)
     % "--enable" % "effects" % "--pretty" % "--wrap-with-fun" % func_name vv
     % "-o"

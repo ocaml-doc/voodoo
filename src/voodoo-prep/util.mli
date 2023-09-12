@@ -18,6 +18,8 @@ val cp : Fpath.t -> Fpath.t -> unit
 val mv : Fpath.t -> Fpath.t -> unit
 (** [mv src dst] moves [src] to [dst]. *)
 
+val file_exists : Fpath.t -> bool
+
 module O : sig
   val to_result : none:'e -> 'a option -> ('a, 'e) Bos_setup.result
 end

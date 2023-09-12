@@ -44,6 +44,11 @@ let write_file filename lines =
   List.iter (fun line -> Printf.fprintf oc "%s\n" line) lines;
   close_out oc
 
+let file_exists file =
+  match Bos.OS.File.exists file with
+  | Ok true -> true
+  | _ -> false
+
 let cp src dst = run_silent Cmd.(v "cp" % p src % p dst)
 let mv src dst = run_silent Cmd.(v "mv" % p src % p dst)
 

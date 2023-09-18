@@ -71,8 +71,8 @@ let process_unwrapped_library l =
   let modules =
     List.fold_right
       (fun l acc ->
-        let r = l >>= assoc "name" >>= string_of_atom in
-        match r with Ok x -> x :: acc | Error _ -> acc)
+        let r = l >>= assoc "obj_name" >>= string_of_atom in
+        match r with Ok x -> (String.capitalize_ascii x) :: acc | Error _ -> acc)
       modules []
   in
   Ok (Library.Unwrapped { modules })

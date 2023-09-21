@@ -3,7 +3,7 @@
 </h1>
 
 <p align="center">
-  <strong>Voodoo is the OCaml documentation generator.</strong>
+  <strong>Voodoo uses odoc to generate the package documentation for OCaml.org</strong>
 </p>
 
 <p align="center">

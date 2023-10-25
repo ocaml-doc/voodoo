@@ -22,7 +22,14 @@ end
 
 type t = { name : string; version : string option; libraries : Library.t list }
 
-val process_file : Fpath.t -> (t, [> `Msg of string ]) Bos_setup.result
+val assoc_list :
+  Sexplib.Sexp.t ->
+  ((string * Sexplib.Sexp.t list) list, [> Bos_setup.R.msg ]) Bos_setup.result
+
+val sexp_of_file :
+  Fpath.t -> (Sexplib.Sexp.t, [> Bos_setup.R.msg ]) Bos_setup.result
+
+val process_file : Fpath.t -> (t, [> Bos_setup.R.msg ]) Bos_setup.result
 (** [process_file f] processes the [dune-package] file located at [f]. *)
 
 val find : Package.t -> (Fpath.t, [> Bos_setup.R.msg ]) Bos_setup.result

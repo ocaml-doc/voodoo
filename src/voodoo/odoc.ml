@@ -50,9 +50,9 @@ let compile_deps file =
       Format.eprintf "Failed to find digest for self (%s)\n%!" name;
       None
 
-type child = CModule of string | CPage of string
+type child = CModule of string | CPage of string | CSrc of string
 
-let compile ?parent ?output path ~includes ~children =
+let compile ?parent ?output ?source path ~includes ~children =
   let cmd = Bos.Cmd.(v "odoc" % "compile" % Fpath.to_string path) in
   let cmd =
     match output with
@@ -61,7 +61,7 @@ let compile ?parent ?output path ~includes ~children =
   in
   let cmd =
     match parent with
-    | Some str -> Bos.Cmd.(cmd % "--parent" % Printf.sprintf "\"%s\"" str)
+    | Some str -> Bos.Cmd.(cmd % "--parent" % Printf.sprintf "page-\"%s\"" str)
     | None -> cmd
   in
   let cmd =
@@ -70,17 +70,35 @@ let compile ?parent ?output path ~includes ~children =
       includes cmd
   in
   let cmd =
+    match source with
+    | Some (parent, file) ->
+        Bos.Cmd.(
+          cmd % "--source-parent-file" % p parent % "--source-name" % p file)
+    | None -> cmd
+  in
+  let cmd =
     List.fold_left
       (fun cmd c ->
         let arg =
           match c with
           | CModule m -> "module-" ^ m
           | CPage p -> "page-\"" ^ p ^ "\""
+          | CSrc p -> "src-" ^ p
         in
         Bos.Cmd.(cmd % "--child" % arg))
       cmd children
   in
   Format.eprintf "compile command: %a\n%!" Bos.Cmd.pp cmd;
+  Util.run_silent cmd
+
+let source_tree ~parent path ~includes ~output =
+  let cmd =
+    Bos.Cmd.(
+      v "odoc" % "source-tree" % p path % "-o" % p output % "-I" % p includes
+      % "--parent"
+      % Printf.sprintf "page-\"%s\"" parent)
+  in
+  Format.eprintf "source-tree command: %a\n%!" Bos.Cmd.pp cmd;
   Util.run_silent cmd
 
 let link path ~includes ~output =
@@ -101,4 +119,13 @@ let html path ~output =
       v "odoc" % "html-generate" % "--indent" % Fpath.to_string path % "-o"
       % Fpath.to_string output)
   in
+  Util.run_silent cmd
+
+let html_gen_source path ~output ~root =
+  let cmd =
+    Bos.Cmd.(
+      v "odoc" % "html-generate" % "--as-json" % "--source-root" % p root % "-o"
+      % output % p path)
+  in
+  Format.eprintf "html-generate command: %a\n%!" Bos.Cmd.pp cmd;
   Util.run_silent cmd

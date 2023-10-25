@@ -12,3 +12,7 @@ val write_file : Fpath.t -> string list -> unit
 
 val cp : string -> string -> unit
 (** [cp src dst] copies [src] to [dst]. *)
+
+module R : sig
+  val value : default:'a -> ('a, 'b) result -> 'a
+end

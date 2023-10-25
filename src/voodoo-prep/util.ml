@@ -40,3 +40,7 @@ let write_file filename lines =
   close_out oc
 
 let cp src dst = assert (lines_of_process Cmd.(v "cp" % src % dst) = [])
+
+module R = struct
+  let value ~default = function Ok x -> x | Error _ -> default
+end

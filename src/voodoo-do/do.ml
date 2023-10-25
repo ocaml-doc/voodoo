@@ -61,22 +61,21 @@ module IncludePaths = struct
     Index.M.fold (fun _ v acc -> Fpath.Set.add v acc) index.extern dirs
 end
 
-let get_source_info parent path =
+let get_source_info source_maps parent path =
   match Fpath.segs path with
-  | "prep" :: "universes" :: id :: pkg_name :: version :: _ -> (
+  | "prep" :: "universes" :: universe :: pkg_name :: version :: rest -> (
       match Odoc.compile_deps path with
       | Some (name, digest, deps) ->
-          [
-            Sourceinfo.
-              {
-                package = { universe = id; name = pkg_name; version };
-                path;
-                name;
-                digest;
-                deps;
-                parent;
-              };
-          ]
+          let package = { Package.universe; name = pkg_name; version } in
+          let src_file =
+            match List.assoc_opt package source_maps with
+            | Some map ->
+                let path = String.concat "/" rest in
+                let p = Fpath.v path |> Fpath.set_ext ".cmt" in
+                Dune_rules.ml_of_cmt map p
+            | _ -> None
+          in
+          [ { Sourceinfo.package; path; src_file; name; digest; deps; parent } ]
       | None -> [])
   | _ -> []
 
@@ -141,6 +140,22 @@ let run pkg_name ~blessed ~failed =
       [] Paths.prep
     |> Result.get_ok
   in
+  let dune_rules =
+    Bos.OS.Dir.fold_contents ~dotfiles:false
+      (fun p acc ->
+        match Fpath.segs p with
+        | [ "prep"; "universes"; universe; name; version; "dune_rules" ] ->
+            if right_package p then
+              ({ Package.universe; name; version }, p) :: acc
+            else acc
+        | _ -> acc)
+      [] Paths.prep
+  in
+  let source_maps =
+    match dune_rules with
+    | Ok ps -> List.map (fun (pkg, rules) -> (pkg, Dune_rules.read rules)) ps
+    | _ -> []
+  in
   let modules =
     List.fold_left
       (fun acc f ->
@@ -188,14 +203,24 @@ let run pkg_name ~blessed ~failed =
 
   let error_log = Error_log.find package in
 
-  let parent =
-    Version.gen_parent package ~blessed ~modules ~dune ~libraries ~package_mlds
-      ~error_log ~failed
+  let parent, src_parent =
+    let source_map = List.assoc_opt package source_maps in
+    let src_files =
+      match source_map with
+      | Some map ->
+          Dune_rules.M.fold
+            (fun _cmt src acc -> Fpath.to_string src :: acc)
+            map.Dune_rules.src []
+      | None -> []
+    in
+    Version.gen_parent package ~blessed ~modules ~src_files ~dune ~libraries
+      ~package_mlds ~error_log ~failed
   in
 
   let () = Package_info.gen ~output:output_path ~dune ~libraries in
 
-  let sis = Compat.List.concat_map (get_source_info parent) prep in
+  let sis = Compat.List.concat_map (get_source_info source_maps parent) prep in
+  let src_parent_odoc = Src.output_file src_parent in
   let this_index = InputSelect.select sis in
   Index.write this_index parent;
   let index = Index.combine this_index index in
@@ -212,7 +237,12 @@ let run pkg_name ~blessed ~failed =
       in
       let includes = IncludePaths.get index si in
       let output = Sourceinfo.output_file si in
-      Odoc.compile ~parent:parent.Mld.name ~output si.path ~includes
+      let source =
+        match si.src_file with
+        | Some fpath -> Some (src_parent_odoc, fpath)
+        | None -> None
+      in
+      Odoc.compile ~parent:parent.Mld.name ~output si.path ~includes ?source
         ~children:[];
       si.path :: compiled
   in
@@ -226,32 +256,31 @@ let run pkg_name ~blessed ~failed =
   Util.mkdir_p output;
   Index.M.iter
     (fun _ si ->
-      if Sourceinfo.is_hidden si then ()
+      if Sourceinfo.is_hidden si then
+        let src = Sourceinfo.output_file si in
+        let dst = Sourceinfo.output_linked_odoc_for_src si in
+        let cmd = Bos.Cmd.(v "cp" % p src % p dst) in
+        Voodoo_lib.Util.run_silent cmd
       else
         Odoc.link
           (Sourceinfo.output_file si)
           ~includes:all_includes
           ~output:(Sourceinfo.output_odocl si))
     this_index.intern;
-  let odocls =
-    Index.M.fold
-      (fun _ si acc ->
-        if Sourceinfo.is_hidden si then acc
-        else Sourceinfo.output_odocl si :: acc)
-      this_index.intern []
-  in
   Odoc.link (Mld.output_file parent) ~includes:all_includes
     ~output:(Mld.output_odocl parent);
+  Odoc.link
+    (Src.output_file src_parent)
+    ~includes:all_includes
+    ~output:(Src.output_odocl src_parent);
   List.iter
     (fun mldv ->
       Odoc.link (Mld.output_file mldv) ~includes:all_includes
         ~output:(Mld.output_odocl mldv))
     mldvs;
-  let odocls = odocls @ List.map Mld.output_odocl (parent :: mldvs) in
   Format.eprintf "%d other files to copy\n%!" (List.length otherdocs);
   let otherdocs, _opam_file = Otherdocs.copy parent otherdocs opam_file in
   List.iter (fun p -> Format.eprintf "dest: %a\n%!" Fpath.pp p) otherdocs;
-  List.iter (Odoc.html ~output) odocls;
   let () =
     Bos.OS.File.delete (Fpath.v "compile/page-p.odoc") |> Result.get_ok
   in
@@ -261,6 +290,17 @@ let run pkg_name ~blessed ~failed =
   let () =
     Bos.OS.File.delete (Fpath.v ("compile/p/page-" ^ pkg_name ^ ".odoc"))
     |> Result.get_ok
+  in
+  (* copy source *)
+  let () =
+    let src_path = Package.src_path package in
+    match Bos.OS.Dir.exists src_path with
+    | Ok true ->
+        let cmd = Bos.Cmd.(v "rsync" % "-av" % p src_path % p output_path) in
+        List.iter
+          (fun l -> Format.eprintf "%s\n%!" l)
+          (Util.lines_of_process cmd)
+    | _ -> ()
   in
   if failed then
     Bos.OS.File.write Fpath.(output_path / "failed") "failed" |> Result.get_ok;

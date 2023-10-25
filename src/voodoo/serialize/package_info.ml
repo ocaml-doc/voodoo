@@ -3,6 +3,7 @@ module Kind = struct
     [ `Module
     | `Page
     | `LeafPage
+    | `SourcePage
     | `ModuleType
     | `Parameter of int
     | `Class
@@ -13,6 +14,7 @@ module Kind = struct
     | `Page -> "page"
     | `Module -> "module"
     | `LeafPage -> "leaf-page"
+    | `SourcePage -> "source"
     | `ModuleType -> "module-type"
     | `Parameter arg_num -> Printf.sprintf "argument-%d" arg_num
     | `Class -> "class"
@@ -23,6 +25,7 @@ module Kind = struct
     | "page" -> `Page
     | "module" -> `Module
     | "leaf-page" -> `LeafPage
+    | "source" -> `SourcePage
     | "module-type" -> `ModuleType
     | "class" -> `Class
     | "class-type" -> `ClassType

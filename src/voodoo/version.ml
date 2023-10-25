@@ -116,13 +116,15 @@ let gen_parent :
     Package.t ->
     blessed:bool ->
     modules:string list ->
+    src_files:string list ->
     dune:Dune.t option ->
     libraries:Ocamlobjinfo.t list ->
     package_mlds:Fpath.t list ->
     error_log:Error_log.t ->
     failed:bool ->
-    Mld.t =
- fun package ~blessed ~modules ~dune ~libraries ~package_mlds ~error_log ~failed ->
+    Mld.t * Src.t =
+ fun package ~blessed ~modules ~src_files ~dune ~libraries ~package_mlds
+     ~error_log ~failed ->
   let cwd = Fpath.v "." in
   let mld_index, mld_children =
     List.partition (fun mld -> Fpath.basename mld = "index.mld") package_mlds
@@ -168,7 +170,8 @@ let gen_parent :
   in
 
   let version =
-    Mld.v cwd package.version (Some pkg) [ Odoc.CPage "doc" ]
+    Mld.v cwd package.version (Some pkg)
+      [ Odoc.CPage "doc"; Odoc.CSrc "src" ]
       (Printf.sprintf "{0 %s}\n{!childpage:doc}\n" package.version)
   in
 
@@ -193,4 +196,6 @@ let gen_parent :
       (Printf.sprintf "{0 %s %s}\n%s\n" package.name package.version content)
   in
   Mld.compile doc;
-  doc
+  let src = Src.v cwd "src" version src_files in
+  Src.compile src;
+  (doc, src)

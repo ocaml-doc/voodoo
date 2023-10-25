@@ -12,7 +12,13 @@ Generate the can-render-org-files documentation
 
   $ voodoo-gen -o output
   0 other versions, 1 packages
-  Found 1 files
+  Found 2 files
+  html-generate command: odoc html-generate --as-json --source-root
+                           linked/p/can-render-org-files/1.0/src -o output/
+                           linked/p/can-render-org-files/1.0/page-doc.odocl
+  html-generate command: odoc html-generate --as-json --source-root
+                           linked/p/can-render-org-files/1.0/src -o output/
+                           linked/p/can-render-org-files/1.0/src-src.odocl
 
 Generates a status.json file
   $ cat output/p/$PKG/1.0/status.json | jq .

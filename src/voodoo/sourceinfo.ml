@@ -1,6 +1,7 @@
 type t = {
   package : Package.t;
   path : Paths.t;
+  src_file : Fpath.t option;
   name : string;
   digest : string;
   parent : Mld.t;
@@ -21,4 +22,5 @@ let compile_dir = output_dir ~base:Paths.compile
 let link_dir = output_dir ~base:Paths.link
 let output_file si = Fpath.(compile_dir si / (si.name ^ ".odoc"))
 let output_odocl si = Fpath.(link_dir si / (si.name ^ ".odocl"))
+let output_linked_odoc_for_src si = Fpath.(link_dir si / (si.name ^ ".odoc"))
 let is_hidden t = Util.is_hidden t.name

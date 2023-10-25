@@ -54,7 +54,7 @@ let cmd vv =
         (if has_runtime then "found" else "not found"));
   Bos.Cmd.(
     v "js_of_ocaml"
-    %% on has_runtime (v "--linkall" % "--no-runtime" % p (runtime_path vv))
+    %% on has_runtime (v "--linkall" % p (runtime_path vv))
     % p (cma_path vv)
     % "--enable" % "effects" % "--pretty" % "--wrap-with-fun" % func_name vv
     % "-o"

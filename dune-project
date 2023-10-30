@@ -53,7 +53,7 @@
   voodoo-lib
   ; odoc.2.2.0 pinned by the pipeline
   (odoc
-   (>= 2.2.0))
+   (>= 2.2.2))
   bos
   astring
   cmdliner
@@ -71,7 +71,7 @@
   voodoo-lib
   ; odoc.2.2.0 pinned by the pipeline
   (odoc
-   (>= 2.2.0))
+   (>= 2.2.2))
   conf-pandoc
   astring
   cmdliner

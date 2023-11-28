@@ -31,9 +31,11 @@ let process_package : Fpath.t -> Package.t -> Fpath.t list -> unit =
       && List.mem ext [ ".cmt"; ".cmti"; ".cmi" ]
       && not has_hyphen
     in
+    let is_cma = ext = ".cma" in
+    let is_js = ext = ".js" in
     let do_copy =
       (not in_build_dir)
-      && (is_in_doc_dir || is_module
+      && (is_in_doc_dir || is_module || is_cma || is_js
          || List.mem no_ext (List.map Fpath.v [ "META"; "dune-package" ]))
     in
     let is_cma = process_ocaml_artefacts && List.mem ext [ ".cma"; ".cmxa" ] in
@@ -49,7 +51,7 @@ let process_package : Fpath.t -> Package.t -> Fpath.t list -> unit =
     (fun (src, dst) ->
       let dir, _ = Fpath.split_base dst in
       Util.mkdir_p dir;
-      Util.cp (Fpath.to_string src) (Fpath.to_string dst))
+      Util.cp src dst)
     actions.copy;
   List.iter
     (fun fpath ->
@@ -60,7 +62,14 @@ let process_package : Fpath.t -> Package.t -> Fpath.t list -> unit =
       Util.write_file Fpath.(dest // set_ext "ocamlobjinfo" fpath) lines)
     actions.objinfo
 
-let run (universes : (string * string) list) =
+let write_opam_file package =
+  match Opam.opam_file package with
+  | Some lines ->
+      let dest = Package.prep_path package in
+      Util.write_file Fpath.(dest / "opam") lines
+  | None -> ()
+
+let run universes ref_universes =
   let get_universe =
     match universes with
     | [] ->
@@ -74,36 +83,39 @@ let run (universes : (string * string) list) =
           let name = pkg.Opam.name in
           let version = pkg.version in
           incr id;
-          Some { Package.universe_id; name; version }
+          Some ({ Package.universe_id; name; version }, `Prep)
     | _ -> (
         fun pkg ->
+          let name = pkg.name in
+          let version = pkg.version in
           try
             let universe_id = List.assoc pkg.Opam.name universes in
-            let name = pkg.name in
-            let version = pkg.version in
-            Some { universe_id; name; version }
-          with _ -> None)
+            Some ({ universe_id; name; version }, `Prep)
+          with Not_found -> (
+            try
+              let universe_id = List.assoc pkg.Opam.name ref_universes in
+              Some ({ universe_id; name; version }, `Reference)
+            with Not_found -> None))
   in
 
-  let packages =
+  let root = Opam.prefix () |> Fpath.v in
+  let pkg_contents =
     Opam.all_opam_packages ()
     |> List.fold_left
          (fun acc pkg ->
-           match get_universe pkg with Some pkg -> pkg :: acc | None -> acc)
+           match get_universe pkg with
+           | Some (package, ty) ->
+               let files = Opam.pkg_contents package in
+               let cmas =
+                 match ty with
+                 | `Prep ->
+                     process_package root package files;
+                     write_opam_file package;
+                     List.filter (Fpath.has_ext ".cma") files
+                 | `Reference -> []
+               in
+               (package, cmas, files) :: acc
+           | None -> acc)
          []
   in
-  let root = Opam.prefix () |> Fpath.v in
-  let pkg_contents =
-    List.map (fun package -> (package, Opam.pkg_contents package)) packages
-  in
-  List.iter
-    (fun (package, files) -> process_package root package files)
-    pkg_contents;
-  List.iter
-    (fun package ->
-      match Opam.opam_file package with
-      | Some lines ->
-          let dest = Package.prep_path package in
-          Util.write_file Fpath.(dest / "opam") lines
-      | None -> ())
-    packages
+  Jsoo.copy_files root pkg_contents

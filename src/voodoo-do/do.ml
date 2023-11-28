@@ -186,6 +186,10 @@ let run pkg_name ~blessed ~failed =
 
   let package_mlds, otherdocs = Package_mlds.find package in
 
+  let toplevel_files = Js_toplevel.find package in
+  Format.eprintf "Found %d toplevel files\n%!" (List.length toplevel_files);
+  Js_toplevel.copy toplevel_files output_path;
+
   let error_log = Error_log.find package in
 
   let parent =
@@ -264,4 +268,6 @@ let run pkg_name ~blessed ~failed =
   in
   if failed then
     Bos.OS.File.write Fpath.(output_path / "failed") "failed" |> Result.get_ok;
+  Bos.OS.File.write Fpath.(output_path / "universe.txt") universe
+  |> Result.get_ok;
   ()

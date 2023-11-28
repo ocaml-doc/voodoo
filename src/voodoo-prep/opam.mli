@@ -15,3 +15,5 @@ val pkg_contents : Package.t -> Fpath.t list
 
 val opam_file : Package.t -> string list option
 (** [opam_file p] returns the contents of the opam file of package [p]. *)
+
+val exec : unit -> Bos.Cmd.t

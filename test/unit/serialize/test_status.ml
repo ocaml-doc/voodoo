@@ -39,8 +39,8 @@ let test x =
 
 let inputs =
   [
-    { failed = true; otherdocs = Otherdocs.empty };
-    { failed = false; otherdocs = Otherdocs.dummy };
+    { failed = true; universe = "0"; otherdocs = Otherdocs.empty };
+    { failed = false; universe = "1"; otherdocs = Otherdocs.dummy };
   ]
 
 let suite = ("Status", List.map test inputs)

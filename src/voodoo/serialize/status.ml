@@ -49,7 +49,7 @@ module Otherdocs = struct
     `Assoc [ readme; license; changes; others ]
 end
 
-type t = { failed : bool; otherdocs : Otherdocs.t }
+type t = { failed : bool; universe : string; otherdocs : Otherdocs.t }
 
 let equal x y = x.failed = y.failed && Otherdocs.equal x.otherdocs y.otherdocs
 
@@ -60,10 +60,12 @@ let pp fs x =
 let of_yojson json =
   let open Yojson.Safe.Util in
   let failed = json |> member "failed" |> to_bool in
+  let universe = json |> member "universe" |> to_string in
   let otherdocs = json |> member "otherdocs" |> Otherdocs.of_yojson in
-  { failed; otherdocs }
+  { failed; universe; otherdocs }
 
-let to_yojson { failed; otherdocs } =
+let to_yojson { failed; universe; otherdocs } =
   let failed = ("failed", `Bool failed) in
+  let universe = ("universe", `String universe) in
   let otherdocs = ("otherdocs", Otherdocs.to_yojson otherdocs) in
-  `Assoc [ failed; otherdocs ]
+  `Assoc [ failed; universe; otherdocs ]

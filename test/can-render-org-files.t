@@ -7,6 +7,7 @@ Generate the can-render-org-files documentation
 
   $ voodoo-prep
   Warning: No universes have been specified: will generate dummy universes
+  Ignoring jsoo option passed: -linkall
 
   $ voodoo-do -p $PKG -b 2> /dev/null
 
@@ -18,6 +19,7 @@ Generates a status.json file
   $ cat output/p/$PKG/1.0/status.json | jq .
   {
     "failed": false,
+    "universe": "13",
     "otherdocs": {
       "readme": [
         "linked/p/can-render-org-files/1.0/doc/README.org"

@@ -1,13 +1,13 @@
-let gen_with_dune (dune : Dune.t) =
+let gen_with_dune (dune : Library_names.Dune.t) =
   let libraries =
-    if List.length dune.Dune.libraries = 0 then []
+    if List.length dune.Library_names.Dune.libraries = 0 then []
     else
       let x =
         List.map
           (fun l ->
             let a =
-              match l.Dune.Library.ty with
-              | Dune.Library.Wrapped w ->
+              match l.Library_names.Dune.Library.ty with
+              | Library_names.Dune.Library.Wrapped w ->
                   if Util.is_hidden w.alias_module then
                     [
                       Printf.sprintf "Documentation: {!module-%s}"
@@ -21,12 +21,12 @@ let gen_with_dune (dune : Dune.t) =
                               (fun s -> w.main_module_name ^ "." ^ s)
                               w.modules));
                     ]
-              | Dune.Library.Unwrapped u ->
+              | Library_names.Dune.Library.Unwrapped u ->
                   [
                     Printf.sprintf "Documentation: {!modules:%s}"
                       (String.concat " " u.modules);
                   ]
-              | Dune.Library.Singleton s ->
+              | Library_names.Dune.Library.Singleton s ->
                   [ Printf.sprintf "Documentation: {!module-%s}" s ]
             in
             let deps =
@@ -35,7 +35,7 @@ let gen_with_dune (dune : Dune.t) =
               else []
             in
             [ "{2 " ^ l.name ^ "}" ] @ a @ ("" :: deps))
-          dune.libraries
+          dune.Library_names.Dune.libraries
         |> List.flatten
       in
       [
@@ -46,13 +46,13 @@ let gen_with_dune (dune : Dune.t) =
   in
   libraries
 
-let gen_with_libraries (libraries : Ocamlobjinfo.t list) =
+let gen_with_libraries (libraries : Library_names.Ocamlobjinfo.t list) =
   let libraries =
     if List.length libraries = 0 then []
     else
       let x =
         List.map
-          (fun { Ocamlobjinfo.library_name; units } ->
+          (fun { Library_names.Ocamlobjinfo.library_name; units } ->
             let non_hidden =
               List.filter (fun x -> not (Util.is_hidden x)) units
             in
@@ -94,15 +94,15 @@ let gen_with_error l =
       ]
 
 let gen :
-    dune:Dune.t option ->
-    libraries:Ocamlobjinfo.t list ->
+    dune:Library_names.Dune.t option ->
+    libraries:Library_names.Ocamlobjinfo.t list ->
     error_log:Error_log.t ->
     failed:bool ->
     string =
  fun ~dune ~libraries ~error_log ~failed ->
   Format.eprintf "libraries: [%s]\n%!"
     (String.concat ","
-       (List.map (fun x -> x.Ocamlobjinfo.library_name) libraries));
+       (List.map (fun x -> x.Library_names.Ocamlobjinfo.library_name) libraries));
   let result =
     if failed then gen_with_error error_log
     else
@@ -112,12 +112,12 @@ let gen :
   in
   String.concat "\n" result
 
-let gen_parent :
+let gen :
     Package.t ->
     blessed:bool ->
     modules:string list ->
-    dune:Dune.t option ->
-    libraries:Ocamlobjinfo.t list ->
+    dune:Library_names.Dune.t option ->
+    libraries:Library_names.Ocamlobjinfo.t list ->
     package_mlds:Fpath.t list ->
     error_log:Error_log.t ->
     failed:bool ->

@@ -102,7 +102,7 @@ let generate_pkgver output_dir name_filter version_filter =
               Fpath.normalize @@ Odoc_odoc.Fs.File.append output_dir output_path
             in
             let paths =
-              List.rev_map (Rendering.render ~output) files
+              List.rev_map (Generate_html_docs.render ~output) files
               |> List.rev_map Result.get_ok |> List.flatten
             in
             let foutput =
@@ -116,7 +116,7 @@ let generate_pkgver output_dir name_filter version_filter =
             in
 
             Package_info.gen ~input:parent ~output:output_prefix paths;
-            Rendering.render_other ~parent ~otherdocs ~output |> Result.get_ok;
+            Generate_html_docs.render_other ~parent ~otherdocs ~output |> Result.get_ok;
 
             let otherdocs =
               let init = Voodoo_serialize.Status.Otherdocs.empty in

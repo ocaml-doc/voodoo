@@ -1,6 +1,6 @@
-let gen ~output ~(dune : Dune.t option) ~libraries =
+let gen ~output ~(dune : Library_names.Dune.t option) ~libraries =
   let dune_modules = function
-    | Dune.Library.Singleton m -> [ m ]
+    | Library_names.Dune.Library.Singleton m -> [ m ]
     | Unwrapped { modules; _ } -> modules
     | Wrapped { main_module_name; _ } -> [ main_module_name ]
   in
@@ -8,7 +8,7 @@ let gen ~output ~(dune : Dune.t option) ~libraries =
     match dune with
     | None ->
         libraries
-        |> List.map (fun { Ocamlobjinfo.library_name; units } ->
+        |> List.map (fun { Library_names.Ocamlobjinfo.library_name; units } ->
                {
                  Voodoo_serialize.Package_info.Library.name = library_name;
                  modules = units;
@@ -16,7 +16,7 @@ let gen ~output ~(dune : Dune.t option) ~libraries =
                })
     | Some { libraries; _ } ->
         List.map
-          (fun (v : Dune.Library.t) ->
+          (fun (v : Library_names.Dune.Library.t) ->
             {
               Voodoo_serialize.Package_info.Library.name = v.name;
               modules = dune_modules v.ty;

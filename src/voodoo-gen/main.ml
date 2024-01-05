@@ -116,7 +116,8 @@ let generate_pkgver output_dir name_filter version_filter =
             in
 
             Package_info.gen ~input:parent ~output:output_prefix paths;
-            Generate_html_docs.render_other ~parent ~otherdocs ~output |> Result.get_ok;
+            Generate_html_docs.render_other ~parent ~otherdocs ~output
+            |> Result.get_ok;
 
             let otherdocs =
               let init = Voodoo_serialize.Status.Otherdocs.empty in

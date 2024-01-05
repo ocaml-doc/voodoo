@@ -21,7 +21,11 @@ module Dune : sig
     }
   end
 
-  type t = { name : string; version : string option; libraries : Library.t list }
+  type t = {
+    name : string;
+    version : string option;
+    libraries : Library.t list;
+  }
 
   val process_file : Fpath.t -> (t, [> `Msg of string ]) Bos_setup.result
   (** [process_file f] processes the [dune-package] file located at [f]. *)
@@ -31,13 +35,16 @@ module Dune : sig
       prepped directory of package [p]. *)
 end
 
-module Ocamlobjinfo : sig
-  type t = { library_name : string; units : string list }
+module Without_dune : sig
+  type library = {
+    name : string;
+    archive_name : string;
+    mutable modules : string list;
+  }
 
-  val process : Fpath.t list -> t list
-  (** [process lx] processes the [*.ocamlobjinfo] files [lx]. *)
+  type t = { libraries : library list }
 
-  val find : Package.t -> (Fpath.t list, [> Bos_setup.R.msg ]) Bos_setup.result
-  (** [find p] looks for the [*.ocamlobjinfo] files in the prepped directory of
-      package [p]. *)
+  val get_libraries : Package.t -> t
+  (** [get_libraries p] returns all libraries in the package, including their
+      modules. *)
 end

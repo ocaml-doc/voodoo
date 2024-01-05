@@ -1,5 +1,4 @@
 module Dune = struct
-
   module Result = Bos_setup.R
   open Result.Infix
 
@@ -23,7 +22,11 @@ module Dune = struct
     type t = { name : string; dependencies : string list; ty : wrapping }
   end
 
-  type t = { name : string; version : string option; libraries : Library.t list }
+  type t = {
+    name : string;
+    version : string option;
+    libraries : Library.t list;
+  }
 
   let assoc_list = function
     | Sexplib.Sexp.List ls ->
@@ -33,8 +36,8 @@ module Dune = struct
             | _ -> None)
           ls
         |> List.fold_left
-            (fun acc x -> match x with Some y -> y :: acc | None -> acc)
-            []
+             (fun acc x -> match x with Some y -> y :: acc | None -> acc)
+             []
         |> List.rev
         |> fun x -> Ok x
     | _ -> Error (`Msg "Expecting list in assoc_list")
@@ -49,7 +52,7 @@ module Dune = struct
       Error
         (`Msg
           (Printf.sprintf "Expecting key '%s' in assoc - keys are: [%s]" name
-            (String.concat ", " (List.map fst l))))
+             (String.concat ", " (List.map fst l))))
 
   let process_wrapped_library d =
     assoc_list (Sexplib.Sexp.List d) >>= fun l ->
@@ -81,11 +84,12 @@ module Dune = struct
 
   let process_singleton_library l =
     assoc_list (Sexplib.Sexp.List l) >>= fun l ->
-    assoc "name" l >>= string_of_atom >>= fun name -> Ok (Library.Singleton name)
+    assoc "name" l >>= string_of_atom >>= fun name ->
+    Ok (Library.Singleton name)
 
-  let process_library : Sexplib.Sexp.t -> (Library.t, [> `Msg of string ]) result
-      =
-  fun s ->
+  let process_library :
+      Sexplib.Sexp.t -> (Library.t, [> `Msg of string ]) result =
+   fun s ->
     assoc_list s >>= fun l ->
     assoc "name" l >>= string_of_atom >>= fun name ->
     assoc "modules" l >>= fun m ->
@@ -113,7 +117,7 @@ module Dune = struct
     Ok Library.{ name; ty; dependencies }
 
   let process_dune_package : Sexplib.Sexp.t -> (t, [> `Msg of string ]) result =
-  fun s ->
+   fun s ->
     assoc_list s >>= fun l ->
     assoc "name" l >>= string_of_atom >>= fun name ->
     let version =
@@ -141,7 +145,8 @@ module Dune = struct
       Ok (Sexplib.Sexp.of_string ("(" ^ String.concat "\n" lines ^ ")"))
     with e ->
       Error
-        (`Msg (Printf.sprintf "Error in process_file: %s" (Printexc.to_string e)))
+        (`Msg
+          (Printf.sprintf "Error in process_file: %s" (Printexc.to_string e)))
 
   let process_file p =
     Format.eprintf "process_file: %s\n%!" (Fpath.to_string p);
@@ -156,12 +161,75 @@ module Dune = struct
       (Error (`Msg "Missing"))
       path
     |> Result.join
+
+  (* TODO: process dune-package based on the dune version, since dune-package
+     is not a stable format - it's internal to dune, so it can change *)
 end
 
-module Ocamlobjinfo = struct
-  type t = { library_name : string; units : string list }
+module Without_dune = struct
+  (** To extract the library names for a given package, without using dune, we
 
-  let process_one file =
+      1. parse the META file of the package with ocamlfind to see which
+      libraries exist.
+
+      2. use ocamlobjinfo to get a list of all modules within the library.
+
+      This code assumes that the META file lists for every library an archive
+      [archive_name], and that for this cma archive exists a corresponsing
+      [archive_name].ocamlobjinfo file. *)
+
+  type library = {
+    name : string;
+    archive_name : string;
+    mutable modules : string list;
+  }
+
+  type t = { libraries : library list }
+
+  let process_meta_file file =
+    let _ = Format.eprintf "process_meta_file: %s\n%!" (Fpath.to_string file) in
+    let rec extract_name_and_archive ~base_library_name
+        ((name, pkg_expr) : string * Fl_metascanner.pkg_expr) =
+      let maybe_archive_name =
+        try Some (Fl_metascanner.lookup "archive" [ "byte" ] pkg_expr.pkg_defs)
+        with Not_found -> None
+      in
+      let child_libraries =
+        pkg_expr.pkg_children
+        |> List.map
+             (extract_name_and_archive
+                ~base_library_name:(base_library_name ^ "." ^ name))
+        |> List.flatten
+      in
+      match maybe_archive_name with
+      | Some archive_name ->
+          let archive_name =
+            String.sub archive_name 0 (String.length archive_name - 4)
+          in
+
+          { name = base_library_name ^ "." ^ name; modules = []; archive_name }
+          :: child_libraries
+      | None -> child_libraries
+    in
+    let ic = open_in (Fpath.to_string file) in
+    let file_name = Fpath.basename file in
+    let library_name =
+      if file_name = "META" then Fpath.parent file |> Fpath.basename
+      else Fpath.get_ext file
+    in
+    let meta = Fl_metascanner.parse ic in
+    let libraries =
+      { name = library_name; archive_name = library_name; modules = [] }
+      :: (meta.pkg_children
+         |> List.map (extract_name_and_archive ~base_library_name:library_name)
+         |> List.flatten)
+    in
+    libraries
+
+  let process_ocamlobjinfo_file ~(libraries : library list) file =
+    let _ =
+      Format.eprintf "process_ocamlobjinfo_file: %s\n%!" (Fpath.to_string file)
+    in
     let ic = open_in (Fpath.to_string file) in
     let lines = Util.lines_of_channel ic in
     let affix = "Unit name: " in
@@ -180,19 +248,52 @@ module Ocamlobjinfo = struct
         (fun l acc -> match l with Some x -> x :: acc | None -> acc)
         units []
     in
-    let _, library_name = Fpath.split_base file in
-    let _ = Format.eprintf "looking at file %s to determine library name!" (Fpath.to_string file) in
-    let library_name =
-      Fpath.rem_ext ~multi:true library_name |> Fpath.to_string
+    let _, archive_name = Fpath.split_base file in
+    let archive_name = archive_name |> Fpath.rem_ext |> Fpath.to_string in
+    let _ =
+      Format.eprintf "trying to look up archive_name: %s\n%!" archive_name
     in
-    { library_name; units }
+    let library =
+      List.find (fun l -> l.archive_name = archive_name) libraries
+    in
+    library.modules <- library.modules @ units
 
-  let process packages = List.map process_one packages
-
-  let find package =
+  let get_libraries package =
     let path = Package.prep_path package in
-    Bos.OS.Dir.fold_contents ~dotfiles:true
-      (fun p acc -> if Fpath.get_ext p = ".ocamlobjinfo" then p :: acc else acc)
-      [] path
+    let maybe_meta_files =
+      Bos.OS.Dir.fold_contents ~dotfiles:true
+        (fun p acc ->
+          let is_meta = p |> Fpath.rem_ext |> Fpath.basename = "META" in
+          if is_meta then p :: acc else acc)
+        [] path
+    in
 
+    match maybe_meta_files with
+    | Error _ ->
+        failwith
+          "FIXME: had an error traversing directories to find the META files"
+    | Ok meta_files -> (
+        let libraries =
+          meta_files |> List.map process_meta_file |> List.flatten
+        in
+
+        let _ =
+          Format.eprintf "found archive_names: [%s]\n%!"
+            (String.concat ", "
+               (List.map (fun (l : library) -> l.archive_name) libraries))
+        in
+
+        let maybe_ocamlobjinfo_files =
+          Bos.OS.Dir.fold_contents ~dotfiles:true
+            (fun p acc ->
+              let is_ocamlobjinfo = Fpath.get_ext p = ".ocamlobjinfo" in
+              if is_ocamlobjinfo then p :: acc else acc)
+            [] path
+        in
+        match maybe_ocamlobjinfo_files with
+        | Error _ ->
+            failwith "FIXME: had an error going over the ocamlobjinfo files"
+        | Ok ocamlobjinfo_files ->
+            List.iter (process_ocamlobjinfo_file ~libraries) ocamlobjinfo_files;
+            { libraries })
 end

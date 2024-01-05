@@ -178,24 +178,24 @@ let run pkg_name ~blessed ~failed =
   in
   let opam_file = match Opam.find package with Ok f -> Some f | _ -> None in
 
-  let libraries =
-    match Library_names.Ocamlobjinfo.find package with
-    | Ok packages -> Library_names.Ocamlobjinfo.process packages
-    | Error _err -> []
-  in
+  let libraries = Library_names.Without_dune.get_libraries package in
 
   let package_mlds, otherdocs = Package_mlds.find package in
 
   let error_log = Error_log.find package in
 
   let auto_generated_index_mld =
-    Auto_generated_index_mld.gen package ~blessed ~modules ~dune ~libraries ~package_mlds
-      ~error_log ~failed
+    Auto_generated_index_mld.gen package ~blessed ~modules ~dune ~libraries
+      ~package_mlds ~error_log ~failed
   in
 
-  let () = Package_info.gen ~output:output_path ~dune ~libraries in
+  let () =
+    Package_info.gen ~output:output_path ~dune ~libraries:libraries.libraries
+  in
 
-  let sis = Compat.List.concat_map (get_source_info auto_generated_index_mld) prep in
+  let sis =
+    Compat.List.concat_map (get_source_info auto_generated_index_mld) prep
+  in
   let this_index = InputSelect.select sis in
   Index.write this_index auto_generated_index_mld;
   let index = Index.combine this_index index in
@@ -212,16 +212,20 @@ let run pkg_name ~blessed ~failed =
       in
       let includes = IncludePaths.get index si in
       let output = Sourceinfo.output_file si in
-      Odoc.compile ~parent:auto_generated_index_mld.Mld.name ~output si.path ~includes
-        ~children:[];
+      Odoc.compile ~parent:auto_generated_index_mld.Mld.name ~output si.path
+        ~includes ~children:[];
       si.path :: compiled
   in
   let _ = ignore (Index.M.fold compile this_index.intern []) in
-  let mldvs = Package_mlds.compile ~parent:auto_generated_index_mld package_mlds in
+  let mldvs =
+    Package_mlds.compile ~parent:auto_generated_index_mld package_mlds
+  in
   let unit_includes = IncludePaths.link index in
   let docs_includes = Package_mlds.include_paths mldvs in
   let all_includes = Fpath.Set.union unit_includes docs_includes in
-  let all_includes = Fpath.Set.add (Mld.compile_dir auto_generated_index_mld) all_includes in
+  let all_includes =
+    Fpath.Set.add (Mld.compile_dir auto_generated_index_mld) all_includes
+  in
   let output = Fpath.(v "html") in
   Util.mkdir_p output;
   Index.M.iter
@@ -240,16 +244,22 @@ let run pkg_name ~blessed ~failed =
         else Sourceinfo.output_odocl si :: acc)
       this_index.intern []
   in
-  Odoc.link (Mld.output_file auto_generated_index_mld) ~includes:all_includes
+  Odoc.link
+    (Mld.output_file auto_generated_index_mld)
+    ~includes:all_includes
     ~output:(Mld.output_odocl auto_generated_index_mld);
   List.iter
     (fun mldv ->
       Odoc.link (Mld.output_file mldv) ~includes:all_includes
         ~output:(Mld.output_odocl mldv))
     mldvs;
-  let odocls = odocls @ List.map Mld.output_odocl (auto_generated_index_mld :: mldvs) in
+  let odocls =
+    odocls @ List.map Mld.output_odocl (auto_generated_index_mld :: mldvs)
+  in
   Format.eprintf "%d other files to copy\n%!" (List.length otherdocs);
-  let otherdocs, _opam_file = Otherdocs.copy auto_generated_index_mld otherdocs opam_file in
+  let otherdocs, _opam_file =
+    Otherdocs.copy auto_generated_index_mld otherdocs opam_file
+  in
   List.iter (fun p -> Format.eprintf "dest: %a\n%!" Fpath.pp p) otherdocs;
   List.iter (Odoc.html ~output) odocls;
   let () =

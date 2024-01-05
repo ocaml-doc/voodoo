@@ -46,15 +46,15 @@ let gen_with_dune (dune : Library_names.Dune.t) =
   in
   libraries
 
-let gen_with_libraries (libraries : Library_names.Ocamlobjinfo.t list) =
+let gen_with_libraries (libraries : Library_names.Without_dune.library list) =
   let libraries =
     if List.length libraries = 0 then []
     else
       let x =
         List.map
-          (fun { Library_names.Ocamlobjinfo.library_name; units } ->
+          (fun { Library_names.Without_dune.name; modules; _ } ->
             let non_hidden =
-              List.filter (fun x -> not (Util.is_hidden x)) units
+              List.filter (fun x -> not (Util.is_hidden x)) modules
             in
             let a =
               [
@@ -62,7 +62,7 @@ let gen_with_libraries (libraries : Library_names.Ocamlobjinfo.t list) =
                   (String.concat " " non_hidden);
               ]
             in
-            [ "{2 " ^ library_name ^ "}" ] @ a @ [ "" ])
+            [ "{2 " ^ name ^ "}" ] @ a @ [ "" ])
           libraries
         |> List.flatten
       in
@@ -95,20 +95,22 @@ let gen_with_error l =
 
 let gen :
     dune:Library_names.Dune.t option ->
-    libraries:Library_names.Ocamlobjinfo.t list ->
+    libraries:Library_names.Without_dune.t ->
     error_log:Error_log.t ->
     failed:bool ->
     string =
  fun ~dune ~libraries ~error_log ~failed ->
   Format.eprintf "libraries: [%s]\n%!"
     (String.concat ","
-       (List.map (fun x -> x.Library_names.Ocamlobjinfo.library_name) libraries));
+       (List.map
+          (fun x -> x.Library_names.Without_dune.name)
+          libraries.libraries));
   let result =
     if failed then gen_with_error error_log
     else
       match dune with
       | Some d -> gen_with_dune d
-      | _ -> gen_with_libraries libraries
+      | _ -> gen_with_libraries libraries.libraries
   in
   String.concat "\n" result
 
@@ -117,7 +119,7 @@ let gen :
     blessed:bool ->
     modules:string list ->
     dune:Library_names.Dune.t option ->
-    libraries:Library_names.Ocamlobjinfo.t list ->
+    libraries:Library_names.Without_dune.t ->
     package_mlds:Fpath.t list ->
     error_log:Error_log.t ->
     failed:bool ->

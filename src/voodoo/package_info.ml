@@ -8,10 +8,10 @@ let gen ~output ~(dune : Library_names.Dune.t option) ~libraries =
     match dune with
     | None ->
         libraries
-        |> List.map (fun { Library_names.Ocamlobjinfo.library_name; units } ->
+        |> List.map (fun { Library_names.Without_dune.name; modules; _ } ->
                {
-                 Voodoo_serialize.Package_info.Library.name = library_name;
-                 modules = units;
+                 Voodoo_serialize.Package_info.Library.name;
+                 modules;
                  dependencies = [];
                })
     | Some { libraries; _ } ->

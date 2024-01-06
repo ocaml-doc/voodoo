@@ -1,6 +1,5 @@
 val gen :
   output:Fpath.t ->
-  dune:Library_names.Dune.t option ->
   libraries:Library_names.Without_dune.library list ->
   unit
 (** [gen ~output ~dune ~libraries] generates a [package.json] describing the

@@ -1,51 +1,3 @@
-let gen_with_dune (dune : Library_names.Dune.t) =
-  let libraries =
-    if List.length dune.Library_names.Dune.libraries = 0 then []
-    else
-      let x =
-        List.map
-          (fun l ->
-            let a =
-              match l.Library_names.Dune.Library.ty with
-              | Library_names.Dune.Library.Wrapped w ->
-                  if Util.is_hidden w.alias_module then
-                    [
-                      Printf.sprintf "Documentation: {!module-%s}"
-                        w.main_module_name;
-                    ]
-                  else
-                    [
-                      Printf.sprintf "Documentation: {!modules:%s}"
-                        (String.concat " "
-                           (List.map
-                              (fun s -> w.main_module_name ^ "." ^ s)
-                              w.modules));
-                    ]
-              | Library_names.Dune.Library.Unwrapped u ->
-                  [
-                    Printf.sprintf "Documentation: {!modules:%s}"
-                      (String.concat " " u.modules);
-                  ]
-              | Library_names.Dune.Library.Singleton s ->
-                  [ Printf.sprintf "Documentation: {!module-%s}" s ]
-            in
-            let deps =
-              if List.length l.dependencies > 0 then
-                [ "Dependencies:"; String.concat ", " l.dependencies ]
-              else []
-            in
-            [ "{2 " ^ l.name ^ "}" ] @ a @ ("" :: deps))
-          dune.Library_names.Dune.libraries
-        |> List.flatten
-      in
-      [
-        "{1 Libraries}";
-        "This package provides the following libraries (via dune):";
-      ]
-      @ x
-  in
-  libraries
-
 let gen_with_libraries (libraries : Library_names.Without_dune.library list) =
   let libraries =
     if List.length libraries = 0 then []
@@ -94,12 +46,11 @@ let gen_with_error l =
       ]
 
 let gen :
-    dune:Library_names.Dune.t option ->
     libraries:Library_names.Without_dune.t ->
     error_log:Error_log.t ->
     failed:bool ->
     string =
- fun ~dune ~libraries ~error_log ~failed ->
+ fun ~libraries ~error_log ~failed ->
   Format.eprintf "libraries: [%s]\n%!"
     (String.concat ","
        (List.map
@@ -108,9 +59,7 @@ let gen :
   let result =
     if failed then gen_with_error error_log
     else
-      match dune with
-      | Some d -> gen_with_dune d
-      | _ -> gen_with_libraries libraries.libraries
+      gen_with_libraries libraries.libraries
   in
   String.concat "\n" result
 
@@ -118,13 +67,12 @@ let gen :
     Package.t ->
     blessed:bool ->
     modules:string list ->
-    dune:Library_names.Dune.t option ->
     libraries:Library_names.Without_dune.t ->
     package_mlds:Fpath.t list ->
     error_log:Error_log.t ->
     failed:bool ->
     Mld.t =
- fun package ~blessed ~modules ~dune ~libraries ~package_mlds ~error_log ~failed ->
+ fun package ~blessed ~modules ~libraries ~package_mlds ~error_log ~failed ->
   let cwd = Fpath.v "." in
   let mld_index, mld_children =
     List.partition (fun mld -> Fpath.basename mld = "index.mld") package_mlds
@@ -176,7 +124,7 @@ let gen :
 
   let content =
     match mld_index with
-    | [] -> gen ~dune ~libraries ~error_log ~failed
+    | [] -> gen ~libraries ~error_log ~failed
     | x :: _ ->
         let ic = open_in (Fpath.to_string x) in
         let result = really_input_string ic (in_channel_length ic) in

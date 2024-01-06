@@ -167,15 +167,6 @@ let run pkg_name ~blessed ~failed =
     match index_res with Ok index -> index | Error _ -> Index.empty
   in
 
-  let dune =
-    match Library_names.Dune.(find package >>= process_file) with
-    | Ok x ->
-        Format.eprintf "Got dune\n%!";
-        Some x
-    | Error (`Msg m) ->
-        Format.eprintf "No dune: %s\n%!" m;
-        None
-  in
   let opam_file = match Opam.find package with Ok f -> Some f | _ -> None in
 
   let libraries = Library_names.Without_dune.get_libraries package in
@@ -185,12 +176,12 @@ let run pkg_name ~blessed ~failed =
   let error_log = Error_log.find package in
 
   let auto_generated_index_mld =
-    Auto_generated_index_mld.gen package ~blessed ~modules ~dune ~libraries
+    Auto_generated_index_mld.gen package ~blessed ~modules ~libraries
       ~package_mlds ~error_log ~failed
   in
 
   let () =
-    Package_info.gen ~output:output_path ~dune ~libraries:libraries.libraries
+    Package_info.gen ~output:output_path ~libraries:libraries.libraries
   in
 
   let sis =

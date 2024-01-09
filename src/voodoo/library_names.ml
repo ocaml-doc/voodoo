@@ -55,6 +55,10 @@ module Without_dune = struct
       :: (meta.pkg_children
          |> List.map (extract_name_and_archive ~base_library_name:library_name)
          |> List.flatten)
+      |> List.filter (fun (lib : library) ->
+             not
+               (String.split_on_char '.' lib.name
+               |> List.exists (fun x -> x = "__private__")))
     in
     libraries
 
@@ -85,10 +89,12 @@ module Without_dune = struct
     let _ =
       Format.eprintf "trying to look up archive_name: %s\n%!" archive_name
     in
-    let library =
-      List.find (fun l -> l.archive_name = archive_name) libraries
-    in
-    library.modules <- library.modules @ units
+    try
+      let library =
+        List.find (fun l -> l.archive_name = archive_name) libraries
+      in
+      library.modules <- library.modules @ units
+    with Not_found -> ()
 
   let get_libraries package =
     let path = Package.prep_path package in

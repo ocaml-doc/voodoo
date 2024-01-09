@@ -58,8 +58,7 @@ let gen :
           libraries.libraries));
   let result =
     if failed then gen_with_error error_log
-    else
-      gen_with_libraries libraries.libraries
+    else gen_with_libraries libraries.libraries
   in
   String.concat "\n" result
 

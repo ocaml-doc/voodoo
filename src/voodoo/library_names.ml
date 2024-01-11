@@ -44,12 +44,14 @@ module Without_dune = struct
       | None -> child_libraries
     in
     let ic = open_in (Fpath.to_string file) in
-    let file_name = Fpath.basename file in
-    let library_name =
-      if file_name = "META" then Fpath.parent file |> Fpath.basename
-      else Fpath.get_ext file
-    in
     let meta = Fl_metascanner.parse ic in
+    let library_name =
+      let cma_filename =
+        try Fl_metascanner.lookup "archive" [ "byte" ] meta.pkg_defs
+        with Not_found -> failwith "META file does not contain archive/byte"
+      in
+      String.sub cma_filename 0 (String.length cma_filename - 4)
+    in
     let libraries =
       { name = library_name; archive_name = library_name; modules = [] }
       :: (meta.pkg_children
@@ -87,14 +89,17 @@ module Without_dune = struct
     let _, archive_name = Fpath.split_base file in
     let archive_name = archive_name |> Fpath.rem_ext |> Fpath.to_string in
     let _ =
-      Format.eprintf "trying to look up archive_name: %s\n%!" archive_name
+      Format.eprintf "trying to look up archive_name: %s\nunits: %s\n%!"
+        archive_name (String.concat "," units)
     in
     try
       let library =
         List.find (fun l -> l.archive_name = archive_name) libraries
       in
       library.modules <- library.modules @ units
-    with Not_found -> ()
+    with Not_found ->
+      Format.eprintf "failed to find archive_name: %s\n%!" archive_name;
+      ()
 
   let get_libraries package =
     let path = Package.prep_path package in
@@ -133,5 +138,13 @@ module Without_dune = struct
             failwith "FIXME: had an error going over the ocamlobjinfo files"
         | Ok ocamlobjinfo_files ->
             List.iter (process_ocamlobjinfo_file ~libraries) ocamlobjinfo_files;
+            let _ =
+              Format.eprintf "found archive_names: [%s]\n%!"
+                (String.concat ", "
+                   (List.map
+                      (fun (l : library) ->
+                        l.archive_name ^ "/" ^ String.concat "," l.modules)
+                      libraries))
+            in
             { libraries })
 end

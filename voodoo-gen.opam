@@ -12,7 +12,7 @@ depends: [
   "dune" {>= "3.0"}
   "omd" {= "2.0.0~alpha3"}
   "voodoo-lib"
-  "odoc" {>= "2.2.0"}
+  "odoc" {>= "2.4.0"}
   "conf-pandoc"
   "astring"
   "cmdliner"

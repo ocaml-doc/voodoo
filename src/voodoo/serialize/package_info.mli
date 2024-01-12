@@ -3,6 +3,7 @@ module Kind : sig
     [ `Module
     | `Page
     | `LeafPage
+    | `SourcePage
     | `ModuleType
     | `Parameter of int
     | `Class

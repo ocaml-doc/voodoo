@@ -16,6 +16,7 @@ val compile_deps : Fpath.t -> (string * string * compile_dep list) option
 type child =
   | CModule of string  (** module name, e.g. 'String' *)
   | CPage of string  (** page name, e.g. 'packages' *)
+  | CSrc of string (* 'src' *)
 
 val compile :
   ?parent:string ->

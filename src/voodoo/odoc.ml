@@ -50,7 +50,7 @@ let compile_deps file =
       Format.eprintf "Failed to find digest for self (%s)\n%!" name;
       None
 
-type child = CModule of string | CPage of string
+type child = CModule of string | CPage of string | CSrc of string
 
 let compile ?parent ?output path ~includes ~children =
   let cmd = Bos.Cmd.(v "odoc" % "compile" % Fpath.to_string path) in
@@ -61,7 +61,7 @@ let compile ?parent ?output path ~includes ~children =
   in
   let cmd =
     match parent with
-    | Some str -> Bos.Cmd.(cmd % "--parent" % Printf.sprintf "\"%s\"" str)
+    | Some str -> Bos.Cmd.(cmd % "--parent" % Printf.sprintf "page-\"%s\"" str)
     | None -> cmd
   in
   let cmd =
@@ -76,6 +76,7 @@ let compile ?parent ?output path ~includes ~children =
           match c with
           | CModule m -> "module-" ^ m
           | CPage p -> "page-\"" ^ p ^ "\""
+          | CSrc p -> "src-" ^ p
         in
         Bos.Cmd.(cmd % "--child" % arg))
       cmd children

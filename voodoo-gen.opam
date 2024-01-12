@@ -12,8 +12,7 @@ depends: [
   "dune" {>= "3.0"}
   "omd" {= "2.0.0~alpha3"}
   "voodoo-lib"
-  "odoc" {= "2.2.2"}
-  "odoc-parser" {= "2.0.0"}
+  "odoc" {>= "2.4.1"}
   "conf-pandoc"
   "astring"
   "cmdliner"
@@ -38,6 +37,3 @@ build: [
   ]
 ]
 dev-repo: "git+https://github.com/ocaml-doc/voodoo.git"
-available: [ os-distribution != "alpine" & arch != "ppc64"]
-# PPC64 fails to build with stack overflow see https://github.com/ocaml/ocaml/issues/11415
-# Alpine-3.16 doesn't have a pandoc package, however 3.17 does

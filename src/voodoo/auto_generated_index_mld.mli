@@ -2,7 +2,7 @@ val gen :
   Package.t ->
   blessed:bool ->
   modules:string list ->
-  libraries:Library_names.Without_dune.t ->
+  libraries:Library_names.t ->
   package_mlds:Fpath.t list ->
   error_log:Error_log.t ->
   failed:bool ->

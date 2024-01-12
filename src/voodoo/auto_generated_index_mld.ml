@@ -1,10 +1,10 @@
-let gen_with_libraries (libraries : Library_names.Without_dune.library list) =
+let gen_with_libraries (libraries : Library_names.library list) =
   let libraries =
     if List.length libraries = 0 then []
     else
       let x =
         List.map
-          (fun { Library_names.Without_dune.name; modules; _ } ->
+          (fun { Library_names.name; modules; _ } ->
             let non_hidden =
               List.filter (fun x -> not (Util.is_hidden x)) modules
             in
@@ -46,7 +46,7 @@ let gen_with_error l =
       ]
 
 let gen :
-    libraries:Library_names.Without_dune.t ->
+    libraries:Library_names.t ->
     error_log:Error_log.t ->
     failed:bool ->
     string =
@@ -54,7 +54,7 @@ let gen :
   Format.eprintf "libraries: [%s]\n%!"
     (String.concat ","
        (List.map
-          (fun x -> x.Library_names.Without_dune.name)
+          (fun x -> x.Library_names.name)
           libraries.libraries));
   let result =
     if failed then gen_with_error error_log
@@ -66,7 +66,7 @@ let gen :
     Package.t ->
     blessed:bool ->
     modules:string list ->
-    libraries:Library_names.Without_dune.t ->
+    libraries:Library_names.t ->
     package_mlds:Fpath.t list ->
     error_log:Error_log.t ->
     failed:bool ->

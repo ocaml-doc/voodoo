@@ -1,7 +1,7 @@
 let gen ~output ~libraries =
   let libraries =
     libraries
-    |> List.map (fun { Library_names.Without_dune.name; modules; _ } ->
+    |> List.map (fun { Library_names.name; modules; _ } ->
            {
              Voodoo_serialize.Package_info.Library.name;
              modules;

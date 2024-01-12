@@ -169,7 +169,7 @@ let run pkg_name ~blessed ~failed =
 
   let opam_file = match Opam.find package with Ok f -> Some f | _ -> None in
 
-  let libraries = Library_names.Without_dune.get_libraries package in
+  let libraries = Library_names.get_libraries package in
 
   let package_mlds, otherdocs = Package_mlds.find package in
 

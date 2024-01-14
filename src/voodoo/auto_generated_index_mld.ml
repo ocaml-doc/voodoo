@@ -46,9 +46,12 @@ let gen_with_error l =
       ]
 
 let gen :
-    libraries:Library_names.t -> error_log:Error_log.t -> failed:bool -> string
-    =
- fun ~libraries ~error_log ~failed ->
+    Package.t ->
+    libraries:Library_names.t ->
+    error_log:Error_log.t ->
+    failed:bool ->
+    string =
+ fun package ~libraries ~error_log ~failed ->
   Format.eprintf "libraries: [%s]\n%!"
     (String.concat ","
        (List.map (fun x -> x.Library_names.name) libraries.libraries));
@@ -56,7 +59,8 @@ let gen :
     if failed then gen_with_error error_log
     else gen_with_libraries libraries.libraries
   in
-  String.concat "\n" result
+  Format.sprintf "{0 %s %s}\n %s" package.name package.version
+    (String.concat "\n" result)
 
 let gen :
     Package.t ->
@@ -119,7 +123,7 @@ let gen :
 
   let content =
     match mld_index with
-    | [] -> gen ~libraries ~error_log ~failed
+    | [] -> gen package ~libraries ~error_log ~failed
     | x :: _ ->
         let ic = open_in (Fpath.to_string x) in
         let result = really_input_string ic (in_channel_length ic) in
@@ -133,9 +137,6 @@ let gen :
         Format.eprintf "Failed to remove file: doc.mld - %s\n%!" m;
         ()
   in
-  let doc =
-    Mld.v cwd "doc" (Some version) children
-      (Printf.sprintf "{0 %s %s}\n%s\n" package.name package.version content)
-  in
+  let doc = Mld.v cwd "doc" (Some version) children content in
   Mld.compile doc;
   doc

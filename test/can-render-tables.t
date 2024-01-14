@@ -34,5 +34,36 @@ Generate a README.md file with the tables formatted in HTML
   $ cat output/p/$PKG/1.0/README.md.html.json | jq '.content'
   "<table>\n<thead>\n<tr>\n<th>x</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>y</td>\n</tr>\n</tbody>\n</table>\n"
 
+Content of Index.mld is fine
+  $ cat output/p/$PKG/1.0/doc/index.html.json | jq .
+  {
+    "uses_katex": false,
+    "breadcrumbs": [
+      {
+        "name": "p",
+        "href": "../../../index.html",
+        "kind": "page"
+      },
+      {
+        "name": "can-render-tables",
+        "href": "../../index.html",
+        "kind": "page"
+      },
+      {
+        "name": "1.0",
+        "href": "../index.html",
+        "kind": "page"
+      },
+      {
+        "name": "doc",
+        "href": "#",
+        "kind": "page"
+      }
+    ],
+    "toc": [],
+    "preamble": "<h1 id=\"title\"><a href=\"#title\" class=\"anchor\"></a>Title</h1><p>Text</p><p>Here is some text that should show up.</p>",
+    "content": ""
+  }
+
 Uninstall the package
   $ opam remove $PKG --yes > /dev/null

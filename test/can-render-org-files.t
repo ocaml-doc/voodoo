@@ -34,5 +34,36 @@ Converted the README.org file in HTML
   $ cat output/p/$PKG/1.0/README.org.html.json | jq '.content'
   "<h3>Title 2</h3>"
 
+Content of automatically generated Index.mld is fine
+  $ cat output/p/$PKG/1.0/doc/index.html.json | jq .
+  {
+    "uses_katex": false,
+    "breadcrumbs": [
+      {
+        "name": "p",
+        "href": "../../../index.html",
+        "kind": "page"
+      },
+      {
+        "name": "can-render-org-files",
+        "href": "../../index.html",
+        "kind": "page"
+      },
+      {
+        "name": "1.0",
+        "href": "../index.html",
+        "kind": "page"
+      },
+      {
+        "name": "doc",
+        "href": "#",
+        "kind": "page"
+      }
+    ],
+    "toc": [],
+    "preamble": "<h1 id=\"can-render-org-files-1.0\"><a href=\"#can-render-org-files-1.0\" class=\"anchor\"></a>can-render-org-files 1.0</h1>",
+    "content": ""
+  }
+
 Uninstall the package
   $ opam remove $PKG --yes > /dev/null

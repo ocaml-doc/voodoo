@@ -1,7 +1,7 @@
 (** To extract the library names for a given package, without using dune, we
 
-    1. parse the META file of the package with ocamlfind to see which
-    libraries exist and what their archive name (.cma filename) is.
+    1. parse the META file of the package with ocamlfind to see which libraries
+    exist and what their archive name (.cma filename) is.
 
     2. use ocamlobjinfo to get a list of all modules within the archives.
 
@@ -28,7 +28,7 @@ let process_meta_file file =
     let child_libraries =
       pkg_expr.pkg_children
       |> List.map
-            (extract_name_and_archive
+           (extract_name_and_archive
               ~base_library_name:(base_library_name ^ "." ^ name))
       |> List.flatten
     in
@@ -44,27 +44,39 @@ let process_meta_file file =
   in
   let ic = open_in (Fpath.to_string file) in
   let meta = Fl_metascanner.parse ic in
-  let archive_name =
-    let maybe_archive_name =
-      try Some (Fl_metascanner.lookup "archive" [ "byte" ] meta.pkg_defs)
-      with Not_found ->
-        None
-    in
-    Option.map (fun cma_filename -> String.sub cma_filename 0 (String.length cma_filename - 4)) maybe_archive_name
+  let library_name =
+    if Fpath.basename file = "META" then Fpath.parent file |> Fpath.basename
+    else Fpath.get_ext file
   in
-  let library_name = if Fpath.basename file = "META" then (Fpath.parent file |> Fpath.basename)
-  else (Fpath.get_ext file) in
+  let maybe_base_library =
+    let archive_name =
+      let maybe_archive_name =
+        try Some (Fl_metascanner.lookup "archive" [ "byte" ] meta.pkg_defs)
+        with Not_found -> None
+      in
+      Option.map
+        (fun cma_filename ->
+          String.sub cma_filename 0 (String.length cma_filename - 4))
+        maybe_archive_name
+    in
+    match archive_name with
+    | None -> None
+    | Some archive_name ->
+        Some { name = library_name; archive_name; modules = [] }
+  in
+  let is_not_private (lib : library) =
+    not
+      (String.split_on_char '.' lib.name
+      |> List.exists (fun x -> x = "__private__"))
+  in
   let libraries =
-    (match archive_name with
+    (match maybe_base_library with
     | None -> []
-    | Some archive_name -> [{ name = library_name; archive_name = archive_name; modules = [] }])
+    | Some base_library -> [ base_library ])
     @ (meta.pkg_children
-        |> List.map (extract_name_and_archive ~base_library_name:library_name)
-        |> List.flatten)
-    |> List.filter (fun (lib : library) ->
-            not
-              (String.split_on_char '.' lib.name
-              |> List.exists (fun x -> x = "__private__")))
+      |> List.map (extract_name_and_archive ~base_library_name:library_name)
+      |> List.flatten)
+    |> List.filter is_not_private
   in
   libraries
 
@@ -116,9 +128,9 @@ let get_libraries package =
   in
 
   match maybe_meta_files with
-  | Error _ ->
+  | Error (`Msg msg) ->
       failwith
-        "FIXME: had an error traversing directories to find the META files"
+        ("FIXME: error traversing directories to find the META files: " ^ msg)
   | Ok meta_files -> (
       let libraries =
         meta_files |> List.map process_meta_file |> List.flatten
@@ -127,7 +139,7 @@ let get_libraries package =
       let _ =
         Format.eprintf "found archive_names: [%s]\n%!"
           (String.concat ", "
-              (List.map (fun (l : library) -> l.archive_name) libraries))
+             (List.map (fun (l : library) -> l.archive_name) libraries))
       in
 
       let maybe_ocamlobjinfo_files =
@@ -138,14 +150,16 @@ let get_libraries package =
           [] path
       in
       match maybe_ocamlobjinfo_files with
-      | Error _ ->
-          failwith "FIXME: had an error going over the ocamlobjinfo files"
+      | Error (`Msg msg) ->
+          failwith
+            ("FIXME: error traversing directories to find the ocamlobjinfo \
+              files: " ^ msg)
       | Ok ocamlobjinfo_files ->
           List.iter (process_ocamlobjinfo_file ~libraries) ocamlobjinfo_files;
           let _ =
             Format.eprintf "found archive_names: [%s]\n%!"
               (String.concat ", "
-                  (List.map
+                 (List.map
                     (fun (l : library) ->
                       l.archive_name ^ "/" ^ String.concat "," l.modules)
                     libraries))

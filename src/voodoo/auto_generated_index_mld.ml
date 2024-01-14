@@ -46,16 +46,12 @@ let gen_with_error l =
       ]
 
 let gen :
-    libraries:Library_names.t ->
-    error_log:Error_log.t ->
-    failed:bool ->
-    string =
+    libraries:Library_names.t -> error_log:Error_log.t -> failed:bool -> string
+    =
  fun ~libraries ~error_log ~failed ->
   Format.eprintf "libraries: [%s]\n%!"
     (String.concat ","
-       (List.map
-          (fun x -> x.Library_names.name)
-          libraries.libraries));
+       (List.map (fun x -> x.Library_names.name) libraries.libraries));
   let result =
     if failed then gen_with_error error_log
     else gen_with_libraries libraries.libraries

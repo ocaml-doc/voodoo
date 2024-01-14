@@ -1,0 +1,3 @@
+(library
+ (name wrapped)
+ (public_name can-read-library-names.wrapped))

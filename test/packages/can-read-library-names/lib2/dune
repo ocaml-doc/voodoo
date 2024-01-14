@@ -1,0 +1,3 @@
+(library
+ (name singleton)
+ (public_name can-read-library-names.singleton))

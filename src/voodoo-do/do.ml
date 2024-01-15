@@ -176,7 +176,7 @@ let run pkg_name ~blessed ~failed =
   let error_log = Error_log.find package in
 
   let auto_generated_index_mld =
-    Auto_generated_index_mld.gen package ~blessed ~modules ~libraries
+    Index_mld_page.gen package ~blessed ~modules ~libraries
       ~package_mlds ~error_log ~failed
   in
 

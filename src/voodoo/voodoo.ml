@@ -1,6 +1,6 @@
 module Opam = Opam
 module Sourceinfo = Sourceinfo
-module Index = Index
+module Sourceinfo_index = Sourceinfo_index
 module Mld = Mld
 module Odoc = Odoc
 module Paths = Paths

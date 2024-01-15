@@ -58,7 +58,9 @@ module IncludePaths = struct
         (fun _ v acc -> Fpath.Set.add (Sourceinfo.compile_dir v) acc)
         index.intern Fpath.Set.empty
     in
-    Sourceinfo_index.M.fold (fun _ v acc -> Fpath.Set.add v acc) index.extern dirs
+    Sourceinfo_index.M.fold
+      (fun _ v acc -> Fpath.Set.add v acc)
+      index.extern dirs
 end
 
 let get_source_info parent path =
@@ -160,7 +162,8 @@ let run pkg_name ~blessed ~failed =
     Bos.OS.Dir.fold_contents ~dotfiles:true
       (fun p acc ->
         let _, name = Fpath.split_base p in
-        if name = Fpath.v "index.m" then Sourceinfo_index.(combine (read p) acc) else acc)
+        if name = Fpath.v "index.m" then Sourceinfo_index.(combine (read p) acc)
+        else acc)
       Sourceinfo_index.empty Paths.compile
   in
   let index =
@@ -176,8 +179,8 @@ let run pkg_name ~blessed ~failed =
   let error_log = Error_log.find package in
 
   let auto_generated_index_mld =
-    Auto_generated_index_mld.gen package ~blessed ~modules ~libraries
-      ~package_mlds ~error_log ~failed
+    Index_mld_page.gen package ~blessed ~modules ~libraries ~package_mlds
+      ~error_log ~failed
   in
 
   let () =

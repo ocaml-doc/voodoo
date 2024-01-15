@@ -9,6 +9,6 @@ module Library_names = Library_names
 module Package = Package
 module Package_mlds = Package_mlds
 module Error_log = Error_log
-module Auto_generated_index_mld = Auto_generated_index_mld
+module Index_mld_page = Index_mld_page
 module Package_info = Package_info
 module Otherdocs = Otherdocs

@@ -17,52 +17,38 @@ type library = {
 
 type t = { libraries : library list }
 
+let read_libraries_from_pkg_defs ~library_name pkg_defs =
+  try
+    let cma_filename = Fl_metascanner.lookup "archive" [ "byte" ] pkg_defs in
+    let archive_name =
+      String.sub cma_filename 0 (String.length cma_filename - 4)
+    in
+    [ { name = library_name; archive_name; modules = [] } ]
+  with Not_found -> []
+
 let process_meta_file file =
   let _ = Format.eprintf "process_meta_file: %s\n%!" (Fpath.to_string file) in
-  let rec extract_name_and_archive ~base_library_name
-      ((name, pkg_expr) : string * Fl_metascanner.pkg_expr) =
-    let maybe_archive_name =
-      try Some (Fl_metascanner.lookup "archive" [ "byte" ] pkg_expr.pkg_defs)
-      with Not_found -> None
-    in
-    let child_libraries =
-      pkg_expr.pkg_children
-      |> List.map
-           (extract_name_and_archive
-              ~base_library_name:(base_library_name ^ "." ^ name))
-      |> List.flatten
-    in
-    match maybe_archive_name with
-    | Some archive_name ->
-        let archive_name =
-          String.sub archive_name 0 (String.length archive_name - 4)
-        in
-
-        { name = base_library_name ^ "." ^ name; modules = []; archive_name }
-        :: child_libraries
-    | None -> child_libraries
-  in
   let ic = open_in (Fpath.to_string file) in
   let meta = Fl_metascanner.parse ic in
-  let library_name =
+  let base_library_name =
     if Fpath.basename file = "META" then Fpath.parent file |> Fpath.basename
     else Fpath.get_ext file
   in
-  let maybe_base_library =
-    let archive_name =
-      let maybe_archive_name =
-        try Some (Fl_metascanner.lookup "archive" [ "byte" ] meta.pkg_defs)
-        with Not_found -> None
-      in
-      Option.map
-        (fun cma_filename ->
-          String.sub cma_filename 0 (String.length cma_filename - 4))
-        maybe_archive_name
+  let rec extract_name_and_archive ~prefix
+      ((name, pkg_expr) : string * Fl_metascanner.pkg_expr) =
+    let library_name = prefix ^ "." ^ name in
+    let libraries =
+      read_libraries_from_pkg_defs ~library_name pkg_expr.pkg_defs
     in
-    match archive_name with
-    | None -> None
-    | Some archive_name ->
-        Some { name = library_name; archive_name; modules = [] }
+    let child_libraries =
+      pkg_expr.pkg_children
+      |> List.map (extract_name_and_archive ~prefix:library_name)
+      |> List.flatten
+    in
+    libraries @ child_libraries
+  in
+  let libraries =
+    read_libraries_from_pkg_defs ~library_name:base_library_name meta.pkg_defs
   in
   let is_not_private (lib : library) =
     not
@@ -70,11 +56,9 @@ let process_meta_file file =
       |> List.exists (fun x -> x = "__private__"))
   in
   let libraries =
-    (match maybe_base_library with
-    | None -> []
-    | Some base_library -> [ base_library ])
+    libraries
     @ (meta.pkg_children
-      |> List.map (extract_name_and_archive ~base_library_name:library_name)
+      |> List.map (extract_name_and_archive ~prefix:base_library_name)
       |> List.flatten)
     |> List.filter is_not_private
   in
@@ -90,17 +74,12 @@ let process_ocamlobjinfo_file ~(libraries : library list) file =
   let len = String.length affix in
   close_in ic;
   let units =
-    List.map
+    Compat.List.concat_map
       (fun line ->
         if Astring.String.is_prefix ~affix line then
-          Some (String.sub line len (String.length line - len))
-        else None)
+          [ String.sub line len (String.length line - len) ]
+        else [])
       lines
-  in
-  let units =
-    List.fold_right
-      (fun l acc -> match l with Some x -> x :: acc | None -> acc)
-      units []
   in
   let _, archive_name = Fpath.split_base file in
   let archive_name = archive_name |> Fpath.rem_ext |> Fpath.to_string in

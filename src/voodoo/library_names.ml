@@ -21,9 +21,13 @@ let read_libraries_from_pkg_defs ~library_name pkg_defs =
   try
     let cma_filename = Fl_metascanner.lookup "archive" [ "byte" ] pkg_defs in
     let archive_name =
-      String.sub cma_filename 0 (String.length cma_filename - 4)
+      let file_name_len = String.length cma_filename in
+      if file_name_len > 0 then String.sub cma_filename 0 (file_name_len - 4)
+      else cma_filename
     in
-    [ { name = library_name; archive_name; modules = [] } ]
+    if String.length archive_name > 0 then
+      [ { name = library_name; archive_name; modules = [] } ]
+    else []
   with Not_found -> []
 
 let process_meta_file file =

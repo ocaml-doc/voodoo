@@ -105,7 +105,7 @@ let get_libraries package =
   let maybe_meta_files =
     Bos.OS.Dir.fold_contents ~dotfiles:true
       (fun p acc ->
-        let is_meta = p |> Fpath.rem_ext |> Fpath.basename = "META" in
+        let is_meta = p |> Fpath.basename = "META" in
         if is_meta then p :: acc else acc)
       [] path
   in

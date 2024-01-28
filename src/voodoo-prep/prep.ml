@@ -60,6 +60,13 @@ let process_package : Fpath.t -> Package.t -> Fpath.t list -> unit =
       Util.write_file Fpath.(dest // set_ext "ocamlobjinfo" fpath) lines)
     actions.objinfo
 
+let write_opam_file package =
+  match Opam.opam_file package with
+  | Some lines ->
+      let dest = Package.prep_path package in
+      Util.write_file Fpath.(dest / "opam") lines
+  | None -> ()
+
 let run (universes : (string * string) list) =
   let get_universe =
     match universes with
@@ -85,25 +92,12 @@ let run (universes : (string * string) list) =
           with _ -> None)
   in
 
-  let packages =
-    Opam.all_opam_packages ()
-    |> List.fold_left
-         (fun acc pkg ->
-           match get_universe pkg with Some pkg -> pkg :: acc | None -> acc)
-         []
-  in
   let root = Opam.prefix () |> Fpath.v in
-  let pkg_contents =
-    List.map (fun package -> (package, Opam.pkg_contents package)) packages
-  in
-  List.iter
-    (fun (package, files) -> process_package root package files)
-    pkg_contents;
-  List.iter
-    (fun package ->
-      match Opam.opam_file package with
-      | Some lines ->
-          let dest = Package.prep_path package in
-          Util.write_file Fpath.(dest / "opam") lines
-      | None -> ())
-    packages
+  Opam.all_opam_packages ()
+  |> List.iter (fun pkg ->
+         match get_universe pkg with
+         | Some package ->
+             let files = Opam.pkg_contents package in
+             process_package root package files;
+             write_opam_file package
+         | None -> ())

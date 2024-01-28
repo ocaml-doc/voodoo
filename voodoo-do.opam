@@ -11,7 +11,8 @@ bug-reports: "https://github.com/ocaml-doc/voodoo/issues"
 depends: [
   "dune" {>= "3.0"}
   "voodoo-lib"
-  "odoc" {>= "2.2.0"}
+  "odoc" {= "2.2.2"}
+  "odoc-parser" {= "2.0.0"}
   "bos"
   "astring"
   "cmdliner"

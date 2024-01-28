@@ -1,60 +1,12 @@
-let gen_with_dune (dune : Dune.t) =
-  let libraries =
-    if List.length dune.Dune.libraries = 0 then []
-    else
-      let x =
-        List.map
-          (fun l ->
-            let a =
-              match l.Dune.Library.ty with
-              | Dune.Library.Wrapped w ->
-                  if Util.is_hidden w.alias_module then
-                    [
-                      Printf.sprintf "Documentation: {!module-%s}"
-                        w.main_module_name;
-                    ]
-                  else
-                    [
-                      Printf.sprintf "Documentation: {!modules:%s}"
-                        (String.concat " "
-                           (List.map
-                              (fun s -> w.main_module_name ^ "." ^ s)
-                              w.modules));
-                    ]
-              | Dune.Library.Unwrapped u ->
-                  [
-                    Printf.sprintf "Documentation: {!modules:%s}"
-                      (String.concat " " u.modules);
-                  ]
-              | Dune.Library.Singleton s ->
-                  [ Printf.sprintf "Documentation: {!module-%s}" s ]
-            in
-            let deps =
-              if List.length l.dependencies > 0 then
-                [ "Dependencies:"; String.concat ", " l.dependencies ]
-              else []
-            in
-            [ "{2 " ^ l.name ^ "}" ] @ a @ ("" :: deps))
-          dune.libraries
-        |> List.flatten
-      in
-      [
-        "{1 Libraries}";
-        "This package provides the following libraries (via dune):";
-      ]
-      @ x
-  in
-  libraries
-
-let gen_with_libraries (libraries : Ocamlobjinfo.t list) =
+let gen_with_libraries (libraries : Library_names.library list) =
   let libraries =
     if List.length libraries = 0 then []
     else
       let x =
         List.map
-          (fun { Ocamlobjinfo.library_name; units } ->
+          (fun { Library_names.name; modules; _ } ->
             let non_hidden =
-              List.filter (fun x -> not (Util.is_hidden x)) units
+              List.filter (fun x -> not (Util.is_hidden x)) modules
             in
             let a =
               [
@@ -62,7 +14,7 @@ let gen_with_libraries (libraries : Ocamlobjinfo.t list) =
                   (String.concat " " non_hidden);
               ]
             in
-            [ "{2 " ^ library_name ^ "}" ] @ a @ [ "" ])
+            [ "{2 " ^ name ^ "}" ] @ a @ [ "" ])
           libraries
         |> List.flatten
       in
@@ -94,35 +46,28 @@ let gen_with_error l =
       ]
 
 let gen :
-    dune:Dune.t option ->
-    libraries:Ocamlobjinfo.t list ->
-    error_log:Error_log.t ->
-    failed:bool ->
-    string =
- fun ~dune ~libraries ~error_log ~failed ->
+    libraries:Library_names.t -> error_log:Error_log.t -> failed:bool -> string
+    =
+ fun ~libraries ~error_log ~failed ->
   Format.eprintf "libraries: [%s]\n%!"
     (String.concat ","
-       (List.map (fun x -> x.Ocamlobjinfo.library_name) libraries));
+       (List.map (fun x -> x.Library_names.name) libraries.libraries));
   let result =
     if failed then gen_with_error error_log
-    else
-      match dune with
-      | Some d -> gen_with_dune d
-      | _ -> gen_with_libraries libraries
+    else gen_with_libraries libraries.libraries
   in
   String.concat "\n" result
 
-let gen_parent :
+let gen :
     Package.t ->
     blessed:bool ->
     modules:string list ->
-    dune:Dune.t option ->
-    libraries:Ocamlobjinfo.t list ->
+    libraries:Library_names.t ->
     package_mlds:Fpath.t list ->
     error_log:Error_log.t ->
     failed:bool ->
     Mld.t =
- fun package ~blessed ~modules ~dune ~libraries ~package_mlds ~error_log ~failed ->
+ fun package ~blessed ~modules ~libraries ~package_mlds ~error_log ~failed ->
   let cwd = Fpath.v "." in
   let mld_index, mld_children =
     List.partition (fun mld -> Fpath.basename mld = "index.mld") package_mlds
@@ -174,7 +119,7 @@ let gen_parent :
 
   let content =
     match mld_index with
-    | [] -> gen ~dune ~libraries ~error_log ~failed
+    | [] -> gen ~libraries ~error_log ~failed
     | x :: _ ->
         let ic = open_in (Fpath.to_string x) in
         let result = really_input_string ic (in_channel_length ic) in

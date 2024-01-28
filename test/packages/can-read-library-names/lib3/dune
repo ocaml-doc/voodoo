@@ -1,0 +1,4 @@
+(library
+ (name unwrapped)
+ (wrapped false)
+ (public_name can-read-library-names.unwrapped))

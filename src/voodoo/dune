@@ -1,4 +1,12 @@
 (library
  (name voodoo_lib)
  (public_name voodoo-lib)
- (libraries astring fpath bos bos.setup sexplib yojson voodoo-lib.serialize))
+ (libraries
+  findlib
+  astring
+  fpath
+  bos
+  bos.setup
+  sexplib
+  yojson
+  voodoo-lib.serialize))

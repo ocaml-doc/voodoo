@@ -1,0 +1,27 @@
+opam-version: "2.0"
+name: "can-read-library-names"
+version: "1.0"
+synopsis: "Test"
+description: "Test"
+maintainer: ["me"]
+authors: ["me"]
+homepage: "http://github.com"
+bug-reports: "http://github.com"
+depends: [
+  "dune"
+  "odoc" {with-doc}
+]
+build: [
+  ["dune" "subst"] {dev}
+  [
+    "dune"
+    "build"
+    "-p"
+    name
+    "-j"
+    jobs
+    "@install"
+    "@runtest" {with-test}
+    "@doc" {with-doc}
+  ]
+]

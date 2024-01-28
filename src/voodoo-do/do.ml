@@ -10,7 +10,7 @@ module InputSelect = struct
     match ext with ".cmti" -> 0 | ".cmt" -> 1 | ".cmi" -> 2 | _ -> 3
 
   (* Given a list of Sourceinfo.t values, we need to find the 'best'
-     file for each, and return an Index.t of these *)
+     file for each, and return an Sourceinfo_index.t of these *)
   let select sis =
     let h = Hashtbl.create (List.length sis) in
     List.iter
@@ -30,20 +30,20 @@ module InputSelect = struct
           best :: acc)
         h []
     in
-    Index.of_source_infos result
+    Sourceinfo_index.of_source_infos result
 end
 
 module IncludePaths = struct
-  let get : Index.t -> Sourceinfo.t -> Fpath.Set.t =
+  let get : Sourceinfo_index.t -> Sourceinfo.t -> Fpath.Set.t =
    fun index si ->
     let s = Mld.compile_dir si.parent in
     let set = Fpath.Set.of_list [ s ] in
     List.fold_left
       (fun paths dep ->
-        match Index.find_opt dep.Odoc.c_digest index with
+        match Sourceinfo_index.find_opt dep.Odoc.c_digest index with
         | Some si -> Fpath.Set.add Sourceinfo.(compile_dir si) paths
         | None -> (
-            match Index.find_extern_opt dep.Odoc.c_digest index with
+            match Sourceinfo_index.find_extern_opt dep.Odoc.c_digest index with
             | Some p -> Fpath.Set.add p paths
             | None ->
                 Format.eprintf "Missing dependency: %s %s\n%!" dep.c_unit_name
@@ -51,14 +51,16 @@ module IncludePaths = struct
                 paths))
       set si.deps
 
-  let link : Index.t -> Fpath.Set.t =
+  let link : Sourceinfo_index.t -> Fpath.Set.t =
    fun index ->
     let dirs =
-      Index.M.fold
+      Sourceinfo_index.M.fold
         (fun _ v acc -> Fpath.Set.add (Sourceinfo.compile_dir v) acc)
         index.intern Fpath.Set.empty
     in
-    Index.M.fold (fun _ v acc -> Fpath.Set.add v acc) index.extern dirs
+    Sourceinfo_index.M.fold
+      (fun _ v acc -> Fpath.Set.add v acc)
+      index.extern dirs
 end
 
 let get_source_info parent path =
@@ -160,11 +162,12 @@ let run pkg_name ~blessed ~failed =
     Bos.OS.Dir.fold_contents ~dotfiles:true
       (fun p acc ->
         let _, name = Fpath.split_base p in
-        if name = Fpath.v "index.m" then Index.(combine (read p) acc) else acc)
-      Index.empty Paths.compile
+        if name = Fpath.v "index.m" then Sourceinfo_index.(combine (read p) acc)
+        else acc)
+      Sourceinfo_index.empty Paths.compile
   in
   let index =
-    match index_res with Ok index -> index | Error _ -> Index.empty
+    match index_res with Ok index -> index | Error _ -> Sourceinfo_index.empty
   in
 
   let opam_file = match Opam.find package with Ok f -> Some f | _ -> None in
@@ -176,8 +179,8 @@ let run pkg_name ~blessed ~failed =
   let error_log = Error_log.find package in
 
   let auto_generated_index_mld =
-    Auto_generated_index_mld.gen package ~blessed ~modules ~libraries
-      ~package_mlds ~error_log ~failed
+    Index_mld_page.gen package ~blessed ~modules ~libraries ~package_mlds
+      ~error_log ~failed
   in
 
   let () =
@@ -188,15 +191,15 @@ let run pkg_name ~blessed ~failed =
     Compat.List.concat_map (get_source_info auto_generated_index_mld) prep
   in
   let this_index = InputSelect.select sis in
-  Index.write this_index auto_generated_index_mld;
-  let index = Index.combine this_index index in
+  Sourceinfo_index.write this_index auto_generated_index_mld;
+  let index = Sourceinfo_index.combine this_index index in
   let rec compile h si compiled =
     if List.mem si.Sourceinfo.path compiled then compiled
     else
       let compiled =
         List.fold_left
           (fun (compiled : Fpath.t list) dep ->
-            match Index.find_opt dep.Odoc.c_digest this_index with
+            match Sourceinfo_index.find_opt dep.Odoc.c_digest this_index with
             | Some si -> compile h si compiled
             | None -> compiled)
           compiled si.deps
@@ -207,7 +210,7 @@ let run pkg_name ~blessed ~failed =
         ~includes ~children:[];
       si.path :: compiled
   in
-  let _ = ignore (Index.M.fold compile this_index.intern []) in
+  let _ = ignore (Sourceinfo_index.M.fold compile this_index.intern []) in
   let mldvs =
     Package_mlds.compile ~parent:auto_generated_index_mld package_mlds
   in
@@ -219,7 +222,7 @@ let run pkg_name ~blessed ~failed =
   in
   let output = Fpath.(v "html") in
   Util.mkdir_p output;
-  Index.M.iter
+  Sourceinfo_index.M.iter
     (fun _ si ->
       if Sourceinfo.is_hidden si then ()
       else
@@ -229,7 +232,7 @@ let run pkg_name ~blessed ~failed =
           ~output:(Sourceinfo.output_odocl si))
     this_index.intern;
   let odocls =
-    Index.M.fold
+    Sourceinfo_index.M.fold
       (fun _ si acc ->
         if Sourceinfo.is_hidden si then acc
         else Sourceinfo.output_odocl si :: acc)

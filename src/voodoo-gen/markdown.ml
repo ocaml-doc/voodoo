@@ -42,7 +42,9 @@ let rec block : 'attr block -> intermediate = function
   | Blockquote (_, _bs) -> Bl []
   | Thematic_break _ -> Bl []
   | Heading (_, n, i) ->
-      It (Heading { label = None; level = n; title = inline i })
+      It
+        (Heading
+           { label = None; level = n; title = inline i; source_anchor = None })
   | Code_block (_, _a, b) ->
       Bl
         [
@@ -69,26 +71,28 @@ let of_content content ~name ~url =
   let md = Omd.of_string content in
   let intermediate = blocks md in
   let items = List.map (function It x -> x | Bl x -> Text x) intermediate in
+  let open Odoc_document.Types.Page in
   Ok
     (match items with
-    | [] -> Odoc_document.Types.Page.{ preamble = []; items = []; url }
+    | [] -> { preamble = []; items = []; url; source_anchor = None }
     | (Heading _ as x) :: rest ->
-        Odoc_document.Types.Page.{ preamble = [ x ]; items = rest; url }
+        { preamble = [ x ]; items = rest; url; source_anchor = None }
     | _ ->
-        Odoc_document.Types.Page.
-          {
-            preamble =
-              [
-                Heading
-                  {
-                    label = None;
-                    level = 1;
-                    title = [ { desc = Text name; attr = [] } ];
-                  };
-              ];
-            items;
-            url;
-          })
+        {
+          preamble =
+            [
+              Heading
+                {
+                  label = None;
+                  level = 1;
+                  title = [ { desc = Text name; attr = [] } ];
+                  source_anchor = None;
+                };
+            ];
+          items;
+          url;
+          source_anchor = None;
+        })
 
 let read_org f url =
   let name = Fpath.basename f in
@@ -108,18 +112,20 @@ let read_md f url =
 let read_plain f url =
   let name = Fpath.basename f in
   Bos.OS.File.read f >>= fun content ->
+  let open Odoc_document.Types.Page in
   Ok
-    Odoc_document.Types.Page.
-      {
-        url;
-        items = [ Text [ { desc = Verbatim content; attr = [] } ] ];
-        preamble =
-          [
-            Heading
-              {
-                label = None;
-                level = 1;
-                title = [ { desc = Text name; attr = [] } ];
-              };
-          ];
-      }
+    {
+      url;
+      items = [ Text [ { desc = Verbatim content; attr = [] } ] ];
+      preamble =
+        [
+          Heading
+            {
+              label = None;
+              level = 1;
+              title = [ { desc = Text name; attr = [] } ];
+              source_anchor = None;
+            };
+        ];
+      source_anchor = None;
+    }

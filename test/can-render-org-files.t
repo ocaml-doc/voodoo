@@ -37,6 +37,7 @@ Converted the README.org file in HTML
 Content of automatically generated Index.mld is fine
   $ cat output/p/$PKG/1.0/doc/index.html.json | jq .
   {
+    "type": "documentation",
     "uses_katex": false,
     "breadcrumbs": [
       {
@@ -61,6 +62,7 @@ Content of automatically generated Index.mld is fine
       }
     ],
     "toc": [],
+    "source_anchor": null,
     "preamble": "<h1 id=\"can-render-org-files-1.0\"><a href=\"#can-render-org-files-1.0\" class=\"anchor\"></a>can-render-org-files 1.0</h1>",
     "content": ""
   }

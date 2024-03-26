@@ -9,50 +9,65 @@ type entry = {
 module Generate = struct
   (** Get plain text doc-comment from a doc comment *)
 
+  module C = Odoc_model.Comment
+
   let get_value x = x.Odoc_model.Location_.value
 
-  let rec string_of_doc (doc : Odoc_model.Comment.docs) =
+  let rec string_of_doc (doc : C.docs) =
     doc |> List.map get_value
     |> List.map s_of_block_element
     |> String.concat " "
 
-  and s_of_block_element (be : Odoc_model.Comment.block_element) =
+  and s_of_block_element (be : C.block_element) =
     match be with
     | `Paragraph is -> inlines is
     | `Tag _ -> ""
     | `List (_, ls) ->
         List.map (fun x -> x |> List.map get_value |> List.map nestable) ls
         |> List.concat |> String.concat " "
-    | `Heading (_, _, h) -> link_content h
+    | `Heading (_, _, h) -> inlines h
     | `Modules _ -> ""
-    | `Code_block (_, s) -> s |> get_value
+    | `Code_block (_, s, _) -> s |> get_value
     | `Verbatim v -> v
     | `Math_block m -> m
+    | `Table { data; _ } -> grid data
 
-  and nestable (n : Odoc_model.Comment.nestable_block_element) =
-    s_of_block_element (n :> Odoc_model.Comment.block_element)
+  and cell (c : _ C.cell) =
+    c |> fst |> List.map (fun x -> get_value x |> nestable) |> String.concat " "
 
-  and inlines is =
-    is |> List.map get_value |> List.map inline |> String.concat ""
+  and row (r : _ C.row) = r |> List.map cell |> String.concat " "
+  and grid (g : _ C.grid) = g |> List.map row |> String.concat " "
 
-  and inline (i : Odoc_model.Comment.inline_element) =
+  and nestable (n : C.nestable_block_element) =
+    s_of_block_element (n :> C.block_element)
+
+  and inlines (is : C.inline_element C.with_location list) =
+    is |> List.map (fun x -> get_value x |> inline) |> String.concat ""
+
+  and leaf_inline (i : C.leaf_inline_element) =
     match i with
-    | `Code_span s -> s
-    | `Word w -> w
-    | `Math_span m -> m
     | `Space -> " "
-    | `Reference (_, c) -> link_content c
-    | `Link (_, c) -> link_content c
-    | `Styled (_, b) -> inlines b
+    | `Word w -> w
+    | `Code_span s -> s
+    | `Math_span m -> m
     | `Raw_markup (_, _) -> ""
 
-  and link_content l =
-    l |> List.map get_value
-    |> List.map non_link_inline_element
-    |> String.concat ""
+  and inline (i : C.inline_element) =
+    match i with
+    | #C.leaf_inline_element as i -> leaf_inline (i :> C.leaf_inline_element)
+    | `Styled (_, b) -> inlines b
+    | `Reference (_, c) -> link_content c
+    | `Link (_, c) -> link_content c
 
-  and non_link_inline_element (n : Odoc_model.Comment.non_link_inline_element) =
-    inline (n :> Odoc_model.Comment.inline_element)
+  and link_content (l : C.link_content) = non_link_inlines l
+
+  and non_link_inline (x : C.non_link_inline_element) =
+    match x with
+    | #C.leaf_inline_element as x -> leaf_inline (x :> C.leaf_inline_element)
+    | `Styled (_, b) -> non_link_inlines b
+
+  and non_link_inlines (is : C.non_link_inline_element C.with_location list) =
+    is |> List.map (fun x -> get_value x |> non_link_inline) |> String.concat ""
 
   let rec full_name_aux : Odoc_model.Paths.Identifier.t -> string list =
     let open Odoc_model.Names in
@@ -80,6 +95,8 @@ module Generate = struct
           FieldName.to_string name :: full_name_aux (parent :> Identifier.t)
       | `Extension (parent, name) ->
           ExtensionName.to_string name :: full_name_aux (parent :> Identifier.t)
+      | `ExtensionDecl (parent, _, name) ->
+          ExtensionName.to_string name :: full_name_aux (parent :> Identifier.t)
       | `Exception (parent, name) ->
           ExceptionName.to_string name :: full_name_aux (parent :> Identifier.t)
       | `CoreException name -> [ ExceptionName.to_string name ]
@@ -96,6 +113,17 @@ module Generate = struct
           :: full_name_aux (parent :> Identifier.t)
       | `Label (parent, name) ->
           LabelName.to_string name :: full_name_aux (parent :> Identifier.t)
+      | `SourceDir (parent, name) ->
+          name :: full_name_aux (parent :> Identifier.t)
+      | `AssetFile (parent, name) ->
+          name :: full_name_aux (parent :> Identifier.t)
+      | `SourceLocationMod parent -> full_name_aux (parent :> Identifier.t)
+      | `SourceLocation (parent, name) ->
+          DefName.to_string name :: full_name_aux (parent :> Identifier.t)
+      | `SourceLocationInternal (parent, name) ->
+          LocalName.to_string name :: full_name_aux (parent :> Identifier.t)
+      | `SourcePage (parent, name) ->
+          name :: full_name_aux (parent :> Identifier.t)
 
   let prefixname :
       [< Odoc_model.Paths.Identifier.t_pv ] Odoc_model.Paths.Identifier.id ->
@@ -134,7 +162,14 @@ module Generate = struct
       | `CoreException _ -> "core exception"
       | `Constructor _ -> "constructor"
       | `Extension _ -> "extension"
+      | `ExtensionDecl _ -> "extension-decl"
       | `Root _ -> "root"
+      | `SourceDir _ -> "source dir"
+      | `AssetFile _ -> "asset file"
+      | `SourceLocationMod _ -> "source location mod"
+      | `SourceLocation _ -> "source location"
+      | `SourceLocationInternal _ -> "source location internal"
+      | `SourcePage _ -> "source page"
     in
     let url = Odoc_html.Link.href ~config ~resolve:(Base "") url in
     let json =
@@ -172,6 +207,7 @@ module Load_doc = struct
     | `Constructor (parent, _) -> is_internal (parent :> Identifier.t)
     | `Field (parent, _) -> is_internal (parent :> Identifier.t)
     | `Extension (parent, _) -> is_internal (parent :> Identifier.t)
+    | `ExtensionDecl (parent, _, _) -> is_internal (parent :> Identifier.t)
     | `Exception (parent, _) -> is_internal (parent :> Identifier.t)
     | `CoreException _ -> false
     | `Value (_, name) -> ValueName.is_internal name
@@ -180,6 +216,13 @@ module Load_doc = struct
     | `Method (parent, _) -> is_internal (parent :> Identifier.t)
     | `InstanceVariable (parent, _) -> is_internal (parent :> Identifier.t)
     | `Label (parent, _) -> is_internal (parent :> Identifier.t)
+    | `SourceDir (parent, _) -> is_internal (parent :> Identifier.t)
+    | `AssetFile (parent, _) -> is_internal (parent :> Identifier.t)
+    | `SourceLocationMod parent -> is_internal (parent :> Identifier.t)
+    | `SourceLocation (parent, _) -> is_internal (parent :> Identifier.t)
+    | `SourceLocationInternal (parent, _) ->
+        is_internal (parent :> Identifier.t)
+    | `SourcePage (parent, _) -> is_internal (parent :> Identifier.t)
 
   let add t ppf =
     if is_internal t.id then ()

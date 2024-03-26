@@ -51,11 +51,9 @@
   "Voodoo is an odoc driver used to generate OCaml.org's package documentation. voodoo-do runs the compilation step.")
  (depends
   voodoo-lib
-  ; odoc.2.2.0 pinned by the pipeline
+  ; odoc.2.4.1 pinned by the pipeline
   (odoc
-   (= 2.2.2))
-  (odoc-parser
-   (= 2.0.0))
+   (>= 2.4.1))
   bos
   astring
   cmdliner
@@ -71,11 +69,9 @@
   (omd
    (= 2.0.0~alpha3))
   voodoo-lib
-  ; odoc.2.2.0 pinned by the pipeline
+  ; odoc.2.4.1 pinned by the pipeline
   (odoc
-   (= 2.2.2))
-  (odoc-parser
-   (= 2.0.0))
+   (>= 2.4.1))
   conf-pandoc
   astring
   cmdliner

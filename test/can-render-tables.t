@@ -37,6 +37,7 @@ Generate a README.md file with the tables formatted in HTML
 Content of Index.mld is fine
   $ cat output/p/$PKG/1.0/doc/index.html.json | jq .
   {
+    "type": "documentation",
     "uses_katex": false,
     "breadcrumbs": [
       {
@@ -61,6 +62,7 @@ Content of Index.mld is fine
       }
     ],
     "toc": [],
+    "source_anchor": null,
     "preamble": "<h1 id=\"title\"><a href=\"#title\" class=\"anchor\"></a>Title</h1><p>Text</p><p>Here is some text that should show up.</p>",
     "content": ""
   }

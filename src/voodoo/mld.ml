@@ -11,6 +11,7 @@ let rec pp fmt v =
   let child_pp fmt = function
     | Odoc.CModule m -> Format.fprintf fmt "CModule %s" m
     | CPage p -> Format.fprintf fmt "CPage %s" p
+    | CSrc p -> Format.fprintf fmt "CSrc %s" p
   in
   Format.fprintf fmt "{ path: %a; name: %s; parent: %a; children: %a }" Fpath.pp
     v.path v.name (Fmt.option pp) v.parent

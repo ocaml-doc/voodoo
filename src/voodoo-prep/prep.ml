@@ -6,12 +6,26 @@ let process_package : Fpath.t -> Package.t -> Fpath.t list -> unit =
  fun root package files ->
   let dest = Package.prep_path package in
 
+  let format_matches_compiler_version path =
+    let filename = Fpath.to_string path in
+    try
+      (match Fpath.get_ext path with
+      | ".cmt" | ".cmti" -> ignore @@ Cmt_format.read_cmt filename
+      | ".cmi" -> ignore @@ Cmi_format.read_cmi filename
+      | _ -> assert false);
+      true
+    with _ ->
+      Format.eprintf "[WARNING] %a ignored: wrong magic number\n%!" Fpath.pp
+        path;
+      false
+  in
+
   (* Some packages produce ocaml artefacts that can't be processed with the switch's
       ocaml compiler - most notably the secondary compiler! This switch is intended to
       be used to ignore those files *)
-  let process_ocaml_artefacts =
+  let is_blacklisted =
     let package_blacklist = [ "ocaml-secondary-compiler" ] in
-    not (List.mem package.name package_blacklist)
+    List.mem package.name package_blacklist
   in
 
   let foldfn fpath acc =
@@ -27,16 +41,17 @@ let process_package : Fpath.t -> Package.t -> Fpath.t list -> unit =
     let no_ext = Fpath.rem_ext filename in
     let has_hyphen = String.contains (Fpath.to_string filename) '-' in
     let is_module =
-      process_ocaml_artefacts
+      (not is_blacklisted)
       && List.mem ext [ ".cmt"; ".cmti"; ".cmi" ]
-      && not has_hyphen
+      && (not has_hyphen)
+      && format_matches_compiler_version Fpath.(root // fpath)
     in
     let do_copy =
       (not in_build_dir)
       && (is_in_doc_dir || is_module
          || List.mem no_ext (List.map Fpath.v [ "META"; "dune-package" ]))
     in
-    let is_cma = process_ocaml_artefacts && List.mem ext [ ".cma"; ".cmxa" ] in
+    let is_cma = (not is_blacklisted) && List.mem ext [ ".cma"; ".cmxa" ] in
     let copy =
       if do_copy then Fpath.(root // fpath, dest // fpath) :: acc.copy
       else acc.copy
